@@ -1,0 +1,479 @@
+## page was renamed from wiki/undefine/undefine
+Git
+ 配置代理
+ {{{#!highlight
+git config http.proxy http://14.119.115.179:3128
+git config https.proxy https://14.119.115.179:3128
+}}}
+
+ 设置为全局代理
+ {{{#!highlight
+git config --global http.proxy http://14.119.115.179:3128
+git config --global https.proxy https://14.119.115.179:3128
+}}}
+
+ 取消代理设置
+ {{{#!highlight
+git config --global --unset http.proxy:3128
+git config --global --unset https.proxy:3128
+}}}
+
+ 查看config配置
+ {{{#!highlight
+git config --global -e
+}}}
+
+ 新建仓库
+ {{{#!highlight
+1. make a new gist on github then copy url
+
+2. git clone https://your.new.empty.git
+
+3. copy your files to the git forder
+
+4. git add
+   git commit -m "comment"
+   git push -u origin master
+}}}
+
+ 提交流程
+ {{{#!highlight
+Administrator@PCDXIT MINGW64 /f/moin (master)
+$ git add .
+
+Administrator@PCDXIT MINGW64 /f/moin (master)
+$ git commit -m "test"
+[master d3d5677] test
+1 file changed, 0 insertions(+), 0 deletions(-)
+create mode 100644 test.txt
+
+Administrator@PCDXIT MINGW64 /f/moin (master)
+$ git push -u origin master
+Enumerating objects: 4, done.
+Counting objects: 100% (4/4), done.
+Delta compression using up to 8 threads
+Compressing objects: 100% (2/2), done.
+Writing objects: 100% (3/3), 313 bytes | 313.00 KiB/s,  done.
+Total 3 (delta 0), reused 0 (delta 0), pack-reused 0
+To https://github.com/apzr/wiki.git
+   a790211..d3d5677  master -> master
+Branch 'master' set up to track remote branch 'master'  from 'origin'.
+}}}
+
+ 更新远程已经重命名了的本地branch
+ {{{#!highlight
+Administrator@PCDXIT MINGW64 /f/moin (main)
+$ dir
+README.md  wiki
+
+Administrator@PCDXIT MINGW64 /f/moin (main)
+$ git branch -m main master
+
+Administrator@PCDXIT MINGW64 /f/moin (master)
+$ git fetch origin
+From https://github.com/apzr/wiki
+* [new branch]      master     -> origin/master
+
+Administrator@PCDXIT MINGW64 /f/moin (master)
+$ git branch -u origin/master master
+Branch 'master' set up to track remote branch 'master'  from 'origin'.
+
+Administrator@PCDXIT MINGW64 /f/moin (master)
+$ git remote set-head origin -a
+origin/HEAD set to master
+}}}
+
+更新t_mobil_pic表中pic_code字段
+{{{#!highlight sql
+UPDATE t_mobile_pic
+SET pic_code = user_code + CONVERT ( VARCHAR ( 8 ), create_date, 112 ) + replace( CONVERT ( VARCHAR ( 8 ), create_date, 108 ), ':', '' )
+}}}
+
+安装本地依赖
+{{{#!highlight
+mvn install:install-file -Dfile=wxpay-sdk-3.0.9.jar -DgroupId=com.yuepong.jdev -DartifactId=jdev-redis -Dversion=1.0.1 -Dpackaging=jar
+}}}
+
+拉个包
+{{{#!highlight
+mvn dependency:get -DremoteRepositories=http://192.168.0.207:7081/repository/maven-snapshots/ -DgroupId=com.yuepong.jdev -DartifactId=jdev-redis -Dversion=1.0-20210413.063037-11
+}}}
+
+windows杀掉相关名字的全部进程
+{{{#!highlight bash
+taskkill /F /IM powershell.exe /T
+}}}
+
+linux数字权限释义
+{{{#!highlight bash
+chmod 754 filename
+}}}
+ {{{#!csv ,
+权限, 数值, 二进制, , 
+r, 4, 00000100, 7 =4 + 2 + 1, 读写运行
+w, 2, 00000010, 5 = 4 + 1, 读运行
+x, 1, 00000001, 4 = 4, 读
+}}}
+
+sql server 临时表查询
+{{{#!highlight sql
+IF EXISTS (
+SELECT * FROM tempdb..sysobjects
+WHERE id = object_id( 'tempdb..##online_foods_stock0931' )
+) DROP TABLE ##online_foods_stock0931
+SELECT * FROM tempdb..sysobjects where name like '##onlineFoods%' ORDER BY name desc
+}}}
+
+python update pip
+{{{#!highlight
+WARNING: You are using pip version 20.2.1; however, version 21.0.1 is available.
+You should consider upgrading via the
+'e:\program_flies\python\python.exe -m pip install --upgrade pip' command.
+}}}
+
+Linux查看path
+{{{#!highlight bash
+[root@localhost ~]# export
+declare -x CLASSPATH=".:/usr/local/java/jdk1.8.0_221/lib:/usr/local/java/jdk1.8.0_221/jre/lib:"
+declare -x HISTCONTROL="ignoredups"
+declare -x HISTSIZE="1000"
+declare -x HOME="/root"
+declare -x HOSTNAME="localhost.localdomain"
+declare -x JAVA_HOME="/usr/local/java/jdk1.8.0_221"
+declare -x JAVA_PATH="/usr/local/java/jdk1.8.0_221/bin:/usr/local/java/jdk1.8.0_221/jre/bin"
+declare -x JRE_HOME="/usr/local/java/jdk1.8.0_221/jre"
+...
+...
+...
+declare -x XDG_SESSION_ID="1584"
+}}}
+
+命令行打开
+{{{#!highlight Batch
+我的电脑
+explorer.exe ::{20D04FE0-3AEA-1069-A2D8-08002B30309D}
+网上邻居
+explorer.exe ::{208D2C60-3AEA-1069-A2D7-08002B30309D}
+回收站
+explorer.exe ::{645FF040-5081-101B-9F08-00AA002F954E}
+IE
+iexplore -new
+}}}
+
+java8单例
+{{{#!highlight java
+    public class Obj{
+        private static Obj OBJ;
+        public static Obj newInstance(){ 
+            return OBJ = Optional.ofNullable(OBJ).orElse(new Obj()); 
+        }
+    }
+}}}
+{{{#!highlight java
+    public class Obj{
+        private static Obj OBJ;
+        public static Obj newInstance() {
+            if (OBJ == null) {
+                synchronized (Obj.class) {
+                    if (OBJ == null) {
+                        OBJ = new Obj();
+                    }
+                }
+            }
+            return OBJ;
+        }
+    }
+}}}
+
+{{{#!highlight java
+    /**
+     * 生成缓存键
+     *
+     * @param params
+     * @return
+     */
+    public String keyGen(Object... params){
+        StringBuilder key = new StringBuilder();
+        Arrays.stream(params).forEach(p -> { key.append(p==null?"null":p.toString()).append(":"); });
+        return key.toString();//.hashCode();
+    }
+}}}
+
+redis-dump导出
+{{{#!highlight
+redis-dump -u 127.0.0.1:6379 > test.json
+# 指定数据库
+redis-dump -u 127.0.0.1:6379 -d 15 > test.json
+# 有密码
+redis-dump -u :123456@192.168.0.112:6379 > test.json
+}}}
+
+redis-dump导入
+{{{#!highlight
+< test.json redis-load -u 127.0.0.1:6379
+# 有密码
+< test.json redis-load -u :123456@127.0.0.1:6379
+}}}
+
+以二进制形式导入,解决乱码问题
+{{{#!highlight
+E:\>< test.json redis-load -u 127.0.0.1:6379
+ERROR (Yajl::ParseError): lexical error: invalid bytes in UTF8 string.
+26923,"type":"set","value":["��\u0000\u0005sr\u0000Corg.spri
+(right here) ------^
+
+E:\>< test.json redis-load -n -u 127.0.0.1:6379
+
+E:\>
+}}}
+
+{{{#!highlight
+spring.main.allow-bean-definition-overriding : true
+}}}
+{{{#!highlight
+在SpringCloud中,有两种调用服务时客户端的负载均衡策略,一个是Ribbon,一个是Feign
+Ribbon是一个基于Http端的负载均衡,通过在Configuration中配置RestTemplate来进行调用,可以自定义负载均衡的方式
+Feign是一个通过本地接口的形式来进行调用服务的,其中Feign中默认引入了Ribbon,在线上开发中,我还是比较倾向用Feign,
+因为Feign中以接口的形式进行调用服务,看起来简洁,而且Feign中还可以增加熔断器,来进行服务的熔断和降级,防止服务调用中的服务的雪崩
+}}}
+
+{{{RestTemplate - @LoadBalanced}}}
+{{{#!highlight
+RestTemplate只是类似于HttpClient的一个发送REST风格的请求的类
+是没有办法去识别所谓的EUREKA服务名的
+要用@LoadBalanced注解修饰的RestTemplate才能实现服务名的调用
+@LoadBalanced是Netflix的ribbon中的一个负载均衡的注解，这个注解加上之后，有3件事情要处理：
+    1. 从负载均衡器中选一个对应的服务实例(所有的服务名实例都放在负载均衡器中的serverlist)。
+    2. 从1中挑选的实例请求内容。
+    3. 由服务名转为真正使用的ip地址
+}}}
+
+eureka.yml
+{{{#!highlight YAML
+eureka:
+  dashboard:
+    path: /eureka-ui
+  server:
+    wait-time-in-ms-when-sync-empty: 0   #在eureka服务器获取不到集群里对等服务器上的实例时，需要等待的时间，单机默认0
+    shouldUseReadOnlyResponseCache: true #eureka是CAP理论种基于AP策略，为了保证强一致性关闭此切换CP 默认不关闭 false关闭
+    enable-self-preservation: false    #关闭服务器自我保护，客户端心跳检测15分钟内错误达到80%服务会保护，导致别人还认为是好用的服务
+    eviction-interval-timer-in-ms: 60000 #清理间隔（单位毫秒，默认是60*1000）5秒将客户端剔除的服务在服务注册列表中剔除#
+    response-cache-update-interval-ms: 3000  #eureka server刷新readCacheMap的时间，注意，client读取的是readCacheMap，这个时间决定了多久会把readWriteCacheMap的缓存更新到readCacheMap上 #eureka server刷新readCacheMap的时间，注意，client读取的是readCacheMap，这个时间决定了多久会把readWriteCacheMap的缓存更新到readCacheMap上默认30s
+    response-cache-auto-expiration-in-seconds: 180   #eureka server缓存readWriteCacheMap失效时间，这个只有在这个时间过去后缓存才会失效，失效前不会更新，过期后从registry重新读取注册服务信息，registry是一个ConcurrentHashMap。
+    renewal-percent-threshold: 0.49  #  指定每分钟需要收到的续约次数的阈值，默认值就是：0.85
+  client:
+    register-with-eureka: false  #false:不作为一个客户端注册到注册中心,是否将自身的实例信息注册到eureka服务器
+    fetch-registry: false      #为true时，可以启动，但报异常：Cannot execute request on any known server ，是否从eureka服务端获取注册信息，消费者需要配置true
+                               #如果设置多个eureka时，需要设置 eureka.client.fetchRegistry=true,表示多个服务器之间的数据同步。单个节点直接设置成false即可。
+    instance-info-replication-interval-seconds: 10
+    registry-fetch-interval-seconds: 30  #从eureka服务端获取注册信息的间隔时间
+    service-url:
+      defaultZone: http://${eureka.instance.hostname}:${server.port}/eureka/
+  instance:
+    hostname: localhost
+    prefer-ip-address: true
+    instance-id: ${spring.application.name}:${spring.cloud.client.ip-address}:${spring.application.instance_id:${server.port}}
+    lease-renewal-interval-in-seconds: 10    # 续约更新时间间隔（默认30秒），eureka客户端向服务端发送心跳的时间间隔
+    lease-expiration-duration-in-seconds: 30 # 续约到期时间（默认90秒）
+}}}
+
+restapi
+{{{#!csv ,
+POST, http://host:port/users, Data: name = Foobar, 增
+GET, http://host:port/users, , 查
+GET, http://host:port/users/123, , 查
+PUT, http://host:port/users/123, Data: name = New Foobar, 改
+DELETE, http://host:port/users/123, , 删
+}}}
+
+JS方便查看后台时间
+{{{#!highlight JavaScript
+Date.prototype.fmt= function(fmt) {
+    let ret;
+    const opt = {
+        "Y+": this.getFullYear().toString(),        // 年
+        "m+": (this.getMonth() + 1).toString(),     // 月
+        "d+": this.getDate().toString(),            // 日
+        "H+": this.getHours().toString(),           // 时
+        "M+": this.getMinutes().toString(),         // 分
+        "S+": this.getSeconds().toString()          // 秒
+        // 有其他格式化字符需求可以继续添加，必须转化成字符串
+    };
+    for (let k in opt) {
+        ret = new RegExp("(" + k + ")").exec(fmt);
+        if (ret) {
+            fmt = fmt.replace(ret[1], (ret[1].length == 1) ? (opt[k]) : (opt[k].padStart(ret[1].length, "0")))
+        };
+    };
+    return fmt;
+}
+}}}
+{{{#!highlight JavaScript
+new Date(1619312697000).fmt("YYYY-mm-dd HH:MM:SS")
+}}}
+
+chrome书签位置
+{{{
+C:\Users\Administrator\AppData\Local\Google\Chrome\User Data\Default\Bookmarks
+}}}
+
+swagger2
+{{{
+mvn swagger2markup:convertSwagger2markup
+mvn generate-resources
+}}}
+{{{
+<!-- swagger2 api-->
+<dependency>
+    <groupId>io.springfox</groupId>
+    <artifactId>springfox-swagger2</artifactId>
+    <version>3.0.0</version>
+</dependency>
+<!-- 生成ASCIIDOC swagger相关 -->
+<dependency>
+    <groupId>io.github.swagger2markup</groupId>
+    <artifactId>swagger2markup</artifactId>
+    <version>1.3.1</version>
+</dependency>
+}}}
+{{{
+       <!-- 生成ASCIIDOC swagger相关 -->
+       <plugin>
+           <groupId>io.github.swagger2markup</groupId>
+           <artifactId>swagger2markup-maven-plugin</artifactId>
+           <version>1.2.0</version>
+           <configuration>
+               <!--项目启动端口-->
+               <swaggerInput>http://localhost:8088/v2/api-docs</swaggerInput>
+               <!-- 生成为单个文档，输出路径
+               <outputFile>src/main/doc/api</outputFile>-->
+               <!-- 生成为多个文档，输出路径 -->
+               <outputDir>docs/generated</outputDir>
+               <config>
+                   <!-- CONFLUENCE_MARKUP  ASCIIDOC  MARKDOWN-->
+                   <swagger2markup.markupLanguage>ASCIIDOC</swagger2markup.markupLanguage>
+                   <swagger2markup.pathsGroupedBy>TAGS</swagger2markup.pathsGroupedBy>
+               </config>
+           </configuration>
+       </plugin>
+
+
+       <!--生成HTML和 PDF-->
+       <plugin>
+           <groupId>org.asciidoctor</groupId>
+           <artifactId>asciidoctor-maven-plugin</artifactId>
+           <version>1.5.3</version>
+           <!-- Include Asciidoctor PDF for pdf generation -->
+           <dependencies>
+               <dependency>
+                   <groupId>org.asciidoctor</groupId>
+                   <artifactId>asciidoctorj-pdf</artifactId>
+                   <version>1.5.0-alpha.10.1</version>
+               </dependency>
+               <dependency>
+                   <groupId>org.jruby</groupId>
+                   <artifactId>jruby-complete</artifactId>
+                   <version>1.7.21</version>
+               </dependency>
+           </dependencies>
+           <!-- Configure generic document generation settings -->
+           <configuration>
+               <sourceDirectory>docs/generated</sourceDirectory>
+               <sourceHighlighter>coderay</sourceHighlighter>
+               <attributes>
+                   <toc>left</toc>
+               </attributes>
+           </configuration>
+           <!-- Since each execution can only handle one backend, run
+                separate executions for each desired output type -->
+           <executions>
+               <execution>
+                   <id>output-html</id>
+                   <phase>generate-resources</phase>
+                   <goals>
+                       <goal>process-asciidoc</goal>
+                   </goals>
+                   <configuration>
+                       <backend>html5</backend>
+                       <outputDirectory>docs/output/html</outputDirectory>
+                   </configuration>
+               </execution>
+
+
+               <execution>
+                   <id>output-pdf</id>
+                   <phase>generate-resources</phase>
+                   <goals>
+                       <goal>process-asciidoc</goal>
+                   </goals>
+                   <configuration>
+                       <backend>pdf</backend>
+                       <outputDirectory>docs/output/pdf</outputDirectory>
+                   </configuration>
+               </execution>
+
+
+           </executions>
+       </plugin>
+}}}
+
+java8stream
+{{{#!highlight Java
+Optional.ofNullable(usualExplain).ifPresent(p -> {
+    LambdaQueryWrapper<ItemValuePo> itemValuePoLambdaQueryWrapper = new LambdaQueryWrapper<>();
+    itemValuePoLambdaQueryWrapper.eq(ItemValuePo::getDdCode, DDCODE);
+    itemValuePoLambdaQueryWrapper.eq(ItemValuePo::getCode, usualExplainPo.getType());
+    ItemValuePo itemValuePo = itemValueMapper.selectOne(itemValuePoLambdaQueryWrapper);
+
+    p.setName(  Optional.ofNullable(itemValuePo).map(item -> item.getName()).orElse("") );
+});
+}}}
+
+{{{#!highlight java
+Optional.ofNullable(customerBaseDto).map(CustomerBaseDto::getNickname).orElse("")
+
+//UsualExplain->setName
+usualExplainList.stream().forEach(usualExplain -> usualExplain.setName(
+    itemValuePoList.stream()
+        .filter(itemValuePo -> StrUtil.equals(itemValuePo.getCode(), usualExplain.getType()))
+        .map(ItemValuePo::getName)
+        .collect(Collectors.joining())
+));
+}}}
+
+{{{#!highlight java
+{List}.stream().map(CustomerDtoAssemble::dtoToResponseDto).collect(Collectors.toList())
+}}}
+
+右键添加打开cmd
+{{{#!highlight reg
+Windows Registry Editor Version 5.00
+
+[HKEY_CLASSES_ROOT\Directory\shell\OpenCmdHere]
+@="在此处打开命令窗口"
+"Icon"="cmd.exe"
+
+[HKEY_CLASSES_ROOT\Directory\shell\OpenCmdHere\command]
+@="cmd.exe /s /k pushd \"%V\""
+
+[HKEY_CLASSES_ROOT\Directory\Background\shell\OpenCmdHere]
+@="在此处打开命令窗口"
+"Icon"="cmd.exe"
+
+[HKEY_CLASSES_ROOT\Directory\Background\shell\OpenCmdHere\command]
+@="cmd.exe /s /k pushd \"%V\""
+
+[HKEY_CLASSES_ROOT\Drive\shell\OpenCmdHere]
+@="在此处打开命令窗口"
+"Icon"="cmd.exe"
+
+[HKEY_CLASSES_ROOT\Drive\shell\OpenCmdHere\command]
+@="cmd.exe /s /k pushd \"%V\""
+
+[HKEY_CLASSES_ROOT\LibraryFolder\background\shell\OpenCmdHere]
+@="在此处打开命令窗口"
+"Icon"="cmd.exe"
+
+[HKEY_CLASSES_ROOT\LibraryFolder\background\shell\OpenCmdHere\command]
+@="cmd.exe /s /k pushd \"%V\""
+}}}
