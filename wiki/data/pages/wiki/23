@@ -1,0 +1,16 @@
+##master-page:SlideTemplate
+##master-date:2004-11-22 11:03:00
+#format wiki
+#language zh
+#pragma section-numbers off
+
+<<Navigation(slides)>>
+= 标题 =
+
+内容
+
+##<<Navigation(siblings)>>
+
+
+
+此页的英文版本SlideTemplate

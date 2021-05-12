@@ -1,0 +1,15 @@
+## Please edit system and help pages ONLY in the master wiki!
+## For more information, please see MoinMoin:MoinDev/Translation.
+##master-page:PageSize
+##master-date:2010-11-21T01:57:03Z
+#acl -All:write Default -All:read
+#format wiki
+#language zh
+
+<<StatsChart(pagesize)>>
+
+下面是所有网页根据其大小排序后的列表：
+
+<<PageSize>>
+
+此页的英文版本：PageSize

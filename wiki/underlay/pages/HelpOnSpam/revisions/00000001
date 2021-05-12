@@ -1,0 +1,204 @@
+## Please edit system and help pages ONLY in the master wiki!
+## For more information, please see MoinMoin:MoinDev/Translation.
+##master-page:None
+##master-date:None
+#acl -All:write Default
+#format wiki
+#language en
+= Managing Spam =
+<<TableOfContents>>
+Wikispam is getting more and more annoying. Wiki pages get high ratings in search engines because of the strong linking between the pages (and each other via InterWiki links). This makes them a valuable target to increase the ranking of other pages.
+
+But you can use a strong wiki community and also some technical means to avoid or remove spam on your wiki.
+
+== Preventing Spam ==
+Moin 1.9.10+ has different security/permissions default which should be very safe to prevent spam, but also are less ''wikiwiki''.
+
+=== newaccount action is disabled ===
+
+Do not allow the "newaccount" action for non-superusers (via `actions_superuser` internal default). Superusers may use it, but there is a better way, see below.
+
+Thus, spam bots can not create a ton of user accounts automatically any more.
+
+But: legitimate new users can't create accounts either - they will need to ask somebody who is on the superuser list to create a new user profile for them.
+
+The superuser then needs to: log in, go to "Settings". Use "Switch user" to switch to new account (giving the new user name), fill in the new user's e-mail address, save the profile. Alternatively, a wiki server admin can use "moin account create" shell command.
+
+The new user needs to: go to "Login", click on "Forgot my password", enter the user name OR the e-mail address, check e-mail inbox for the password recovery link, click on it and define a new password.
+
+=== no write permissions for Known: and All: ===
+
+Do not give write permissions to the "Known" and "All" ACL pseudo group (via `acl_rights_default` internal default).
+
+Thus, not logged-in users (including spammers) can not change content or create new content any more.
+
+To allow legitimate users to change content, it is suggested to:
+
+ * create accounts for them (see above)
+ * put trusted users into some group, e.g. create a "EditorGroup" page with a first-level list of user names.
+ * put a on-page acl onto the group page: `#acl EditorGroup:read,write,revert All:read`, so that group members can add new members to the group.
+ * configure `acl_rights_default = u"EditorGroup:read,write,delete,revert All:read"` in the wiki config.
+
+== Blocking Spam ==
+
+MoinMoin contains some technical features which try to block spam.
+
+=== TextChas ===
+
+==== What is a TextCHA? ====
+It is a pure text alternative to ''CAPTCHAs''. !MoinMoin uses it to prevent wiki spamming and it has proven to be very effective.
+
+Features:
+ * for page save, ask a random question
+ * match the given answer against a regular expression
+ * q and a can be configured in the wiki config
+ * multi language support: a user gets a textcha in his language or in language_default or in English (depending on availability of questions/answers for the language)
+
+Tips for answering:
+ * you need to answer the textcha for e.g.:
+  * page save
+  * attachment upload
+  * user profile creation
+
+ * you do not need to answer the textcha for e.g.:
+  * page preview (if you do, it will remember what you entered, though)
+  * user profile changes
+
+ * it is usually a simple/short answer
+ * it compares case-insensitive
+ * sometimes you can find the right answer by reading some important pages of the wiki
+ 
+==== TextCha Configuration ====
+
+Tips for configuration:
+ * have 1 word / 1 number answers
+ * ask questions that normal users of your site are likely to be able to answer
+ * do not ask too hard questions
+ * do not ask "computable" questions, like "1+1" or "2*3"
+ * do not ask too common questions
+ * do not share your questions with other sites / copy questions from other sites (or spammers might try to adapt to this) 
+ * you should at least give textchas for 'en' (or for your language_default, if that is not 'en') as this will be used as fallback if !MoinMoin does not find a textcha in the user's language
+
+In your wiki config, do something like this:
+{{{
+    textchas_disabled_group = u"TrustedEditorGroup" # members of this don't get textchas
+    textchas = {
+        'en': { # silly english example textchas (do not use them!)
+            u"Enter the first 9 digits of Pi.": ur"3\.14159265",
+            u"What is the opposite of 'day'?": ur"(night|nite)",
+            # ...
+        },
+        'de': { # some german textchas
+            u"Gib die ersten 9 Stellen von Pi ein.": ur"3\.14159265",
+            u"Was ist das Gegenteil von 'Tag'?": ur"nacht",
+            # ...
+        },
+        # you can add more languages if you like
+    }
+}}}
+
+Note that TrustedEditorGroup from above example can have groups as members.
+
+
+=== BadContent / LocalBadContent ===
+You can ban certain content within contributions by listing regular expressions on the your 'BadContent' page.
+
+If a user tries to save a page and its content matches any of these regular expressions, then saving that page will be denied (until the offending content is removed from the editor).
+
+You can also enable an automatic update of BadContent via your wikiconfig. This is enabled by this line:
+{{{
+    from MoinMoin.security.antispam import SecurityPolicy
+}}}
+see HelpOnConfiguration/SecurityPolicy
+
+=== Abuse Logging ===
+
+Moin 1.9.8 added abuse logging.  Events that often indicate the presence of a wiki spammer are logged.  Tools like fail2ban, swatch, logsurfer, or a custom script can be used to process the logs, identify the IP numbers from which spam is coming, and instruct the system firewall to block the spammers.  Linux iptables and its "recent" module can be used on the firewall side although the ipset module is preferred.
+
+==== Abuse Firewalling ====
+
+The firewalling approach outlined here uses Linux iptables and it's ipset module to keep track of and block the IP numbers of discovered spammers.  Swatch is used to monitor the abuse logs to identify spammers.
+
+Note that the example presented here is only a guide.  The details will vary depending on your requirements and your present firewall configuration.  They may also vary depending on your OS version or other factors.  (On Red Hat based systems the ipset module is not supported until release 6.6.)  Careful testing is required.
+
+{{{#!wiki warning
+Improper firewall configuration can lock you out of your system.   To recover physical access to the system console may be required.
+}}}
+
+As presented here, wikispam will be blocked only after system reboot.
+
+The general outline of the example is as follows:  The wiki logs user actions.  The swatch program monitors the logs and decides which actions taking place over what time period indicate the presence of a spammer.  When swatch finds a spammer it extracts the spammer's IP number from the log and puts it on a "block" list used by iptables' ipset module.  Iptables uses ipset to block the spammer for a given period of time.  After the time limit has passed the spammer's IP number is removed from the block list by iptables.  Ipset must be configured to allow for a large number of blocked IPs and to designate a timeout period.
+
+===== Configuring mod ipset =====
+
+The ipset package must be installed using your system's packaging system.
+
+Run the following command as root to track a maximum of 65536 IP numbers and place wikispammers on a blacklist for 300 days:
+
+{{{
+# Timeout after 300 days (adjust timeout and maxelem as necessary)
+ipset create wikispam hash:ip -exist family inet hashsize 16384 \
+             maxelem 65536 timeout 25920000
+}}}
+
+Red-Hat and derived systems require the following in {{{/etc/sysconfig/iptables-config}}}:
+
+{{{
+# Save accumulated ipset data on iptables stop. (Default: no)
+# (Save is forced if IPTABLES_SAVE_ON_STOP=yes)
+IPSET_SAVE_ON_STOP=yes
+# Save accumulated ipset data on iptables restart. (Default: no)
+# (Save is forced if IPTABLES_SAVE_ON_RESTART=yes)
+IPSET_SAVE_ON_RESTART=yes
+}}}
+
+Debian and derived systems must use their firewall package of choice to save and restore of the wikispam ipset blacklist on system shutdown and reboot.
+
+===== Blocking Wiki Spammers =====
+
+The following iptables rules blocks discovered spammers for the time configured above.
+They are blocked from port 80, the http port, and so denied use
+of the webserver.
+
+{{{
+# Drop if on the spam list (within the configured time period)
+iptables -A INPUT -p tcp --dport 80 -m set --match-set wikispam src -j DROP
+}}}
+
+These rules should be inserted at the appropriate
+point into the existing firewall rules.
+
+===== Identifying Wiki Spammers =====
+
+The following {{{/etc/swatch.conf}}} file identifies as spammers those who are denied edit permission from wiki pages with more than 100 characters in their page name, at least 3 times within 1 day.
+
+{{{
+# This file is /etc/swatch.conf
+
+# 3 failed attempts to edit a page of more than 100 characters within 1 day
+watchfor / WARNING MoinMoin\.util\.abuse:37 : edit\/no permissions: status failure: [^:]*: ip ([.0123456789]*): page .{100,}/
+  threshold track_by=$1, type=both, count=3, seconds=86400
+     # exec 'logger -t swatch-wikispam -p local0.info "denied $1: 3 edits of a page having a name of 100 chars or more, within 1 day"'
+     exec 'echo  ipset add wikispam $1 -exist'
+     continue
+}}}
+
+Note that the above assumes no special abuse logging configuration.
+
+Finally, swatch must be started.  The following lines can be added to {{{/etc/rc.local}}}:
+
+{{{
+# Start the swatch daemon
+# (Adjust to watch your webserver's error log file.)
+swatch --daemon --tail-args '-F -n0' -c /etc/swatch.conf -t /var/log/httpd/error_log
+}}}
+
+
+== Removing Spam ==
+
+If you are a [[HelpOnSuperUser|SuperUser]], you can use the "Remove Spam" action to mass-revert changes of some spammer (or some other ''bad guy'').
+
+ 1. Select "Remove Spam" from the available actions.
+ 1. Select the user (usually part of the IP)
+ 1. Select "Revert All"
+ 1. You will see how moin tries to revert his edits. This does not work in every case, so you may have to clean up some of his edits manually.

@@ -1,0 +1,21 @@
+## windows 批量结束进程
+
+结束名称为java.exe的进程
+{{{#!highlight shell
+taskkill /F /IM java.exe /T
+}}}
+
+结束以abc开头的所有进程
+{{{#!highlight shell
+taskkill /f /im abc*
+}}}
+
+结束所有扩展名为bat的进程，也就是结束当前正在运行的所有批处理程序
+{{{#!highlight shell
+taskkill /f /im *.bat
+}}}
+
+结束以a开头的所有扩展名为cmd的进程，也就是结束当前所有以a开头的批处理程序
+{{{#!highlight shell
+taskkill /f /im a*.cmd
+}}}

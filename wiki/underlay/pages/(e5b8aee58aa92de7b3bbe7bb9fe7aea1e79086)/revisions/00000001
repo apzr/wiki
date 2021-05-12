@@ -1,0 +1,36 @@
+## Please edit system and help pages ONLY in the master wiki!
+## For more information, please see MoinMoin:MoinDev/Translation.
+##master-page:HelpOnAdministration
+##master-date:2010-11-10T05:51:19Z
+#acl -All:write Default
+#format wiki
+#language zh
+
+= 系统管理 =
+以下页面含有对Moin``Moin管理员很重要的信息.
+
+== 常规作业 ==
+ * [[帮助-系统设置]] - 如何设置 Moin``Moin.
+ * [[帮助-访问权限控制表]] - 如何通过 ACLs 来控制页面访问权限
+ * [[帮助-自动管理]] - 赋予一些用户或用户组管理权限
+ * [[帮助-删除网页]] - 如何删除页面
+ * [[帮助-Spam]] - 如何处理 spam
+ * [[帮助-用户管理]] - 如何管理用户
+ * [[帮助-超级用户]] - 特权用户
+ * [[帮助-认证]] - 如何设置认证选项
+ * [[LanguageSetup]] - Moin``Moin 多语言支持
+
+== 安装 ==
+请阅读文档目录中的 INSTALL.html 文件。
+
+== 升级 ==
+
+ * [[帮助-升级]] - 如何升级一个现存的 MoinMoin
+ * [[帮助-升级Python]] - 如何升级 Python
+
+== 高级内容 ==
+
+ * [[帮助-同步]]
+ * [[帮助-Moin命令]] 和 [[帮助-命令/导出]]
+
+此页的英文版本：HelpOnAdministration

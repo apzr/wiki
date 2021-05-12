@@ -1,0 +1,14 @@
+## Please edit system and help pages ONLY in the master wiki!
+## For more information, please see MoinMoin:MoinDev/Translation.
+##master-page:EventStats
+##master-date:2010-11-21T01:54:32Z
+#acl -All:write Default
+#format wiki
+#language zh
+
+下面这些图表基于事件日志中的数据（访问语言除外）：
+ * [[/访问量]]
+ * [[/访问语言]]
+ * [[/访问客户端]]
+
+此页的英文版本：EventStats

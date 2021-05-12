@@ -1,0 +1,16 @@
+## Please edit system and help pages ONLY in the master wiki!
+## For more information, please see MoinMoin:MoinDev/Translation.
+##master-page:CategoryHomepage
+##master-date:2010-11-21T05:07:50Z
+#acl -All:write Default
+#format wiki
+#language zh
+
+这是所有[[维基个人网页]]的分类。
+
+在这个分类中的网页:
+<<FullSearch(category:个人网页类)>>
+
+此页的英文版本：CategoryHomepage
+----
+网页分类

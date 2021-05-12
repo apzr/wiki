@@ -1,0 +1,8 @@
+.idea文件夹下的workspace.xml文件
+ {{{
+<component name="PropertiesComponent">
+}}}
+标签下添加
+ {{{
+<property name="dynamic.classpath" value="true" />
+}}}

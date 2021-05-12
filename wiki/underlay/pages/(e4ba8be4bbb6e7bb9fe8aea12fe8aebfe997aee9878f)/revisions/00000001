@@ -1,0 +1,11 @@
+## Please edit system and help pages ONLY in the master wiki!
+## For more information, please see MoinMoin:MoinDev/Translation.
+##master-page:EventStats/HitCounts
+##master-date:2010-11-21T02:14:05Z
+#acl -All:write Default -All:read
+#format wiki
+#language zh
+
+<<StatsChart(hitcounts)>>
+
+此页的英文版本：EventStats/HitCounts

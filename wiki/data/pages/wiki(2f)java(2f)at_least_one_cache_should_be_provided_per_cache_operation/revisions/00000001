@@ -1,0 +1,8 @@
+要加cacheNames ；不然报错： 
+{{{
+java.lang.IllegalStateException: No cache could be resolved for 'Builder[public abstract java.util.List com.test.findByXXX()] caches=[] | key='' | keyGenerator='' | cacheManager='' | cacheResolver='' | condition='' | unless='' | sync='false'' using resolver 'org.springframework.cache.interceptor.SimpleCacheResolver@12fddded'. At least one cache should be provided per cache operation. 
+}}}
+解决办法
+{{{
+@Cacheable(cacheNames = {"user","user"},key = "#id") 
+}}}

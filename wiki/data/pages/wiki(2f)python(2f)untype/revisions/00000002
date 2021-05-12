@@ -1,0 +1,7 @@
+转码
+ {{{#!highlight python
+    #print sys.getdefaultencoding()
+    reload(sys)
+    sys.setdefaultencoding('utf8')  
+    #print sys.getdefaultencoding()
+}}}

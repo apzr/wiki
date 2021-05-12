@@ -1,0 +1,18 @@
+o2o代码备忘
+
+{{{#!highlight Java
+/**
+ * 数据字典仓储服务实现
+ *
+ * @author qozi
+ * @since 2020/7/25 19:09
+ **/
+@Component
+@CacheConfig(cacheNames = "DataDicRepositoryImpl")
+@EnableRedisPlugin
+public class DataDicRepositoryImpl implements DataDicRepository {
+
+        @Autowired
+        private DataDicMapper dataDicMapper;
+        ...
+}}}

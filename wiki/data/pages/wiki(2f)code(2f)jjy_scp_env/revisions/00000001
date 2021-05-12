@@ -1,0 +1,48 @@
+##家家悦trantor项目开发环境
+
+{{{#!highlight Batchfile
+
+@echo off
+
+::zookeeper
+echo -----------------------------
+echo Starting zookeeper
+echo -----------------------------
+cd /d %zk_home%/bin
+start "zookeeper" /D "E:/program_flies/zookeeper-3.4.8/bin" zkServer.cmd
+
+::nacos
+echo -----------------------------
+echo Starting nacos
+echo -----------------------------
+cd /d %nacos_home%/bin
+start "nacos" /D "E:/program_flies/nacos/bin" startup.cmd -m standalone
+
+::rocketmq
+echo -----------------------------
+echo Starting rocketmq(server, broker, console)
+echo -----------------------------
+cd /d %rocketmq_home%/bin
+start "rocket name server" /D "E:/program_flies/rocketmq-all-4.2.0/bin" mqnamesrv.cmd
+start "rocket broker server" /D "E:/program_flies/rocketmq-all-4.2.0/bin" mqbroker.cmd -n 127.0.0.1:9876 autoCreateTopicEnable=true
+start "rocket gui server" /D "E:/program_flies/rocketmq-externals-master/rocketmq-console/target" java -jar rocketmq-console-ng-2.0.0.jar
+
+echo -----------------------------
+echo Starting MySQL
+echo -----------------------------
+net stop mysql57
+net start mysql57
+echo -----------------------------
+echo Starting Docker "default"
+echo -----------------------------
+docker-machine restart default
+echo Docker ENV
+docker-machine env
+
+echo -----------------------------
+echo Starting Trantor "0.10"
+echo -----------------------------
+cd /d %trantor_home%/bin
+trantor run 0.10
+
+}}}

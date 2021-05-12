@@ -1,0 +1,78 @@
+## Please edit system and help pages ONLY in the master wiki!
+## For more information, please see MoinMoin:MoinDev/Translation.
+##master-page:WikiSandBox
+##master-date:2010-11-10T03:18:24Z
+#format wiki
+#language zh
+== 维基沙盘演练 ==
+'''在下面的四个短横后面您可以随意编辑练习。但是请不要仅仅为测试一下就创建没有意义的新网页！'''
+
+'''技巧:''' Shift-点击"[[帮助-编辑]]"在另外一个窗口中阅读帮助网页。
+
+----
+
+<<Anchor(formatting)>>
+== 排版 ==
+''斜体'' '''粗体''' {{{打印字体}}}
+
+`用反引号括起的打字机字体` (可以通过设置而改变格式)
+
+~+大一点 +~ ~-小一些 -~
+
+{{{
+预先排好的文字
+再来一行
+}}}
+
+{{{ #!python
+def syntax(highlight):
+    print "on"
+    return None
+}}}
+{{{
+#!java
+  public void main(String[] args]){
+     System.out.println("Hello world!");
+  }
+}}}
+
+== 链接 ==
+HelpOnEditing MoinMoin:InterWiki
+
+http://moinmo.in/ [[http://www.python.org/|Python]]
+
+someone@example.com
+
+来两个锚点的例子：
+ * [[#锚点1]]
+ * [[#formatting|带说明的锚点（链接到排版段）]]
+
+=== 图片链接 ===
+{{http://c2.com/sig/wiki.gif}}
+
+== 笑脸 ==
+/!\ 警告
+
+<<ShowSmileys>>
+
+<<Anchor(anchorname1)>>
+== 列表 ==
+=== 圆点列表 ===
+ * 一
+  1. 嵌套并编号
+  1. 编号的列表总是重新编号的
+ * 二
+ * 三
+  . 更多缩进
+=== 词汇表===
+ 术语:: 定义
+=== 绘图 ===
+{{drawing:mytest}}
+{{drawing:anywikitest.adraw}}
+= 标题 1 =
+== 标题 2 ==
+=== 标题 3 ===
+==== 标题 4 ====
+===== 标题 5 =====
+
+此页的英文版本：WikiSandBox

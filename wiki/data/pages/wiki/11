@@ -1,0 +1,30 @@
+## Please edit system and help pages ONLY in the master wiki!
+## For more information, please see MoinMoin:MoinDev/Translation.
+##master-page:HelpOnUpdatingPython
+##master-date:2005-12-11 03:12:39
+#acl -All:write Default
+#format wiki
+#language zh
+
+== 升级Python ==
+
+如果想更换运行你MoinMoin的Python，这里有几点需要注意：
+
+=== MoinMoin目录的位置 ===
+
+默认安装过程(`setup.py`)把MoinMoin文件安装到当前Python的site-packages目录下(比如 `/usr/lib/python2.4/site-packages`)。如果要转移到另外的Python解释器，你必须把MoinMoin文件重新安装到新的`lib/pythonX.X/site-packages`目录。如果你把MoinMoin文件安装到了其他位置，那么调整一下`sys.path`就没问题了。
+
+=== 预编译Python文件(.pyc) ===
+
+Python不保证.pyc文件在不同的Python版本间兼容。如果你改变了Python解释器，那么应该重新编译这些Python脚本。你可以这样作：
+{{{
+python -c "import compileall; compileall.compile_dir('/path/to/MoinMoin')"
+}}}
+
+如果你为新的解释器重新安装了MoinMoin，那么这一步就不需要做了 / setup.py会帮你完成。
+
+=== 清空页面缓存 ===
+
+为了保证更快的页面渲染，页面缓存使用了Python字节码。为避免兼容问题，你应该清空缓存：手工删除 `data/pages/*/cache/` 和 `underlay/pages/*/cache/` 中的所有文件。
+
+此页的英文版本：HelpOnUpdatingPython

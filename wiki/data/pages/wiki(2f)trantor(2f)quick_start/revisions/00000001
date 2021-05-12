@@ -1,0 +1,41 @@
+杭州端点     
+ https://github.com/TerminusHQ
+Trantor Demo
+ https://github.com/TerminusHQ/trantor-demo
+Trantor示例代码
+ https://github.com/TerminusHQ/trantor-examples
+自定义控件与容器示例
+ https://github.com/TerminusHQ/trantor-fe-example
+二开
+ https://github.com/TerminusHQ/trantor-demo-custom
+
+安装 Trantor CLI
+ MacOS 下执行:
+ {{{
+$brew tap TerminusHQ/trantor
+$brew install trantor
+}}}
+ Windows 版下载地址: http://mxsl.oss-cn-hangzhou.aliyuncs.com/dist/trantor/trantor.latest.zip ，下载完成解压后执行 setup.cmd 安装。
+
+ 完成 CLI 安装，可通过{{{$trantor version}}}查看安装的 CLI 版本。
+
+2.1.2 配置 host
+ 在 /etc/hosts 下添加 host {{{127.0.0.1 trantor.terminus.io}}}
+
+ 注意：在 Windows 下也同样需要绑定 hosts ，但绑定的 IP 分情况，取决于 docker VM 所在位置。
+ 例如带有 WLS 使用 docker desktop 安装的 docker ，则同样绑定 127.0.0.1 即可；而通过 docker-machine 创建的则需要使用 docker-machine ip 命令来获取。
+
+2.1.3 常用 Trantor CLI 命令
+ * 运行 trantor 环境: trantor run
+ * 运行 trantor 指定版本: trantor run 0.11
+ * 停止 trantor 环境: trantor stop
+ * 配置 trantor cli: trantor config
+
+2.1.4 升级 Trantor CLI
+ MacOS 下执行:
+ {{{$brew upgrade trantor2.1.5 卸载 Trantor CLI}}}
+ MacOS 下执行:
+ {{{
+$brew untap TerminusHQ/trantor
+$brew uninstall trantor
+}}}

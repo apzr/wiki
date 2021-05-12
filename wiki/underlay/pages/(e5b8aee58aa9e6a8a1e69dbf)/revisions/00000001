@@ -1,0 +1,19 @@
+##master-page:HelpTemplate
+##master-date:2010-11-21T05:10:51Z
+#format wiki
+#language zh
+
+== 帮助网页的模板 ==
+一些文字。
+
+=== 示例 ===
+{{{
+啊哈
+}}} 
+
+=== 展示 ===
+{{{#!wiki
+啊哈
+}}}
+
+此页的英文版本：HelpTemplate

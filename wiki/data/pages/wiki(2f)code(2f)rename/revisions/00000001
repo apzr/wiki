@@ -1,0 +1,30 @@
+##重命名
+{{{#!highlight python
+
+# -*- coding: utf-8 -*-
+import os
+path = 'F:\TDdownload\[Nekomoe kissaten&VCB-Studio] Zombie Land Saga [Ma10p_1080p]'
+num= 1
+for file in os.listdir(path):
+    '''
+    print(  file
+            .replace('[Nekomoe kissaten&VCB-Studio] Z', 'Z')
+            .replace('][Ma10p_1080p][x265_flac]', '')
+            .replace('[', '')
+    )
+    '''
+    
+    #os.rename(os.path.join(path,file),os.path.join(path,str(num)+".flv"))
+
+
+    os.rename(
+        os.path.join(path,file),
+        os.path.join(path,file
+            .replace('[Nekomoe kissaten&VCB-Studio] Z', 'Z')
+            .replace('][Ma10p_1080p][x265_flac]', '')
+            .replace('[', ''))
+        
+    )
+    
+    num+=1
+}}}

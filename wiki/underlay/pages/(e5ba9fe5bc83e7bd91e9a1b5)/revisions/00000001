@@ -1,0 +1,13 @@
+## Please edit system and help pages ONLY in the master wiki!
+## For more information, please see MoinMoin:MoinDev/Translation.
+##master-page:AbandonedPages
+##master-date:2010-08-15 21:51:14
+#acl -All:write Default -All:read
+#format wiki
+#language zh
+
+这里列出了自创建以来从未编辑过的网页。这个列表实际上是编辑日志(editlog)中最旧的的那些条目。
+
+<<AbandonedPages>>
+
+此页的英文版本：AbandonedPages

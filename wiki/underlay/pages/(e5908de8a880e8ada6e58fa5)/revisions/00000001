@@ -1,0 +1,27 @@
+## Please edit system and help pages ONLY in the master wiki!
+## For more information, please see MoinMoin:MoinDev/Translation.
+##master-page:FortuneCookies
+##master-date:2010-11-21T02:32:10Z
+#acl -All:write Default
+#format wiki
+#language zh
+
+`RandomQuote`宏随机地从FortuneCookies网页中的列表中选取一项。在中文版本中我们使用`RandomQuote(名言警句)`从本页的列表中随机地选取一项。参见[[帮助-宏]].
+
+以下是给新用户或不喜欢读用户手册的用户看的一些提示：
+
+## 本页的内容是一个自链接的链接，当被引用时不会显示为链接。
+## 要解决这个问题，请使用 [:XXXX:XXXX] 格式。
+ * 提示：编辑本页可以显示随机的名言警名。
+
+ * 提示：设置你的页面语言为 {{{#language zh}}} 可以显示中文。参见[[帮助-语言]]。
+
+ * 提示：在你的用户设置中编辑快捷链接就可以在导航条中加入你喜欢的页面链接。
+
+ * 提示：可以象使用 Google 一样搜索多个单词。参见[[帮助-搜索]]。
+
+ * 提示：使用 '''<<GetText(Subscribe)>>''' 就可以页面有变动时获得电子邮件通知。
+
+ * 提示：在[[最新改动]]页面中点击 <<Icon(moin-info.png)>> 图标可以查看页面历史变动信息。
+
+ 此页的英文版本：FortuneCookies

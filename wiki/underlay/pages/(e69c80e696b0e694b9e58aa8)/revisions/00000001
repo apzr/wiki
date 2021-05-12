@@ -1,0 +1,24 @@
+## Please edit system and help pages ONLY in the master wiki!
+## For more information, please see MoinMoin:MoinDev/Translation.
+##master-page:RecentChanges
+##master-date:2010-08-01 09:11:10
+#acl -All:write Default
+#format wiki
+#language zh
+
+{{{#!wiki blue/condensed
+''<<RandomQuote(WikiTipOfTheDay)>>''
+}}}
+
+<<RecentChanges>>
+
+##最后，但或许有用，这里是一个随机选取的网页: <<RandomPage(1)>>
+
+||<:> <<Icon(diffrc)>> || 标识至少有一个备份的旧网页(点击比较与原始版本的差别)||
+||<:> <<Icon(updated)>> || 标识您设定标签以后改动过的网页(点击比较与设定书签时的版本的差别) ||
+||<:> <<Icon(new)>> || 标识您设定书签后新建但没有改动过的网页 ||
+||<:> <<Icon(deleted)>> || 标识删除的网页 ||
+||<:> <<Icon(renamed)>> || 标识重命名的网页||
+||<:> <<Icon(conflict)>> || 发生编辑冲突, 请将有问题的部分合并. ||
+
+此页的英文版本：RecentChanges

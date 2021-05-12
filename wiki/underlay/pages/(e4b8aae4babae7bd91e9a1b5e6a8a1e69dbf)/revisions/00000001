@@ -1,0 +1,15 @@
+##master-page:HomepageTemplate
+##master-date:2010-11-21T05:17:32Z
+## Please edit system and help pages ONLY in the master wiki!
+## For more information, please see MoinMoin:MoinDev/Translation.
+#format wiki
+#language zh
+== DormouseYoung ==
+
+电子邮件地址: <<MailTo(you AT SPAMFREE example DOT com)>>
+## 可以在电子邮件地址中加入前后有空白分隔的大写字母来混淆电子邮件地址，用于防止垃圾邮件。
+...
+
+此页的英文版本：HomepageTemplate
+----
+个人网页类

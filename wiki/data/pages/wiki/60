@@ -1,0 +1,33 @@
+## Please edit system and help pages ONLY in the master wiki!
+## For more information, please see MoinMoin:MoinDev/Translation.
+##master-page:FindPage
+##master-date:2010-7-31 21:00:00
+#acl -All:write Default
+#format wiki
+#language zh
+
+<<AdvancedSearch>>
+
+您也可以使用正规表达式和其他修饰符（参见[[帮助-搜索]]），比如：
+
+{{{regex:seriali[sz]e}}}
+
+或直接转到某个网页，或者创建一个新网页，请输入网页链接名：
+  <<GoTo>>
+  
+如果你想要手动浏览，以下是一些探索本维基的好起点：
+ * [[最新改动]]：看看别人在忙些什么
+ * [[标题索引]]：本维基中所有网页的列表
+ * [[词汇索引]]：所有标题所含词汇列表 (也就是这个维基中所有的概念)
+ * [[待建网页]]：已存在指向该网页的链接，但还没建立的网页列表
+ * [[孤立网页]]：已建立但没有指向该网页的链接的网页列表
+ * [[废弃网页]]：长时间没有变动的网页列表
+ * [[随机网页]]：一些随机网页
+ * [[网页大小]]：网页大小统计
+ * [[网页流量]]：网页流量统计
+
+你可能通过选择这些动作来导航到与本网页有关的其他维基网页。这些动作可以在顶部和（或）底部的编辑栏中的下拉列表中找到：
+ * <<GetText(Like Pages)>>
+ * <<GetText(Local Site Map)>>
+
+另外，还有 {{{<<PageList>>}}} 、 {{{<<FullSearch(...)>>}}} 、 {{{<<Navigation(...)>>}}} 、 和 {{{<<TableOfContents>>}}} 等宏，这些宏可以让你自动建立索引，以整合维基内容（参见[[帮助-宏]]）。

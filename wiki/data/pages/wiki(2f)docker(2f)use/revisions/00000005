@@ -1,0 +1,57 @@
+##常用命令docker
+
+运行容器
+{{{#!hightlight bash
+docker run 镜像标识|镜像名称[:版本号]
+}}}
+
+常用参数
+{{{#!hightlight bash
+docker run -d -p 宿主机端口:容器端口 --name 容器名称 镜像标识|镜像名称[:版本号]
+}}}
+
+~- 
+-d：代表后台运行容器 <<br>>
+-p 宿主机端口:容器端口 ：映射宿主机端口和容器端口 <<br>>
+--name 容器名称：指定容器名称
+-~
+
+查看正在运行的容器
+{{{#!hightlight bash
+docker ps [-aq]
+}}}
+ -a 查看所有容器，包括未运行的
+ -q 查看运行容器，之查看标识
+
+查看日志
+{{{#!hightlight bash
+docker logs -f 容器id
+
+ -f：可以滚动查看日志的最后几行
+
+进入容器
+{{{#!hightlight bash
+docker exec -it 容器id bash
+}}}
+
+删除容器(删除容器前需要先停止容器)
+{{{#!hightlight bash
+docker stop 容器id
+docker rm 容器id
+}}}
+
+删除全部容器
+{{{#!hightlight bash
+docker stop $(docker ps -qa)
+docker rm $(docker ps -qa)
+}}}
+
+启动容器
+{{{#!hightlight bash
+docker start 容器id
+}}}
+
+查看容器相关参数
+{{{#!hightlight bash
+docker inspect 72
+}}}

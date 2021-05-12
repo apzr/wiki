@@ -1,0 +1,19 @@
+## Please edit system and help pages ONLY in the master wiki!
+## For more information, please see MoinMoin:MoinDev/Translation.
+##master-page:TitleIndex
+##master-date:2010-08-01 09:12:24
+#acl -All:write Default
+#format wiki
+#language zh
+
+这是本维基中所有网页的索引。
+
+另见：
+ * [[词汇索引]] -- 标题中所用词汇的索引
+ * [[查找网页]] -- 查找内容或探索维基
+
+----
+
+<<TitleIndex>>
+
+此页的英文版本：TitleIndex

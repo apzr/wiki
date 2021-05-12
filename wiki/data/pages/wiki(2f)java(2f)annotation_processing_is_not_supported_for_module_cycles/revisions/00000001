@@ -1,0 +1,6 @@
+项目启动报这个Error的原因是moudle循环依赖的问题，就是我依赖了你，同时你也依赖了我，这时候就回产生循环依赖问题：
+{{{
+java: Annotation processing is not supported for module cycles. 
+Please ensure that all modules from cycle [partner-infrastructure,partner-domain,partner-application] are excluded from annotation processing
+}}}
+这里面会显示你产生循环依赖问题的两个某块，你看下是否时循环依赖了对方，如果是，在pom.xml文件中删除其中一个依赖，然后重新启动，就可以了。

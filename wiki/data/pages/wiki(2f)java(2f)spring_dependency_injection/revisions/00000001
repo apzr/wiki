@@ -1,0 +1,23 @@
+Filed Injection
+ {{{
+    @Autowired
+    UserDao userDao;
+ }}}
+Constructor Injection
+ {{{
+    final UserDao userDao;
+
+    @Autowired
+    public UserServiceImpl(UserDao userDao) {
+        this.userDao = userDao;
+    }
+ }}}
+Setter Injection
+ {{{
+    private UserDao userDao;
+
+    @Autowired
+    public void setUserDao (UserDao userDao) {
+        this.userDao = userDao;
+    }
+ }}}

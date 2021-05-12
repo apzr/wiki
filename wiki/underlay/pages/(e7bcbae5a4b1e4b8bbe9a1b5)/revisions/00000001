@@ -1,0 +1,22 @@
+## Please edit system and help pages ONLY in the master wiki!
+## For more information, please see MoinMoin:MoinDev/Translation.
+##master-page:MissingHomePage
+##master-date:2010-08-01 09:17:00
+#acl -All:write Default
+#format wiki
+#language zh
+看上去你还没有创建你的[[WikiHomePage|个人主页]]。
+
+一个个人主页可以用于“自我介绍”，如：
+ * 你是谁、做什么工作、喜欢或不喜欢什么
+ * 你的电话号码、电子邮件地址或其他联系方式
+ * 你的照片
+ 
+你也可以把个人主页用作存放“个人”信息资料（同时也可能方便了他人）的地方，如：
+ * 你喜欢的链接
+ * 你的 todo 列表
+ * 你的笔记
+
+请记住一个个人主页通常是“公开”的，任何人都可以阅读或和编辑它（这是一件好事，是一种互动方式）。但是你也可以创建受保护的子网页，作为一个私人领地。
+
+<<Action(edit,现在就创建我的个人主页！,template=HomepageTemplate)>>

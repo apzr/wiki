@@ -1,0 +1,87 @@
+##a quick start
+
+=== 下载安装docker toolbox ===
+
+http://mirrors.aliyun.com/docker-toolbox/windows/docker-toolbox/DockerToolbox-18.03.0-ce.exe
+
+
+
+=== 问题 ===
+1.安装完成后，桌面会有3个图标，双击“Docker Quickstart Terminal”，可能会出现缺少快捷方式报错。 ===
+
+ 这是因为在安装的时候没有勾选安装git，如果之前有装过git，那么“右键”快捷图标，修改为正确的路径即可，如下图所示：
+
+
+2.启动“Docker Quickstart Terminal”出现如下报错信息：
+ {{{
+ (default)default Boot2Docker ISO out-of-date,downloading the latest release...
+ Downloading C:\Users\Administrator\.docker\machine\cache\boot2docker.iso from https://github.com/boot2docker/boot2docker/releases/download/v18.06.1-ce/boot2docker.iso...
+ }}}
+
+ 国内访问github.com比较慢，可以用下载工具手动下载
+ 
+ https://github.com/boot2docker/boot2docker/releases/download/v18.06.1-ce/boot2docker.iso
+ 
+ 然后将下载好的boot2docker.iso文件放到C:\Users\reson.dai\.docker\machine\cache\目录下。
+
+3.解决上面问题后，继续打开docker，可能会报如下错误：
+ {{{
+(default) Creating VirtualBox VM...
+(default) Creating SSH key...
+(default) Starting the VM...
+(default) Check network to re-create if needed...
+(default) Windows might ask for the permission to create a network adapter. Some
+times, such confirmation window is minimized in the taskbar.
+(default) Found a new host-only adapter: "VirtualBox Host-Only Ethernet Adapter
+#2"
+(default) Windows might ask for the permission to configure a network adapter. S
+ometimes, such confirmation window is minimized in the taskbar.
+(default) Windows might ask for the permission to configure a dhcp server. Somet
+imes, such confirmation window is minimized in the taskbar.
+}}}
+ 
+ 虚拟机未启动，也就是“Oracle VM VirtualBox”。
+ 
+4.虚拟机启动的时候可能也会报错
+ 请确认docker安装完成后有重启电脑，实在不行，在控制面板“添加/删除程序”卸载“Oracle VM VirtualBox”，安装一个“VirtualBox-4.3.12-93733-Win”版本的（在家里的电脑就是安装4.3.12才好，但是公司的电脑却很顺利，都是win7 64位）。
+ 
+5.虚拟机实例正在运行但未正确运行且无法连接到docker
+
+Error cheking TLS connectiong
+
+ 5.1删除虚拟机实例并创建一个新实例。（只有在您确定不需要任何其他内容时才删除）
+ {{{
+$ docker-machine rm default
+$ docker-machine create --driver virtualbox default
+ }}}
+ 5.2如果你需要在VM上保存东西，这是值得的。尝试找出虚拟机实例的问题并进行修复。
+ {{{
+ 尝试重新启动
+ $ docker-machine restart default
+ 尝试sshing到虚拟框
+ $ docker-machine ssh default
+ }}}
+
+各个问题都解决后，启动vm，打开docker，可以看到已经成功了，如下图：
+ 
+6.docker  TLS connection error
+ {{{
+Unable to query docker version: Get https://192.168.99.100:2376/v1.15/version: x509: certificate is valid for  192.168.99.102, not 192.168.99.100
+}}}
+ 根据错误信息判断是网络配置问题，查看其env发现报同样错误，并给出提示解决方案：
+ {{{
+root@localhost ~]# docker-machine env default
+Error checking TLS connection: Error checking and/or regenerating the certs: There was an error validating certificates for host "192.168.99.100:2376": x509: certificate is valid for 192.168.99.102, not 192.168.99.100
+You can attempt to regenerate them using 'docker-machine regenerate-certs [name]'. Be advised that this will trigger a Docker daemon restart which might stop running containers.
+ }}}
+
+ 根据提示对default执行回收操作：
+ {{{[root@localhost ~]# docker-machine regenerate-certs default
+Regenerate TLS machine certs? Warning: this is irreversible. (y/n): y
+Regenerating TLS certificates Waiting for SSH to be available...
+Detecting the provisioner...
+Copying certs to the local machine directory...
+Copying certs to the remote machine...
+Setting Docker configuration on the remote daemon...
+ }}}
+再次查看docker-machine状态，已恢复

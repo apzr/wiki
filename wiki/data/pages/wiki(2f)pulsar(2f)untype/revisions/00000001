@@ -1,0 +1,19 @@
+
+pulsar两个topic之间复制消息
+{{{
+java -jar pulsar-msg-transfer-1.0.jar --from=persistent://test/msg_test/OLD_TOPIC --to=persistent://test/msg_test/NEW_TOPIC
+}}}
+
+强制删除某个topic 运行命令之后要等一会(是否为异步还需待确认)
+{{{
+./pulsar-admin 
+tenants brokers namespaces persistent topics
+stats internal list delete create
+./pulsar-client
+produce consume
+}}}
+
+docker-pulsar
+{{{
+docker exec -it mypulsar /bin/bash
+}}}

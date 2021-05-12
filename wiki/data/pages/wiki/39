@@ -1,0 +1,26 @@
+## Please edit system and help pages ONLY in the master wiki!
+## For more information, please see MoinMoin:MoinDev/Translation.
+##master-page:InterWiki
+##master-date:2010-11-10T03:25:25Z
+#acl -All:write Default
+#format wiki
+#language zh
+
+[[维基链]]链接是引用别的维基网页信息的快捷方式，以免记忆这些复杂难记的URL。如要使用[[维基链]]链接，只需使用其它维基的别名，后面跟上冒号(:)，并加上一个这个维基上的网页链接名就可以了。
+
+例如
+{{{WikiPedia:MoinMoin}}}
+会被识别为WikiPedia:MoinMoin, 其指向英文维基百科网站上的MoinMoin页面。
+
+可以编辑InterWikiMap来增加新的维基链条目。
+
+当然，如果引用的网页不存在，[[维基链]]链接不会多管闲事，MoinMoin 也不会检查你是否遵循其它维基的链接名规范。所以，使用时请仔细检查。
+
+更详细的内容参见MeatBall:MeatballWiki网站的MeatBall:InterWiki page。
+
+下面是所有有效[[维基链]]链接的一个列表(原始数据来源于 MoinMaster:InterWikiMap):
+<<InterWiki>>
+
+MoinMoin 按照 MeatBall:ColourBlind 和 MeatBall:LynxFriendly 的规范，使用一个小图标和ALT属性来显示[[维基链]]链接。如果您在一个图形界面的浏览器下移动鼠标到这个小图标上，您将会看到一个有关这个维基的提示。如果这个图标有个边框，那说明您使用了一个无效的或者错误 [BadBadBad:维基链] 链接名（参见上面那些有效的链接）。顺便说一句，这个小图标的鬼点子来源于Wiki:WikiWikiWeb （[[维基网]]）是团体合作的结晶。
+
+此页的英文版本：InterWiki

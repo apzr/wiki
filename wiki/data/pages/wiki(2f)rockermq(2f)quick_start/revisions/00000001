@@ -1,0 +1,87 @@
+Download
+ https://archive.apache.org/dist/rocketmq/4.2.0/rocketmq-all-4.2.0-bin-release.zip
+
+Homepage
+ http://rocketmq.apache.org/
+
+Older releases
+ http://rocketmq.apache.org/release_notes/
+
+Documentation
+ http://rocketmq.apache.org/docs/quick-start/
+
+环境变量
+{{{
+ROCKETMQ_HOME  E:\program_flies\rocketmq-all-4.2.0
+}}}
+
+启动nameserver
+{{{
+C:\Users\Administrator>e:
+
+E:\>cd program_flies\rocketmq-all-4.2.0\bin
+
+E:\program_flies\rocketmq-all-4.2.0\bin>start mqnamesrv.cmd
+
+
+Java HotSpot(TM) 64-Bit Server VM warning: Using the DefNew young collector with the CMS collector is deprecated and will likely be removed in a future release
+Java HotSpot(TM) 64-Bit Server VM warning: UseCMSCompactAtFullCollection is deprecated and will likely be removed in a future release.
+The Name Server boot success. serializeType=JSON
+}}}
+
+启动broker
+{{{
+C:\Users\Administrator>e:
+
+E:\>cd program_flies\rocketmq-all-4.2.0\bin
+
+E:\program_flies\rocketmq-all-4.2.0\bin>start mqbroker.cmd -n 127.0.0.1:9876 autoCreateTopicEnable=true
+}}}
+ 注：
+  此处会打开一个空的cmd界面但是暂时没有任何输出。不要关闭
+  若提示框提示 错误: 找不到或无法加载主类 xxxxxx 。打开runbroker.cmd，将 %CLASSPATH% 加上英文双引号，保存并重新执行start语句。
+
+安装可视化插件
+ https://github.com/apache/rocketmq-externals.git 
+ https://codeload.github.com/apache/rocketmq-externals/zip/refs/heads/master
+
+ 配置...\rocketmq-externals-master\rocketmq-console\src\main\resources\application.properties
+ {{{
+server.port=8088
+rocketmq.config.namesrvAddr=127.0.0.1:9876
+}}}
+
+ 编译...\rocketmq-externals\rocketmq-console
+ {{{
+C:\Users\Administrator>e:
+E:\>cd program_flies\rocketmq-externals-master\rocketmq-console
+E:\program_flies\rocketmq-externals-master\rocketmq-console>mvn clean package -Dmaven.test.skip=true
+}}}
+
+ 运行
+ {{{
+C:\Users\Administrator>e:
+E:\>cd program_flies\rocketmq-externals-master\rocketmq-console\target\
+E:\program_flies\rocketmq-externals-master\rocketmq-console\target>java -jar rocketmq-console-ng-2.0.0.jar
+}}}
+
+ 访问
+ {{{
+http://127.0.0.1:{server.port}/#/
+}}}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,23 @@
+##文本逐行去重复
+#format highlight python
+
+
+# -*- coding: utf-8 -*-
+import os
+dirIn = 'D:/Documents/Desktop/123.txt'
+dirOut = 'D:/Documents/Desktop/456.txt'
+
+
+sets = set()
+
+
+with open(dirIn, 'r') as fileIn:
+    for num,value in  enumerate(fileIn,1):
+        sets.add( value )
+print( len(sets) )  
+
+
+fileOut = open(dirOut, "w")
+for code in sets:
+    fileOut.write( code )
+fileOut.close()

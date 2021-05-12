@@ -1,0 +1,29 @@
+{{{
+docker run -it -d -p 6650:6650 -p 8080:8080 -v data -v conf --name=mypulsar apachepulsar/pulsar:2.6.1 bin/pulsar standalone
+}}}
+将 pulsar 的 6650和8080端口号开放出来，并绑定到宿主机对应的端口号，这样我们能直接访问宿主机 ip:port 就能访问到容器。
+接着，将 pulsar 的 data 和 conf 挂载到宿主机中，这样数据就不会丢失了。
+接着利用 pulsar standalone 命令启动一个单机版的 pulsar。
+
+不管我们是需要创建租户或者命名空间，直接进入容器中创建即可。进入容器：
+{{{
+docker exec -it mypulsar /bin/bash
+}}}
+
+关于tenant 和 namespace 的增删改查命令：
+{{{
+## 1 租户
+#查看有哪些租户(public 是系统默认的租户)
+pulsar-admin tenants list
+##创建租户
+pulsar-admin tenants create my-tenant
+#删除租户
+pulsar-admin tenants delete my-tenant
+## 2 命名空间
+#查看指定租户下边的命名空间
+pulsar-admin namespaces list my-tenant
+#创建指定租户命名空间
+pulsar-admin namespaces create my-tenant/my-namespace
+#删除指定租户命名空间
+pulsar-admin namespaces delete my-tenant/my-namespace
+}}}

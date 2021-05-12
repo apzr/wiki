@@ -1,0 +1,10 @@
+## Please edit system and help pages ONLY in the master wiki!
+## For more information, please see MoinMoin:MoinDev/Translation.
+##master-page:EventStats/UserAgents
+##master-date:2010-11-10T06:17:40Z
+#acl -All:write Default -All:read
+#format wiki
+#language zh
+<<StatsChart(useragents)>>
+
+此页的英文版本：EventStats/UserAgents

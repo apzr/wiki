@@ -1,0 +1,196 @@
+## Please edit system and help pages ONLY in the master wiki!
+## For more information, please see MoinMoin:MoinDev/Translation.
+##master-page:HelpOnConfiguration
+##master-date:@DATETIME@
+#acl -All:write Default
+#format wiki
+#language zh
+
+= 系统配置 =
+(!) Update of translate is under proccess. Refer to HelpOnConfiguration if ambigious. 
+
+[[帮助目录]] > [[帮助-系统管理]] > [[帮助-系统设置]]
+
+'''目录'''
+<<TableOfContents>>
+
+本页内容可帮助您配置安装MoinMoin维基。
+
+== 字符集 ==
+
+Moin程序内部使用Unicode编码进行字符处理，而默认使用`utf-8`字符编码处理外部如HTML页面、翻译文件的输出输入。外部编码通过`config.charset`默认配置成`utf-8`，该种编码能够适应语言文字。通常你不该修改该编码。
+ 
+ <!> '''重要信息: 如要使用unicode，你必须在配置文件第一行设置正确的编码。请检查你的编辑器配置是否正确。'''
+
+有一些配置'''必须'''使用Unicode表示。例如，网站名称(site name)可能包含德语、法语、汉语、阿拉伯语等，因此，你必须使用Unicode字符串表示这些配置。 Unicode字符串通过前置字母`u`表示。下面是一些例子:
+
+{{{
+    # Site name, used by default for wiki name-logo [Unicode]
+    sitename = u"Jürgen's Wiki"
+    # 另一例子:
+    sitename = u'中文维基'
+}}}
+
+请阅读配置文件中的注释，其中会提示那些选项必须使用unicode表示。
+
+注意: 
+
+ * 不能在一个文件中混合使用多种编码。如果编码是`iso-8859-1`，则所有的字符串和整个文件内容都必须是这种编码的。
+
+ * 如果你使用utf-8编码(或者 plain ascii)，就不必须使用unicode字符串，moin会自动对字符串解码。
+
+== 国际化设置 ==
+
+默认的配置文件是`iso-8859-1`编码。对于拉丁语系的语言，比如英语、德语，这种编码没有任何问题，但是对于非拉丁语系的语言就不适用了。如果你要在配置文件中使用非拉丁字符，请将配置文件用utf-8编码。
+
+设置所有配置文件的第一行如下:
+{{{
+# -*- coding: utf-8 -*-
+}}}
+
+ /!\ 你需要一个能够使用utf-8编码的编辑器。
+
+使用unicode字符串的选项 (国际化用户可能会修改它们):
+ * sitename
+ * logo_string
+ * page_front_page
+ * navi_bar
+ * page_category_regex
+ * page_dict_regex
+ * page_group_regex
+ * page_template_regex
+ * page_license_page - New in 1.3.2
+ * page_local_spelling_words - New in 1.3.2
+ * acl_rights_default - New in 1.3.2
+ * acl_rights_before - New in 1.3.2
+ * acl_rights_after - New in 1.3.2
+ * mail_from - New in 1.5.0
+
+这些选项对应各种语言的配置，可以在[[MoinMoin:ConfigMarket#Simplefied_Chinese_Wiki]]找到。请阅读关于Unicode编码的章节。
+
+== 自定义用户设置 ==
+您可以预定义、禁用、隐藏某些在用户自定义页面当中的选项：[[帮助-系统设置/用户设置]]
+
+<<Anchor(singlewiki)>>
+== 配置单独的维基 ==
+
+如要运行单独的维基, 您不要复制`farmconfig.py`文件到配置目录中(如果有，删除它和“.pyc”文件)。如果没有farmconfig，moin就使用默认的`wikiconfig.py`。
+
+`wikiconfig.py`可以放到任何地方，您只需要保证它能够被moin导入，通常把该文件的路径加入到`sys.path`的第一个元素（这是python查找import模块的顺序）。修改`sys.path`的工作通常在程序执行早期完成，如在`moin.cgi`、`moin.wsgi`当中。参考您的服务器脚本中“系统路径配置”一节。
+
+
+=== 维基配置文件结构 ===
+wiki/farmconfig.py 结构:
+{{{
+# -*- coding: iso-8859-1 -*-
+
+from MoinMoin.multiconfig import DefaultConfig
+
+class Config(DefaultConfig):
+
+    sitename = u'MyWiki'   # u 意味着字符串转化为Unicode格式
+    interwikiname = 'MyWiki'
+    data_dir = '/where/ever/mywiki/data/'
+    underlay_dir = '/where/ever/mywiki/underlay/'
+    
+    # 等等...
+}}}
+
+ * 第一步，你必须定义配置文件的编码。缺省配置只能用于Latin("西方")语种，若要进行国际化配置，请阅读下一个部分。如果不定义配置文件的代码，你就无法使用非ASCII字符。
+
+ * 下一步导入Moin的内部缺省配置。缺省配置设置了所有配置的属性，所以不必去定义所有的属性，只需要定制想要的属性即可。
+
+ * 然后定义名为"Config"的新的配置类，从导入的缺省配置中继承所有设置。注意这个类的名字必须叫做"Config"。
+
+ * 下面几行是Config类的配置选项。注意每一行必须缩进4个空格，不允许使用制表符(tab)。如果缩进错误，Moin就无法运行。
+ 
+ * 一个常用的配置项是`sitename` - 大多数情况下，你不希望wiki的名字是默认的"Untitled Wiki"。你可以使用任何语言定义任何wiki的名字，但是在此之前，请阅读下一节关于Unicode的设置。
+
+ * 如果你按照安装建议操作，那么wiki会正常运行。但是也许你还想改变其他配置，比如`data_dir`，`data_underlay_dir`，`acl_rights_before` 等等。大多数情况下，修改安装包自带的`wikiconfig.py`文件中的配置就足够了。
+
+ * 没有定义的其他选项都从继承的Default''''''Config类中获得。
+
+
+== 配置多个维基 ==
+
+MoinMoin可以在仅安装一次、单独配置文件、单独服务器进程的情况下，处理多个维基。特别是对像twisted这样的持久运行环境，这个功能是很有必要的，因为twisted服务器可能会在特殊的IP地址和TCP端口长久运行。所以对于一个IP和端口上的多域(维基)的虚拟主机，需要维基引擎持续能够同时加载多个配置并正确处理访问请求。
+
+为了选择正确配置，moin使用配置文件`farmconfig.py`中的变量`wikis` - 其包含`(wikiname, url-regex)`一对对的列表。 `wikiname`只能使用正确的python语法(确切的说: `identifier ::= (letter|"_") (letter | digit | "_")*` - 如果你不能理解这个语法，那么使用简单的单词就可以了)。当处理对某个URL的访问请求时，moin搜索这个列表，试图匹配URL。如果不能匹配，则试图匹配下一对。如果匹配，moin加载名为`<wikiname>.py`的配置文件(通常位于相同目录) 。
+
+发行包中的`farmconfig.py`文件包含一些维基农场(wiki farm)的配置例子。你应该修改这个文件以适应自身的需要。
+
+/!\ 为了简化帮助文件的编写，我们将这些`<wikiname>.py`配置文件称为`wikiconfig.py`，你应该根据自己的需要使用适当的文件名。
+
+既然你已经修改了`farmconfig.py`中的设置(见上)，我们在这里只给一些提示，希望可以节省你的时间。同时请你阅读单独的维基配置提示，因为在那里已经解释了配置继承的原理。
+
+现在我们使用基于类的配置在一个单独的位置设置常用选项，这就是配置基类。(请看`farmconfig.py`中的例子):
+
+'''farmconfig.py''':
+{{{
+# -*- coding: iso-8859-1 -*-
+# farmconfig.py:
+from MoinMoin.multiconfig import DefaultConfig
+class FarmConfig(DefaultConfig):
+    url_prefix = '/wiki'
+    show_hosts = 1
+    underlay_dir = '/where/ever/common/underlay'
+    # ...
+}}}
+
+ 说明:
+  * 首先导入默认配置
+  * 现在定义新的农场(farm)配置类 - 继承自默认配置
+  * 然后我们改变所有维基的通用设置，暂时不修改那些各有不同的设置
+  * 这个Farm''''''Config类将在维基的配置文件中使用，它将代替moin内部的Default''''''Config类
+
+这样一来，每个单独的维基只需要设定各有不同的设置选项即可(比如logo，数据目录或者ACL设置)。其他的设置都从基本配置类中继承而来，请看`moinmaster.py`示例:
+
+'''moinmaster.py''':
+{{{
+# -*- coding: iso-8859-1 -*-
+# moinmaster.py:
+from farmconfig import FarmConfig
+class Config(FarmConfig):
+    show_hosts = 0
+    sitename = u'MoinMaster'
+    interwikiname = 'MoinMaster'
+    data_dir = '/org/de.wikiwikiweb.moinmaster/data/'
+    # ...
+}}}
+
+ 说明:
+  * 请参考单独维基的配置，两者唯一的区别在于: 类继承自Farm''''''Config (它继承自Default''''''Config)，而不是直接继承自Default''''''Config
+  * 现在将`show_hosts`设置为0 - 我们希望农场中大部分维基都有此选项，但这个维基除外
+  * 还要设置sitename，interwikiname和data_dir(常见设置)
+
+== 配置选项总览 ==
+
+下面的表格包含所有配置变量的默认值和简短描述。大部分选项可以使用默认值，无须改动。每次安装都需要改动的选项已经写在发行包中自带的`wikiconfig.py`文件中了。
+
+(!) 下面表格中一些很长的值将被表示为"'''...'''"，把光标指向这些点可显示默认值。您也可以参考`MoinMoin/config/multiconfig.py`, `class DefaultConfig`得到更详细的信息（当中包含默认配置）。
+
+<<WikiConfigHelp(heading_level=3)>>
+
+/!\ 从moin 1.3.1开始，有些选项必须使用unicode字符串。请阅读unicode选项一节的内容。
+
+有些值只能在 MoinMoin/config.py 中设置(他们是MoinMoin代码的一部分，因此对所有维基都有影响)，- 只有对系统很了解的情况下才可以修改这些值:
+|| charset || 'utf-8' || the encoding / character set used by the wiki ||
+|| lowerletters || ''ucs-2 lowercase letters'' || Lowercase letters, used to define what is a WikiName ||
+|| smileys || {} || user-defined smileys (a dict with the markup as the key and a tuple of width, height, border, image name as the value) ||
+|| umask || 0770 || umask used on all open(), mkdir() and similar calls ||
+|| upperletters || ''ucs-2 uppercase letters'' || uppercase letters, used to define what is a WikiName ||
+|| url_schemas || `[]` || additional URL schemas you want to have recognized (list of strings; e.g. `['ldap', 'imap']`) ||
+
+== 相关页面 ==
+ * [[/附件]]
+ * [[帮助-访问权限控制表]]
+ * [[帮助-主题]]
+ * [[帮助-拼写检查]]
+ * [[/邮件支持]]
+ * [[帮助-XML网页]]
+ * [[/安全策略]]
+ * [[/过载保护]]
+ 
+
+
+此页的英文版本：HelpOnConfiguration

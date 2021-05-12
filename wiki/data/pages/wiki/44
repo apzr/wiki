@@ -1,0 +1,68 @@
+## Please edit system and help pages ONLY in the master wiki!
+## For more information, please see MoinMoin:MoinDev/Translation.
+##master-page:HelpOnConfiguration/FileAttachments
+##master-date:2006-06-28 04:35:01
+#acl -All:write Default
+#format wiki
+#language zh
+
+通过[[帮助-操作/附件|附件操作功能]]，一个网页可以添加多个附件。 由于文件上传功能有可能被滥用于DoS (Denial of Service) 攻击，因此维基管理员可以通过`AttachFile`操作控制附件功能，只需在配置文件中添加"`allowed_actions = ['AttachFile']`"。
+
+||<tablestyle="color: red;"> /!\ '''警告: 如果通过网络服务器可以直接访问维基附件，您必须确保网络服务器不会运行恶意用户上传的附件(比如 .php 或 .asp 或其他脚本)。如果你不太理解，切勿按照下面的说明操作，否则您的服务器可能会被远程攻击。''' ||
+
+= 附件的处理方式 =
+
+附件有两种存储/获取模型:
+
+ 1. 附件存储地址是隐藏的，只能通过 CGI GET 操作获得(通过URLs，比如 `http://myorg.org/mywiki/<SomePage>?action=AttachFile&do=get&target=filename.ext`)。
+
+ 1. 附件存储在可以被网络服务器直接访问的目录下，因而可以通过服务器直接使用，而无须通过MoinMoin (URLs类似于`http://myorg.org/mywikiattach/<Somepage>/attachments/filename.ext`)。
+
+默认配置是第一种模型。附件存储在"...mywiki/data/pages/" 目录，路径为"`...mywiki/data/pages/<pagename>/attachments/<filename>`".
+
+MoinMoin的''attachments'' 配置选项允许您将存储附件的目录转移到其他位置。不过一般来说不需要如此操作，除非你有明确的原因。使用其他位置存储附件需要将现有的附件拷贝到新的位置，所以会比较麻烦，而且会带来更多风险。下面的建议是针对Apache服务器的，假设您想把附件放在他们现在的位置，而原来的安装使用的名称为"mywiki"。
+
+= 通过网络服务器直接访问附件 =
+
+
+ * /!\ 注意，这个配置对于文件名含有非Ascii字符的附件不适用。
+
+ * /!\ '''注意，在2.0中这个选项将被移除。因为其潜在的安全问题，我们建议不使用这个选项。'''
+
+
+第一步是让Apache知道有一个Alias目录，可以访问其中的文件。查看安装MoinMoin过程中修改的httpd.conf(或者commonhttpd.conf)文件，找到与下面类似的Alias语句:
+
+{{{
+    ScriptAlias /mywiki           ".../mywiki/moin.cgi" 
+}}}
+新建一个与上面类似的Alias语句, 将 ''/mywiki'' 替换为 ''/mywikiattach/'' ，将 ''moin.cgi'' 替换为 ''data/pages/''。
+{{{
+    Alias       /mywikiattach/    ".../mywiki/data/pages/"
+}}}
+
+请注意这两个语句尾部的 '/' 符号，配置语句必须如上所示。修改配置之后，必须重新启动Apache，改动才能生效。
+
+第二步是让MoinMoin知道获取附件的操作由Apache完成。你需要在 .../mywiki/wikiconfig.py 文件中增加`attachments`选项. 该选项是带有两个值的字典: {{{
+attachments = {
+    'dir': '.../mywiki/data/pages',
+    'url': '/mywikiattach',
+}
+}}}
+
+上传文件的操作仍然由Moin``Moin完成。''dir''告诉Moin``Moin附件的存储位置，注意它的路径与Apache中新增加的Alias语句中的路径是一样的，但是尾部没有"/"。''url''告诉Moin``Moin如何获取附件，其和Alias语句的中路径一致，但是尾部也没有"/"。
+
+/!\ 您的附件现在通过Apache Your attached files are now directly servable by Apache. However if you also have PHP (or ASP or any other server parsed language) installed then an attacker can upload a PHP script an then run it to exploit other local weaknesses.
+
+For example, you can disable PHP for the appropriate directory (note that it's difficult to include instructions for disabling all server parsed languages).
+
+{{{
+<Directory .../mywiki/data/pages/>
+    RemoveType .php .php3 .php4 .phtml
+</Directory>
+}}}
+
+/!\ This only disables php stuff - you have to add everything else on your own!
+
+After you have completed the configuration changes, test by uploading an attachment for WikiSandBox. Then modify the WikiSandBox page to display the uploaded image or download the file. If there were existing attachments before this change, verify the old attachments are still available.  Finally, review the Apache ''access.log'' file to verify you have a log entry showing the expected file access:
+
+  * ''"...GET /mywikiattach/Wiki``Sand``Box/attachments/mypix.jpg HTTP/1.1..."''.

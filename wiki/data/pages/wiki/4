@@ -1,0 +1,18 @@
+## Please edit system and help pages ONLY in the master wiki!
+## For more information, please see MoinMoin:MoinDev/Translation.
+##master-page:WordIndex
+##master-date:2010-08-01 09:15:00
+#acl -All:write Default -All:read
+#format wiki
+#language zh
+
+这是所有网页标题中所用词汇的索引。
+
+也请参阅:
+ * [[标题索引]] -- 简要一些的索引
+ * [[查找网页]] -- 查找内容或探索维基
+
+----
+<<WordIndex>>
+
+此页的英文版本：WordIndex

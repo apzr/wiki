@@ -1,0 +1,13 @@
+## Please edit system and help pages ONLY in the master wiki!
+## For more information, please see MoinMoin:MoinDev/Translation.
+##master-page:RandomPage
+##master-date:2010-11-21T02:00:28Z
+#acl -All:write Default
+#format wiki
+#language zh
+
+这里列出从全部<<PageCount>>个网页中随机选取的25个网页：
+
+<<RandomPage(25)>>
+
+此页的英文版本：RandomPage

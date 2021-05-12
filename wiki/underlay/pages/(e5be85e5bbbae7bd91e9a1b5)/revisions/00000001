@@ -1,0 +1,13 @@
+## Please edit system and help pages ONLY in the master wiki!
+## For more information, please see MoinMoin:MoinDev/Translation.
+##master-page:WantedPages
+##master-date:2010-08-15T13:57:31Z
+#acl -All:write Default -All:read
+#format wiki
+#language zh
+
+这里列出了那些被引用到，但并不存在的网页。同时也列出了哪些网页引用了这些不存在的网页：
+
+<<WantedPages>>
+
+此页的英文版本：WantedPages

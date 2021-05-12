@@ -1,0 +1,15 @@
+##master-page:CategoryTemplate
+##master-date:2010-11-13T00:52:25Z
+#format wiki
+#language zh
+
+描述属于本类的页面...
+
+要把页面加入本类，请在页面的最后一行加上一个链接。一个页面可以属于多个类。
+
+'''本类的所有页面列表：'''
+
+<<FullSearchCached(category:分类模板)>>
+
+----
+CategoryCategory

@@ -1,0 +1,37 @@
+## page was renamed from wiki/redis/erroe_on_redis_dump
+
+windows下cmd执行redis-dump命令报错:
+{{{
+C:\Users\Administrator>redis-dump –u 127.0.0.1:6379 > test.json
+ERROR (Errno::ENOENT): No such file or directory - ps -o rss= -p 17592
+}}}
+解决
+ 编辑器打开文件:
+  {{{%RUBY_HOME%\lib\ruby\gems\2.7.0\gems\redis-dump-0.4.0\lib\redis\dump.rb}}}
+
+ 注释掉第32行内容, 保存:
+  {{{#!highlight ruby
+    ...
+    ...
+    ...
+23    class << self
+24      attr_accessor :debug, :encoder, :parser, :safe, :host, :port, :password, :chunk_size, :with_optimizations, :with_base64
+25      def le(msg)
+26        STDERR.puts "#%.4f: %s" % [Time.now.utc.to_f, msg]
+27      end
+28      def ld(msg)
+29        STDERR.puts "#%.4f: %s" % [Time.now.utc.to_f, msg] if debug
+30      end
+31      def memory_usage
+32#        `ps -o rss= -p #{Process.pid}`.to_i # in kb
+33      end
+34      def check_utf8=(check)
+35        if check == false
+36          @parser = Yajl::Parser.new(:check_utf8 => false)
+37        end
+38      end
+39    end
+    ...
+    ...
+    ...
+}}}

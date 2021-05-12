@@ -1,0 +1,13 @@
+## Please edit system and help pages ONLY in the master wiki!
+## For more information, please see MoinMoin:MoinDev/Translation.
+##master-page:OrphanedPages
+##master-date:2010-08-15T13:55:09Z
+#acl -All:write Default -All:read
+#format wiki
+#language zh
+
+这里列出了没有被其他网页链接过的网页：
+
+<<OrphanedPages>>
+
+此页的英文版本：OrphanedPages

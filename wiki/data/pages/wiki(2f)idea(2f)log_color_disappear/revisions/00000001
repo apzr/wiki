@@ -1,0 +1,6 @@
+在这里详述 wiki/idea/log_color_disappear。
+
+添加参数
+ {{{
+ -Dspring.output.ansi.enabled=ALWAYS
+ }}}

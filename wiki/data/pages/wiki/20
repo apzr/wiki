@@ -1,0 +1,47 @@
+## Please edit system and help pages ONLY in the master wiki!
+## For more information, please see MoinMoin:MoinDev/Translation.
+##master-page:HelpOnConfiguration/SecurityPolicy
+##master-date:2006-06-07 03:49:39
+#acl -All:write Default
+#format wiki
+#language zh
+
+`SecurityPolicy` 是配置选项中的一项，它允许维基管理员动态地开放或关闭维基中的某个操作方式，主要是编辑和删除操作。请看[[帮助-访问权限控制表]]。
+
+== 机理 ==
+
+安全限制是通过 `MoinMoin.security` 模块中定义的接口来实现的。在`Permissions` 类中实现了用户权限和系统策略的基本接口。 如果你想自定义一种策略，请从这个基本类继承下来，这样，当你定义新的权限时，还可以得到那些默认的权限。
+
+然后，你可以在 `wikiconfig.py` 中把新类赋值给 `Config.SecurityPolicy` (注意是类本身，而不是它的实例)，或者在 `wikiconfig.py` 中把新类定义为 `class Config` 的成员，并且命名为 `SecurityPolicy`。
+
+== 反垃圾防护 ==
+
+如果激活"antispam"功能，那么您的维基会下载MoinMaster:BadContent 网页，并与原始版本自动同步。请不要编辑这个网页，因为您的改动会被覆盖。
+
+把这部分代码加入您的wikiconfig文件:
+
+{{{
+from MoinMoin.security.antispam import SecurityPolicy
+}}}
+
+== SSL-only Write ==
+
+如果为了安全原因，您希望限制用户只能在SSL连接的情况下才可以编辑，那么可以添加下面的代码:
+
+{{{
+# add this at the of your config settings:
+from MoinMoin.security import Permissions
+
+   # add this later , careful with indentation
+   # make wiki only writeable via SSL
+    class SecurityPolicy(Permissions):
+    	def write(self, pagename):
+    		return (self.request.is_ssl
+    			and Permissions.write(self, pagename)
+}}}
+
+== 示例 ==
+
+请看 MoinMoin:SecurityPolicy 
+
+此页的英文版本: HelpOnConfiguration/SecurityPolicy

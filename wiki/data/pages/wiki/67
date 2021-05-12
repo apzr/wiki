@@ -1,0 +1,13 @@
+## Please edit system and help pages ONLY in the master wiki!
+## For more information, please see MoinMoin:MoinDev/Translation.
+##master-page:PageHits
+##master-date:2010-11-21T01:58:24Z
+#acl -All:write Default -All:read
+#format wiki
+#language zh
+
+这里显示从日志创建以来网页被访问的频度。数据未经智能化处理，每次访问都计算在内。
+
+<<PageHits>>
+
+此页的英文版本：PageHits
