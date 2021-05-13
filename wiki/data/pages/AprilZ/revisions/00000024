@@ -1,0 +1,62 @@
+##master-page:HomepageTemplate
+##master-date:2021-5-13 13:57:37
+## Please edit system and help pages ONLY in the master wiki!
+## For more information, please see MoinMoin:MoinDev/Translation.
+#format wiki
+#language en
+
+~+ [[https://github.com/apzr | April.Z ]] +~
+
+<<MonthCalendar>>
+
+## You can even more obfuscate your email address by adding more uppercase letters followed by a leading and trailing blank.
+
+
+
+<<Hits>>
+
+a counter for page hits <<Hits([all=(False,True)][,event_type=(VIEWPAGE,SAVEPAGE)]>>
+
+<<InterWiki>>
+
+a list of all known InterWiki names.
+
+<<SystemInfo>>
+
+info on the wiki, the python interpreter and the host system.
+
+<<PageCount(exists)>>
+
+current page count. If exists is supplied as an argument, only existing pages will be shown.
+
+<<PageSize>>
+
+list the sizes of all pages. See PageSize
+
+<<StatsChart(type)>>
+
+shows statistical charts (currently defined types: hitcounts, pagesize, useragents, languages). See EventStats and subpages
+
+<<SystemAdmin>>
+
+Information for system administrators, see SystemAdmin. You need to be superuser to use this macro.
+
+<<EditedSystemPages>>
+
+A list of system pages that were modified.
+
+<<WikiConfig>>
+
+Shows wiki configuration settings which are either non-default or unknown. You need to be superuser to use this macro.
+
+<<WikiConfigHelp>>
+
+Shows all wiki configuration settings with descriptions.
+
+<<HighlighterList>>
+
+
+
+Email: <<MailTo(iswallow1l2l@126.com)>>
+----
+CategoryHomepage

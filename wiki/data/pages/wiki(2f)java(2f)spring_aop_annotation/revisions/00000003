@@ -1,0 +1,11 @@
+{{{#!text_markdown
+```Java
+            public void beginTrans( ) {
+                    …
+                conn = getIdleConnectionFromPoll( );
+                userId = getUserId( );
+                registerTrans(userId, conn);
+                    …
+            } 
+```
+}}}

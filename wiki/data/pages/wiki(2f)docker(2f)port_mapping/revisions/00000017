@@ -1,0 +1,35 @@
+=== 给docker正在运行的容器加端口映射 ===
+
+ 一. 提交当前容器为镜像，使用`run -p`映射
+
+  {{{
+ #指令会将容器的80端口映射到宿主机的8000端口上。docker run -p 8000:80 -it centos /bin/bash 
+}}}
+
+
+ 二. 防火墙层处理
+  如果没有/etc/sysconfig/iptables这个文件，可以参考文章 [[https://www.jianshu.com/p/c08d27c48cf8 | centos创建iptables文件]]
+
+  1.添加规则
+   * 获取到docker容器的ip地址
+   {{{
+#查看运行中的容器，查看容器iddocker inspect c5ea97ccc82d | grep IPAddress ##其中 c5ea97ccc82d 为容器id
+docker ps 
+}}}
+
+   * 将docker容器的80端口映射到宿主机主机的8091端口
+   {{{
+#将docker容器的80端口映射到宿主机主机的8091端口
+iptables -t nat -A  DOCKER -p tcp --dport 8091 -j DNAT --to-destination 172.17.0.19:80
+
+#保存防火墙
+service iptables save
+}}}
+
+  2.测试规则
+   {{{
+#192.168.1.208 为宿主机ip
+#8091为以上配置宿主机port
+curl 192.168.1.208:8091
+#80端口是web服务器默认端口，即访问到docker nginx 欢迎页面。 
+}}}
