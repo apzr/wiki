@@ -1,0 +1,138 @@
+1. `@TAction`注解
+ TAction是trantor封装Spring Controller后对外暴露的控制器
+ {{{#!highlight java
+   public class CategoryPartnerAction {
+     @TAction(modelClass = SupplierChangeLog.class)
+     public void modifySupplierInfo(@TModelParam SupplierChangeLog supplierChangeLog) {
+       //TODO
+     }
+   }
+ }}}
+
+ 方法参数 支持的注解如下：
+  * `@TModelParam`单个`Model`对象
+  * `@TModelsParam`接收多个对象的列表`List<Model>`
+  * `@TEnvParam`接收前端传递的名字为env的变量。一般env都是用map格式传递数据。
+
+ 前段view.xml的访问方式：
+  {{{
+[project_name]_[model_name]_[action_class_name]::[method_name]
+}}} 
+  ~- `<Action type="Submit" action="partner_center_Partner_CategoryPartnerAction::modifySupplierExtInfo" after="GoBack" layout="Footer"/>` -~
+
+2. 数据库操作
+ * 通过继承TrantorDAO类使用TrantorDAO提供的API操作数据库。
+ {{{#!highlight java
+    @Repository
+    public class BrandCategoryDetailRepo extends TrantorDAO<BrandCategoryDetail, Long> {
+
+        public List<BrandCategoryDetail> findByContractId(Long contractId) {
+            return find(query -> {
+                query.select(builder -> {
+                    builder.getObject(BrandCategoryDetail.category_field);
+                    builder.getObject(BrandCategoryDetail.brand_field);
+                    builder.getObject(BrandCategoryDetail.material_field);
+                    builder.getAll();
+                });
+                query.where(builder -> builder.condition(BrandCategoryDetail.contract_field,
+                    chBuilder -> chBuilder.condition(Contract.id_field, Operators.EQ, contractId)));
+            });
+        }
+    }
+}}}
+ ~- `Query.select 方法用于指定查询结果包含哪些列。Query.where 方法用于编写查询条件。如果查询的列或者查询条件是关联表的话，需要按照上述例子中的方式进行嵌套操作。` -~
+ 
+ * 用法
+ {{{#!highlight java
+    /* 基本的查询写法 */
+    //TrantorDAO继承了DeprecatedTrantorDAO, 其中有一些方法由于版本更新已经废弃但是二开没办法用
+    public class SomeRepo extends TrantorDAO<SomeClassExtendsBaseModel, Long> {
+
+        public void someMethod(){
+
+            //findById来自DeprecatedTrantorDAO, 参数是Select类
+	    findById(id, select -> {
+	        select.getObject("field", queryField -> {
+		    queryField.select(builder -> {
+		        builder.getObject("@TModelField");
+		        builder.getAll();
+		    });
+		    queryField.where( builder -> {
+		        builder.condition("@TModelField", conditionSet -> {
+			    conditionSet.condition("TModelField.id_field", Operators.EQ, id);
+			});
+		    });
+		});
+	    });
+
+            //find来自DeprecatedTrantorDAO, 参数是Query类
+	    find(query -> {
+		query.select(builder -> {
+		    builder.getObject("@TModelField");
+		    builder.getAll();
+		});
+		query.where(builder -> {
+		    builder.condition("@TModelField", conditionSet -> {
+			conditionSet.condition("TModelField.id_field", Operators.NEQ, id);
+		    });
+		});
+	    });
+
+        }
+
+    }
+}}}
+ * Select类与Query类
+ {{{#!highlight java
+    public class Select<MODEL, INST> extends HelperHolder<MODEL, INST> {
+        public void getObject(String field, Consumer<QueryField<MODEL, INST>> builder) {
+            ...
+        }	
+    }
+}}}
+
+ {{{#!highlight java
+    public class QueryField<MODEL, INST> extends GQL<MODEL, INST> implements Queryable<MODEL, INST>, Selectable<MODEL, INST> {
+        ...
+    }
+}}}
+
+ {{{#!highlight java
+    public class Query<MODEL, INST> extends GQL<MODEL, INST> implements Queryable<MODEL, INST>, Selectable<MODEL, INST> {
+	...	
+    }
+}}}
+ * Select类与Query类实现的接口
+ {{{#!highlight java
+    public interface Selectable<MODEL, INST> { ... }
+
+}}}
+
+ {{{#!highlight java
+    public interface Queryable<MODEL, INST> extends Whereable<MODEL, INST> { ... }
+}}}
+
+
+ {{{#!highlight java
+    public interface Whereable<MODEL, INST> extends ParamsHolder<MODEL, INST> { ... }
+}}}
+
+
+3. 自定义查询`DataAction`
+ 自定义查询的使用是因为业务需求的查询条件比较复杂多样化（如多表关联），这种情况下需要自定义一个查询的后台方法
+ {{{#!highlight java
+    @Component
+    public class SupplierSelectDataSourceAction implements MultiDataAction<Partner> {
+        @Override
+        @SkipDataPermissionAuthentication
+        public MultiDataResult<Partner> load(QueryValues queryValues, MultiDataParams multiDataParams) {
+               // queryValues是前端传递的查询条件 ，根据queryValues 查询数据。
+	}
+    }
+}}}
+ ~- 注：`MultiDataAction`是指返回多条数据的查询接口, `SingleDataAction`是指返回单条数据的查询接口。根据业务选择合适的接口 实现。 -~
+
+4. Model注解
+ * 如果Model只用于前后端交互，不持久化到数据库中，那么`@TModel`添加属性`isTransient = true`
+ * 如果Model需要持久化到数据库，但是其中某个字段不需要持久化到数据库，字段添加注解`@TModelField(store = false)`
+ * 表关联参见https://trantor-docs.app.terminus.io/doc/marked/model-relation
