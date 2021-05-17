@@ -1,0 +1,78 @@
+以需求举例，采购文员在【新品列表】点击“批量导入”按钮创建新品时，增加程序逻辑管控：
+ * 修改'''采购商'''端批量导入模板，取消箱包中的“最大箱包数”字段的维护，导入时该字段允许为空，
+ * 点击【批量导入创建新品】界面的“提交”按钮后，增加“最大箱包数”的取值逻辑 ( 模板详见附件《采购商新品导入模板.xlsx》，最大箱包数在最小要货量字段前面） )：
+  * 如果当前商品有箱包，则系统校验商品包装中维护的箱包的“与基本单位数量关系（箱包）”必须是最小要货量的整数倍，否则提示：‘商品名称’的箱包数不是最小要货量的整数倍，请处理；
+  * 若当前新增的商品是新品，即当前主条形码在【新品列表】和【商品列表】中不存在：
+   . 若当前商品有箱包记录，则“最大箱包数”默认等于【商品包装】中“包装形态”=箱包的“与基本单位数量关系”字段值；
+   . 若当前商品没有箱包记录，则“最大箱包数”默认等于“最小要货量”；
+  * 若当前新增的商品是老品，即当前主条形码在【商品列表】中存在source=SAP的记录，则“最大箱包数”取【商品列表】（material_center__material）中source=SAP的记录对应的“最大箱包数”字段值；
+  * 若当前新增的商品是老品，即当前主条形码在【新品列表】中不存在source=SAP的记录，但存在source=New_item的记录，且“审核状态”是待质检、待税审、质检不通过、待商品部审核、审核成功、发布成功，则“最大箱包数”取【新品列表】（material_center__material）中source=New_item的记录对应的“最大箱包数”字段值；
+ * 修改采购商端批量导入模板，取消单品包装中的“与基本单位数量关系（单品）”字段的取值字段的维护，导入时默认等于1，模板详见附件《采购商新品导入模板.xlsx》（与基本单位数量关系（单品）在包装长(cm)（单品）字段前面）；
+
+操作记录如下
+ 1. 打开[[http://scp-console.test.jjyyx.com/ | 测试页面 ]]
+ 2. 登陆相应账号
+  || 有效环境 || 账号 || 密码 || 用户角色 ||
+  || 测试 || 08110223 || 123456 || 资深品类经理 ||
+  || 测试 || 02080023 || 123456 || 采购文员（新流程） ||
+  || 测试 || 02060020 || 123456 || 质检科（新流程） ||
+  || 测试 || 02060074 || 123456 || 财务部（新流程） ||
+  || 测试 || 01120041 || 123456 || 商品部（新流程） ||
+  || 测试 || 13589132535 || 123456 || 供应商（已合作） ||
+ 3. 选择
+  <<ImageLink(商品界面, , , , alt=商品界面)>>
+ 4. 定位, 
+ 无法下手可以直接在项目中搜索界面的小标题 '''采购商端新品申请列表'''
+ {{{
+ 定位到PurchaserNewItemApply-list-view.xml文件
+ <View title="采购商端新品申请列表">
+}}}
+
+ 在''PurchaserNewItemApply-list-view.xml''文件中搜索'''批量导入'''
+ {{{
+ <Action label="批量导入" action="custom_ImportModel_Import_Purchaser_ItemRelation"/>
+}}}
+
+ 页面点击'''批量导入'''按钮后弹出界面标题为'''批量导入创建新品'''的页面
+ 在文件中搜索'''批量导入创建新品'''
+ {{{
+ 定位到import-file-newItem-view.xml
+ <View title="批量导入创建新品">
+    <Form model="custom_ImportModel">
+        <Fields>
+            <Field name="showTemplate" label="模板下载" :show="!!this.data.showTemplate" readonly/>
+            <Field name="uploadFile" label="导入数据"/>
+            <Field name="key" :display="false"/>
+        </Fields>
+        <Actions>
+            <Action type="Submit" action="custom_ImportModel_ImportFileAction::importHandle" after="GoBack" layout="Footer"/>
+        </Actions>
+    </Form>
+ </View>
+}}}
+
+ 搜索'''showTemplate'''
+ {{{
+ int index = showTemplate.firstFile().getUrl().indexOf("trantor/attachments");
+ 查找上下文定位到导入模板附件代码
+ Optional<ImportModel> exist = importFileRepo.findOne(query -> {
+  query.selectAll();
+  query.where(ImportModel.key_field, "PurchaserCompleteItemRelation");
+ });
+}}}
+
+ 点击提交, Fiddler抓包
+  <<ImageLink(fiddler, , , , alt=)>>
+
+ 根据request中的actionkey可以判断出 请求的是模块custom_ImportModel中的行为ImportFileAction 中的方法importHandle
+ {{{
+ ImportFileAction.java
+
+ @TAction(modelClass = ImportModel.class)
+ public ActionBusinessMessage importHandle(ImportModel importModel) throws NoSuchMethodException {
+ 
+ }
+}}}
+ {{{
+custom_ImportModel-actions.json - "target": "custom_ImportModel_Import_File_newItem_view"
+}}}

@@ -1,0 +1,4 @@
+图片引用方式
+{{{
+<<ImageLink(1.png, ,width=, height=, alt=问题2)>>
+}}}
