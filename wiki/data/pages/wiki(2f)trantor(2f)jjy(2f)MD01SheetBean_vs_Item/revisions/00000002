@@ -1,0 +1,32 @@
+在这里详述 wiki/trantor/jjy/MD01SheetBean_vs_Item。
+
+MD101是要推送过去的东西
+ {{{#!highlight java
+    //商品
+    ItemRelation itemRelationDetail = itemRelationRepo.queryDetailById(itemRelation.getId());
+
+    //物料
+    Material material = itemRelation.getMaterial();
+    
+    //MD101
+    MD101SheetBean bean = new MD101SheetBean();
+    
+    //TODO:转换
+    ...
+
+    List<MD101SheetBean> sheets = Lists.newArrayList();
+    sheets.add(bean);
+
+    MD101Request md101Request = new MD101Request();
+    md101Request.setSheet(sheets);
+    
+    //推送
+    Object reponsesObject = dalaranGenericHandler.invoke(
+        DalaranGenericHandler.DalaranGenericInterfaceEnum.ITEM_SAP_FACADE.getClassFullName(),
+        ItemSapFacade.itemInfoDetailSyncSap,
+        Lists.newArrayList( MD101Request.class.getName() ),
+        Lists.newArrayList( itemConvert.toMD101Request(itemRelationDetail) )
+    );
+    
+}}}
+`Item.java`是商品 是材料类`Material.class`的子类
