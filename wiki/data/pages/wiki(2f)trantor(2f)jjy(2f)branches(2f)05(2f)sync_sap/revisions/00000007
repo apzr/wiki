@@ -1,0 +1,160 @@
+## page was renamed from wiki/trantor/jjy/branches/sync_sap
+## page was renamed from wiki/trantor/jjy/sync_sap
+ * 在同步SAP过程中，MD101是要推送过去的东西
+ {{{#!highlight java
+    //商品
+    ItemRelation itemRelationDetail = itemRelationRepo.queryDetailById(itemRelation.getId());
+
+    //物料
+    Material material = itemRelation.getMaterial();
+    
+    //MD101
+    MD101SheetBean bean = new MD101SheetBean();
+    
+    //TODO:转换
+    ...
+
+    //封装MD101SheetBean
+    List<MD101SheetBean> sheets = Lists.newArrayList();
+    sheets.add(bean);
+
+    //封装MD101Request 
+    MD101Request md101Request = new MD101Request();
+    md101Request.setSheet(sheets);
+    
+    //推送
+    Object reponsesObject = dalaranGenericHandler.invoke(
+        DalaranGenericHandler.DalaranGenericInterfaceEnum.ITEM_SAP_FACADE.getClassFullName(),
+        ItemSapFacade.itemInfoDetailSyncSap,
+        Lists.newArrayList( MD101Request.class.getName() ),
+        Lists.newArrayList( md101Request )
+    );
+    
+}}}
+
+ * 具体调用测试通过如下操作
+ {{http://localhost/wiki/trantor/jjy/branches/05/sync_sap?action=AttachFile&do=get&target=sync_sap_cmd.jpg}}
+
+ * `Item.java`是商品 是材料类`Material.class`的子类, 具体转换成md101过程中有如下记录<<BR>>
+ 
+  * 商品类目
+
+  {{{#!highlight java
+    //MD101Sheetbean
+
+    //*** Item 的父类 Material ***
+    @TModelField(
+        name = "物料分类",
+        nullable = false
+    )
+    @NotNull(
+        message = "物料分类不能为空"
+    )
+    @RelationMeta(
+        name = "MaterialMaterialCategory",
+        modelClass = MaterialCategory.class
+    )
+    private MaterialCategory category;
+
+}}}
+
+  * 2级分类
+
+  {{{#!highlight java
+    //MD101SheetBean    
+    /**
+     * 柜组
+     */
+    private String zglbm;
+    
+    //Item
+    @TModelField(name = "2级类目")
+    @RelationMeta(name = "Level2ItemMaterialCategory", modelClass = MaterialCategory.class)
+    private MaterialCategory secondCategory;
+
+    @Reference(fromField = Item.secondCategory_field, mappingField = MaterialCategory.outerId_field, onChange = NEVER)
+    @TModelField(name = "2级类目sap编码")
+    private String secondCategoryOutCode;
+}}}
+
+  * 3级分类
+
+  {{{#!highlight java
+    //MD101SheetBean
+    /**
+     * 物料组
+     */
+    private String matkl;
+    
+    //Item
+    @TModelField(name = "物料组")
+    @RelationMeta(name = "Level3ItemMaterialCategory", modelClass = MaterialCategory.class)
+    private MaterialCategory thirdCategory;
+
+}}}
+
+  * 4级分类
+
+  {{{#!highlight java
+    //MD101SheetBean
+    /**
+     * 商品小类编码
+     */
+    private String zmatkl;
+    
+    //Item
+    @TModelField(name = "商品小类")
+    @RelationMeta(name = "Level4ItemMaterialCategory", modelClass = MaterialCategory.class)
+    private MaterialCategory fourthCategory;
+}}}
+
+ * 通过测试环境点击"同步SAP"连接操作之后发现日志报错
+ {{{
+2021-05-19 14:19:26.943ERROR[jjy-b2b-scp]  - [http-nio-0.0.0.0-8080-exec-6] i.t.trantor.framework.TrantorWebAdvice  : handleException error with request info: RequestInfo(path: [http://jjy-b2b-scp.services--test-561.svc.cluster.local:8080/api/trantor/action/exe], referer: [http://scp-console.test.jjyyx.com/])
+java.lang.NullPointerException: null
+	at io.terminus.jjy.b2b.scp.convert.ItemConvert.toMD101Request(ItemConvert.java:474)
+	at io.terminus.jjy.b2b.scp.action.item.apply.ItemRelationAction.syncDrp(ItemRelationAction.java:1277)
+	at io.terminus.jjy.b2b.scp.action.item.apply.ItemRelationAction$$FastClassBySpringCGLIB$$48530abe.invoke(&lt;generated&gt;)
+	...
+        ...
+}}}
+ `NullPointerException at io.terminus.jjy.b2b.scp.convert.ItemConvert.toMD101Request(ItemConvert.java:474)`
+ 查看java代码后增加`thirdCategory`
+ {{{#!highlight java 
+    473    MaterialCategory materialCategory = material.get(Item.thirdCategory_field);
+    474    bean.setMatkl(materialCategory.getOuterId());
+}}}
+
+ * 同步品类的代码
+ {{{#!highlight java
+    ...
+    log.warn("MD101商品推送开始, Code:{}", itemRelation.getCode());
+    ...
+    //添加转换md101的参数获取日志
+    log.warn("MD101 Material Category {}", material.getCategory());
+    log.warn("MD101 Material Second {}", (MaterialCategory) material.get(Item.secondCategory_field));
+    log.warn("MD101 Material Second Code {}", (String) material.get(Item.secondCategoryOutCode_field));
+    log.warn("MD101 Material Third {}", (MaterialCategory) material.get(Item.thirdCategory_field));
+    log.warn("MD101 Material Fourth {}", (MaterialCategory) material.get(Item.fourthCategory_field));
+    ...
+    //同步sap 增加品类传输
+    MaterialCategory category = material.getCategory();
+    if(Objects.nonNull(category)) {
+        log.warn("MD101商品推送SAP入 品类 {} 品类oid {}", category.getName(), category.getOuterId());
+        bean.setCategory(category.getOuterId());
+    }
+    ...
+    log.warn("MD101商品推送SAP入参, {}", JSON.toJSONString(md101Request));
+}}}
+
+ * 同步成功的日志记录
+ {{{#!highlight prolog
+2021-05-20 08:33:44.033WARN[jjy-b2b-scp]  - [http-nio-0.0.0.0-8080-exec-2] i.t.jjy.b2b.scp.convert.ItemConvert     : MD101 Material Category MaterialCategory(parent=null, name=农产, level=2, hasChildren=true, outerId=1003, path=160-839, status=ENABLE)
+2021-05-20 08:33:44.033WARN[jjy-b2b-scp]  - [http-nio-0.0.0.0-8080-exec-2] i.t.jjy.b2b.scp.convert.ItemConvert     : MD101 Material Third null
+2021-05-20 08:33:44.033WARN[jjy-b2b-scp]  - [http-nio-0.0.0.0-8080-exec-2] i.t.jjy.b2b.scp.convert.ItemConvert     : MD101 Material Fourth null
+2021-05-20 08:33:44.450WARN[jjy-b2b-scp]  - [http-nio-0.0.0.0-8080-exec-2] i.t.jjy.b2b.scp.convert.ItemConvert     : MD101商品推送SAP入 品类 农产 品类oid 1003
+}}}
+
+----
+
+|| [[attachment:./MD101-增加品类传输.xlsx]] ||

@@ -1,0 +1,195 @@
+ || '''Material''' || '''Item''' || MD101Request << '''MD101SheetBean''' || '''备注''' ||
+ || code || || || 物料编号 ||
+ || outCode || || || 外部编号 ||
+ || name || MAKTX || || 物料名称 ||
+ || shortName || || || 简称 ||
+ || images || || || 物料图 ||
+ || specification || || || 物料型号 ||
+ || attributes || || || 规格属性 ||
+ || category || || || 物料分类 ||
+ || categoryName || || || 物料分类名字 ||
+ || type || MTART || || 物料类型<<BR>>Z001-常规商品；Z002-服务商品；Z003-销售大码；Z004-生鲜原材料；Z005-包装辅料；Z006-大家电；Z007-无价值物料；Z008-百货自营商品；Z009-工厂通用物料；Z010-低值易耗品 ||
+ || brand || || || 品牌 ||
+ || unifiedCode || || || 商品统一码 ||
+ || baseUnit || || || 基本单位 ||
+ || salesUnit || || || 销售单位 ||
+ || salesUnitFactor || || || 销售单位转换系数 ||
+ || orderUnit || || || 采购单位 ||
+ || orderUnitFactor || || || 采购单位转换系数 ||
+ || shipmentUnit || || || 发货单位 ||
+ || shipmentUnitFactor || || || 发货单位转换系数 ||
+ || calculateWay || || || 计量方式 ||
+ || roughWeight || || || 毛重 ||
+ || netWeight || || || 净重 ||
+ || weightUnit || || || 重量单位 ||
+ || size || || || 大小 ||
+ || sizeUnit || || || 体积单位 ||
+ || priceWithTax || || || 采购含税单价 ||
+ || minOrderQuantity || || || 最小采购量 ||
+ || status || || || 物料状态 ||
+ || variety || || || 品种 ||
+ || level || || || 品级 ||
+ || packageNum || || || 箱包数 ||
+ || pcs || || || PCS值 ||
+ || leadTime || || || 采购提前期 ||
+ || incomeTaxRate || || || 进项税率 ||
+ || lifetime || || || 寿命 ||
+ || originType || || || 产地类型 ||
+ || origin || || || 产地 ||
+ || seasonal || || || 季节性 ||
+ || storageCondition || || || 存储条件 ||
+ || temperatureCondition || || || 温度条件 ||
+ || estimatedTurnoverDays || || || 预估周转天数 ||
+ || estimatedRoughProfit || || || 预估毛利率 ||
+ || isCustom || || || 是否定制 ||
+ || isPollutionFree || || || 是否绿色无公害 ||
+ || isTaxFree || || || 是否免税 ||
+ || startAt || || || 有效起始日期 ||
+ || endAt || || || 有效结束日期 ||
+ || remark || || || 物料备注 ||
+ ||<#00FF00 -4 >||
+ || || 助记符 || || symbol ||
+
+ || || 商品单位 || || unit ||
+
+ || || 规格 || || dimensions ||
+
+ || || 自制商品 || || selfMadeItem ||
+
+ || || 主要成分 || || majorConstituents ||
+
+ || || 电子秤签打印 || || electronicWeigherPrint ||
+
+ || || 货号 || || no ||
+
+ || || 品牌扩展信息 || || brandExt ||
+
+ || || 颜色 || || color ||
+
+ || || 尺码 || || itemSize ||
+
+ || || 款式 || || style ||
+
+ || || 原产国 || || country ||
+
+ || || 货架寿命（天） || || shelfLeftTime ||
+
+ || || 预警天数（天） || || warningLeftTime ||
+
+ || || 销项税率 || || saleTaxRate ||
+
+ || || 批发价格 || || wholeSalePrice ||
+
+ || || 建议零售价格 || || suggestRetailPrice ||
+
+ || || 指导出厂价格 || || factoryPrice ||
+
+ || || 商品卖点 || || salePoint ||
+
+ || || 商品定位 || || position ||
+
+ || || 正面图 || || frontImage ||
+
+ || || 左面图 || || leftImage ||
+
+ || || 顶面图 || || topImage ||
+
+ || || 背面图 || || backImage ||
+
+ || || 右面图 || || rightImage ||
+
+ || || 底面图 || || bottomImage ||
+
+ || || 批次报告 || || batchReport ||
+
+ || || 是否上传质检报告 || || uploadQualityReport ||
+
+ || || 包装列表 || || isCooperated ||
+
+ || || 商品状态 || || itemStatus ||
+
+ || || 是否是品类经理审核通过商品 || || isAuditPassItem ||
+
+ || || 生命周期 || || lifecycle ||
+
+ || || 采购员 || || operator ||
+
+ || || 管理部门 || || manageDept ||
+
+ || || 收入所属部门 || || incomeDept ||
+
+ || || 存储状态-拓展信息 || || storageExt ||
+
+ || || 条形码长度 || || unifiedCodeLength ||
+
+ || || 成本算法 || || cost ||
+
+ || || 工厂专用-大码单码 || || factoryShoppeExt ||
+
+ || || 商品寿命(天) || || itemLife ||
+
+ || || 状态变更时间 || || statusUpdateAt ||
+
+ || || 区域属性 || || area ||
+
+ || || 品类角色 || || categroyType ||
+
+ || || 品牌性 || || brandType ||
+
+ || || 价格来源 || || priceSource ||
+
+ || || 价格管控类型 || || priceControlType ||
+
+ || || 专属商品 || || exclusiveItem ||
+
+ || || 商品采购等级 || || purchaseLevel ||
+
+ || || 是否试销 || || trialSale ||
+
+ || || 计划交货时间 || || plannedDeliveryTime ||
+
+ || || 新品关联SAP编码 || || relatedSapCode ||
+
+ || || 数据来源 || || source ||
+
+ || || 商品类别 || || itemAType ||
+
+ || || 管理日期类型 || || dateType ||
+
+ || || 工业销项税码 || || industrySaleTaxRate ||
+
+ || || 经营模式 || || businessModel ||
+
+ || || 物流模式 || || logisticsType ||
+
+ || || 单品价格管理 || || priceManagement ||
+
+ || || 最小订单数量 || || minFormQuantity ||
+
+ || || 最小订单数量 || || minFormQuantity ||
+
+ || || 门店调价上限 || || storeAdjustLimit ||
+
+ || || 采购组织 || || purchaseOrg ||
+
+ || || 采购组 || || purchaseTeam ||
+
+ || || 采购员 || || purchaseName ||
+
+ || || 厂家代码 || || factoryCode ||
+
+ || || 品牌 || || newBrand ||
+
+ || || 产地 || || newOrigin ||
+
+ || || 2级类目 || || secondCategory ||
+
+ || || 2级类目sap编码 || || secondCategoryOutCode ||
+
+ || || 外部物料组 || || categoryGroup ||
+
+ || || 物料组 || || thirdCategory ||
+
+ || || 实施自动补货 || || autoSupplement ||
+
+ || || 商品小类 || || fourthCategory ||

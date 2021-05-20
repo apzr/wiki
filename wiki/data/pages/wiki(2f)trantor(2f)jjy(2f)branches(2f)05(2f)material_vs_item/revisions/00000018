@@ -1,0 +1,51 @@
+ || '''Material''' || '''Item''' || MD101Request << '''MD101SheetBean''' || '''备注''' ||
+ || code || || || 物料编号 ||
+ || outCode || || || 外部编号 ||
+ || name || MAKTX || || 物料名称 ||
+ || shortName || || || 简称 ||
+ || images || || || 物料图 ||
+ || specification || || || 物料型号 ||
+ || attributes || || || 规格属性 ||
+ || category || || || 物料分类 ||
+ || categoryName || || || 物料分类名字 ||
+ || type || MTART || || 物料类型<<BR>>Z001-常规商品；Z002-服务商品；Z003-销售大码；Z004-生鲜原材料；Z005-包装辅料；Z006-大家电；Z007-无价值物料；Z008-百货自营商品；Z009-工厂通用物料；Z010-低值易耗品 ||
+ || brand || || || 品牌 ||
+ || unifiedCode || || || 商品统一码 ||
+ || baseUnit || || || 基本单位 ||
+ || salesUnit || || || 销售单位 ||
+ || salesUnitFactor || || || 销售单位转换系数 ||
+ || orderUnit || || || 采购单位 ||
+ || orderUnitFactor || || || 采购单位转换系数 ||
+ || shipmentUnit || || || 发货单位 ||
+ || shipmentUnitFactor || || || 发货单位转换系数 ||
+ || calculateWay || || || 计量方式 ||
+ || roughWeight || || || 毛重 ||
+ || netWeight || || || 净重 ||
+ || weightUnit || || || 重量单位 ||
+ || size || || || 大小 ||
+ || sizeUnit || || || 体积单位 ||
+ || priceWithTax || || || 采购含税单价 ||
+ || minOrderQuantity || || || 最小采购量 ||
+ || status || || || 物料状态 ||
+ || variety || || || 品种 ||
+ || level || || || 品级 ||
+ || packageNum || || || 箱包数 ||
+ || pcs || || || PCS值 ||
+ || leadTime || || || 采购提前期 ||
+ || incomeTaxRate || || || 进项税率 ||
+ || lifetime || || || 寿命 ||
+ || originType || || || 产地类型 ||
+ || origin || || || 产地 ||
+ || seasonal || || || 季节性 ||
+ || storageCondition || || || 存储条件 ||
+ || temperatureCondition || || || 温度条件 ||
+ || estimatedTurnoverDays || || || 预估周转天数 ||
+ || estimatedRoughProfit || || || 预估毛利率 ||
+ || isCustom || || || 是否定制 ||
+ || isPollutionFree || || || 是否绿色无公害 ||
+ || isTaxFree || || || 是否免税 ||
+ || startAt || || || 有效起始日期 ||
+ || endAt || || || 有效结束日期 ||
+ || remark || || || 物料备注 ||
+ ||<#00FF00>||
+ || || itemAType || || 商品类别 ||

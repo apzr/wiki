@@ -1,0 +1,16 @@
+ * 代码
+ {{{#!highlight java
+    public void handleExcel(List<CompleteItemRelationExcelBean> beans) {
+        ...
+        //校验审核结果维护为0的行的审核原因是否符合规范
+        if ("0".equals(bean.getResult()) ) {
+            if( StringUtils.isEmpty(bean.getReason()) || !resultList.contains(bean.getReason()) ){
+                throw new ScpBizException(TrantorBizException.ErrorType.SERVER_ERROR, "第[" + (lineNum + 1) + "]行商品维护的原因描述不在字典值内，请调整");
+            }
+        }
+        ...
+    }
+}}}
+
+ * 效果
+ {{http://localhost/wiki/trantor/jjy/branches/05/bacth_complete_check?action=AttachFile&do=get&target=wiki_trantor_jjy_branches_05_bacth_complete_check_01}}

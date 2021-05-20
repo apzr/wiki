@@ -1,0 +1,7 @@
+日志记录
+ {{{
+2021-05-20 08:33:44.033WARN[jjy-b2b-scp]  - [http-nio-0.0.0.0-8080-exec-2] i.t.jjy.b2b.scp.convert.ItemConvert     : MD101 Material Category MaterialCategory(parent=null, name=农产, level=2, hasChildren=true, outerId=1003, path=160-839, status=ENABLE)
+2021-05-20 08:33:44.033WARN[jjy-b2b-scp]  - [http-nio-0.0.0.0-8080-exec-2] i.t.jjy.b2b.scp.convert.ItemConvert     : MD101 Material Third null
+2021-05-20 08:33:44.033WARN[jjy-b2b-scp]  - [http-nio-0.0.0.0-8080-exec-2] i.t.jjy.b2b.scp.convert.ItemConvert     : MD101 Material Fourth null
+2021-05-20 08:33:44.450WARN[jjy-b2b-scp]  - [http-nio-0.0.0.0-8080-exec-2] i.t.jjy.b2b.scp.convert.ItemConvert     : MD101商品推送SAP入 品类 农产 品类oid 1003
+}}}

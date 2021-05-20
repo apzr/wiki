@@ -1,0 +1,12 @@
+{{{
+
+//判断是否是最小要货量的整数倍
+ItemUtil :: packageNumCheck
+
+//判断新品老品  
+ItemServiceImpl :: queryByItemUnifiedCodes
+
+
+}}}
+
+----
