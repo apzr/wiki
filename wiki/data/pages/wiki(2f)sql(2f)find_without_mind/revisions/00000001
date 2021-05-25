@@ -1,0 +1,33 @@
+sql server 临时表查询
+{{{#!highlight sql
+IF EXISTS (
+SELECT * FROM tempdb..sysobjects
+WHERE id = object_id( 'tempdb..##online_foods_stock0931' )
+) DROP TABLE ##online_foods_stock0931
+SELECT * FROM tempdb..sysobjects where name like '##onlineFoods%' ORDER BY name desc
+}}}
+
+sql查询'trantor'库中所有column为bizCode的表
+{{{#!highlight sql
+SELECT
+	* 
+FROM
+	information_schema.COLUMNS 
+WHERE
+	table_schema = 'trantor'
+AND 
+  column_name = 'bizCode'
+}}}
+
+sql查询'trantor'库中所有column为bizCode, 且bizCode = 13213131的数据
+{{{#!highlight sql
+SELECT
+        CONCAT('SELECT * FROM ', TABLE_NAME, ' WHERE', ' unifiedCode = \'13213131\' ') 
+FROM
+        information_schema.COLUMNS 
+WHERE
+        table_schema = 'trantor'
+AND 
+        column_name = 'unifiedCode'
+
+}}}

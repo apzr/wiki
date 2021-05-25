@@ -1,0 +1,24 @@
+> [[ /branches_list|  开发分支 ]]
+
+> [[ /sync_sap | 供应商_新品创建_传输SAP时_增加_MD101品类传输 ]]
+
+ >> [[ /item_status_workflow | 新品_审核状态流程 ]]
+ >> [[ /food_catalog | 食品类_类目参考 ]]
+ >> [[ /material_vs_item | 物料_商品_推送类_属性对应参考 ]]
+ >> [[ /sync_sap_final | ***此需求的原因为Item做MD101转换问题*** ]]
+
+> [[ /package_zzdxbs_check | 管控_新品创建_箱包单位>基本单位数量关系_主数据>最大箱包数_一致 ]]
+ 
+ >> [[ /package_zzdxbs_check_rules | 需求概述 ]]
+ >> [[ /package_zzdxbs_check_record | 实现流程 ]]
+
+> [[ /bacth_complete_check | 采购_批量完善_原因描述不正确_系统提醒 ]]
+
+
+
+
+
+----
+
+|| [[attachment:MD101-增加品类传输.xlsx]] ||
+|| [[attachment:协同商品需求方案_20210512_V1.0.docx]] ||

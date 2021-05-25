@@ -1,0 +1,8 @@
+设计原则
+ * 供应商端逻辑调整
+  * `批量导入`取消`最大箱包数`字段的维护, 且允许保存空值
+   [[wiki/trantor/jjy/branches/05/package_zzdxbs_check_rules | description]]
+   对照 {http://localhost/wiki/trantor/jjy/branches/05/package_zzdxbs_check_rules?action=AttachFile&do=view&target=supplier-new-import.xlsx | sf}导入表SupplierItemRelationExcelBean
+   {{{#highlight java
+
+}}}

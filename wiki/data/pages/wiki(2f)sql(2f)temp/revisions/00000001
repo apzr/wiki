@@ -1,0 +1,8 @@
+sql server 临时表查询
+{{{#!highlight sql
+IF EXISTS (
+SELECT * FROM tempdb..sysobjects
+WHERE id = object_id( 'tempdb..##online_foods_stock0931' )
+) DROP TABLE ##online_foods_stock0931
+SELECT * FROM tempdb..sysobjects where name like '##onlineFoods%' ORDER BY name desc
+}}}

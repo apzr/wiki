@@ -1,0 +1,7 @@
+设计原则
+ * 供应商端逻辑调整
+  * `批量导入`取消`最大箱包数`字段的维护, 且允许保存空值
+   对照 [[attachment:./package_zzdxbs_check_rules/supplier-new-import.xlsx]]导入表SupplierItemRelationExcelBean
+   {{{#highlight java
+
+}}}

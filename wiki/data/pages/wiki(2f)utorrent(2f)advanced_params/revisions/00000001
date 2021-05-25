@@ -1,0 +1,185 @@
+{{{
+gui.compat_diropen
+使用不同的文件夹打开窗口以使那些无法使用默认文件夹浏览窗口查看文件的用户也可正常使用.
+
+}}}
+{{{
+net.bind_ip
+强制µTorrent 仅使用指定的网卡接受连入连接. 输入要使用的网卡的 IP 地址即可.
+
+}}}
+{{{
+net.outgoing_ip
+强制µTorrent 使用指定的网卡发送所有连出连接. 输入要使用的网卡的 IP 地址即可.
+
+}}}
+{{{
+net.outgoing_port 
+强制µTorrent 使用一个端口处理连出连接, 用于某些特殊情况下. 
+如对某些型号的路由器启用该选项并将该端口设置为与连入端口相同, 都将会减少 NAT 转发规则数目从而有效的减少路由崩溃情况的发生. 
+仅支持 Win 2003 以上系统.
+
+}}}
+{{{
+net.low_cpu
+轻微降低 CPU 的使用率. 关闭此功能有助于提高下载速度.
+
+}}}
+{{{
+net.max_halfopen
+指定µTorrent 的最大并发连接数. 注意: 在没有打过 TCP/IP 补丁的 XP SP2 系统上设置值不能超过8!
+
+}}}
+{{{
+net.wsaevents
+用来解决某些莫名其妙的防火墙问题. 你可以逐步降低该值并查看是否有效.
+  
+}}}
+{{{
+ipfilter.enable
+启用或禁用 ipfilter.dat 文件
+
+}}}
+{{{
+dht.rate
+指定 DHT 使用的带宽. 设为 -1 意为由程序根据上传速度自动管理. 
+可设置的值的范围在 512 到 8192 之间. 
+算法为使用最大上传速度除以 16 获得该值, 比以前的带宽占用 (4096) 低了很多, 提高该值有助于提升 DHT 网络的性能.
+
+}}}
+{{{
+rss.update_interval
+设置 RSS 的更新间隔时间. 低于 5 的值将被自动忽略并重置为默认值 5.
+
+}}}
+{{{
+gui.update_rate
+设置程序界面的刷新间隔时间, 单位为毫秒. 最小值为 500.
+
+}}}
+{{{
+gui.delete_to_trash
+启用后将尽可能的删除文件到回收站. 同样可在右键点击工具栏删除图标时选择 " 移动到回收站" 选择.
+
+}}}
+{{{
+gui.default_del_action
+设置默认的删除操作. 如需修改本选项请右键点击工具栏删除按钮并按住 Shift 键选择想要设置为默认删除操作的菜单项.
+
+}}}
+{{{
+gui.bypass_search_redirect
+忽略 Nanotorrent 搜索重定向.
+
+}}}
+{{{
+queue.dont_count_slow_dl/ul
+设置µTorrent 不对那些速度低于 1KiB/s 的下载或上传连接用户进行计数.
+
+}}}
+{{{
+queue.prio_no_seeds
+优先对那些网上没有种子的任务进行做种.
+
+}}}
+{{{
+bt.scrape_stopped
+启用/禁用对已停止任务的种子进行状态查询 (不在队列中).
+
+}}}
+{{{
+bt.compact_allocation
+允许µTorrent 按照 Python 式样创建文件以节省空间. 这个选项不能与 partfile 功能同时使用. 这个功能有时会无法正常工作: 如果你遇到提示 " 没有找到组件" 就说明该功能出问题了.
+
+}}}
+{{{
+bt.enable_tracker
+启用或禁用内置的 tracker 服务器. tracker 服务器地址为 http://你的公网IP地址:端口/announce (不支持域名). 支持外部任务.
+
+}}}
+{{{
+bt.multiscrape
+打开/关闭多次查询状态功能. 无需手动更改选项,µTorrent 会自动检测 tracker 服务器是否支持这一功能.
+
+}}}
+{{{
+bt.send_have_to_seed
+打开/关闭发送已有消息给种子.
+
+}}}
+{{{
+bt.set_sockbuf
+调试选项, 用来自动检测 TCP 缓冲大小(so_sndbuf) 并根据上传速度自动调整.
+
+}}}
+{{{
+bt.connect_speed 控制µTorrent
+每秒的连接数
+
+}}}
+{{{
+bt.prio_first_last_piece
+禁用或启用调整每个文件的第一块和最后一块的优先级.
+
+}}}
+{{{
+bt.allow_same_ip
+允许来自同一 IP 的多个连接. 一般来说无需启用, 可用来阻止那些只下载不上传的用户.
+
+}}}
+{{{
+bt.no_connect_to_services
+不连接使用 25 或 110 端口的用户. 如果你想使用反病毒软件的邮件检测则启用此选项.
+
+}}}
+{{{
+peer.lazy_bitfield
+帮助对抗某些 ISP 干扰做种. 这一选项不会始终工作.
+}}}
+}}}
+{{{
+peer.resolve_country
+µTorrent 使用 DNSBL 服务来解析 IP 所属国家. 不能和 flags.conf 文件同时使用!
+
+}}}
+{{{
+peer.disconnect_inactive
+启用或禁用在一段时间后(默认为 5 分钟)断开不活动用户的功能. 
+但是如果群集中用户数低于设置的任务最大连接数则不会断开.
+
+}}}
+{{{
+peer.disconnect_inactive_interval
+设置用户被视作不活动状态的时间. µTorrent 自动忽视低于 300 的值.
+
+}}}
+{{{
+diskio.flush_files
+设置µTorrent 按分钟关闭文件句柄. 这可以避免发生内存泄露的情况.
+
+}}}
+{{{
+diskio.sparse_files
+仅可用于使用 NTFS(2k/XP/2003) 格式的分区. 
+打开此功能后, 文件仅会在写入时才会分配空间. 
+当然这会增加磁盘碎片, 但是可以减少磁盘占用. 
+不能与 pre-allocate 同时使用.
+
+}}}
+{{{
+diskio.use_partfile
+用来保存那些你标记为取消下载的文件的数据. 
+在避免为文件分配空间时非常有用. 
+尽管我们不需要下载某些文件, 但是µTorrent 依然会下载少量分块信息并保存为 dat 文件. 
+不要与 compact allocation 功能同时使用.
+
+}}}
+{{{
+diskio.smart_hash
+启用µTorrent 在内存(写入缓冲队列)中校验数据的功能, 避免直接在磁盘上校验或从磁盘上重新读取. 
+这对降低磁盘读取非常有用, 特别是在拥有一个很高的下载速度时.
+
+}}}
+{{{
+diskio.coalesce_writes
+尝试使用最少次数的调用写入文件功能, 有助于降低磁盘写入次数 (不可避免的会稍微提高内存和 CPU 的使用率).

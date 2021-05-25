@@ -1,0 +1,13 @@
+=== Docker Toolbox ===
+
+在Windows命令行执行`docker-machine ssh [machine-name]`进入VM bash
+ {{{
+sudo vi /var/lib/boot2docker/profile
+}}}
+ ~- 在`--label provider=virtualbox`的下一行添加`--registry-mirror https://xxxxxxxx.mirror.aliyuncs.com1` -~
+
+重启docker服务：
+ {{{
+sudo /etc/init.d/docker restart
+}}}
+或者重启`VM：exit`退出VM bash，在Windows命令行中执行`docker-machine restart`

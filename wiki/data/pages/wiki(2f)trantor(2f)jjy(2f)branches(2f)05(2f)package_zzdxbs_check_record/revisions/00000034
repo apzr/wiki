@@ -1,0 +1,174 @@
+设计原则
+ * 供应商端逻辑调整
+  * `批量导入`取消`最大箱包数`字段的维护, 且允许保存空值
+   
+   对照~- [[attachment:wiki/trantor/jjy/branches/05/package_zzdxbs_check_rules/supplier-new-import.xlsx | 导入模板]] -~的字段和`SupplierItemRelationExcelBean.java`的属性做调整, 删除掉java中对应Excel的@, 并且将其他字段的index修改为表中对应的列数
+   {{{#!highlight java
+
+    /**
+     * 最大箱包数
+     */
+    //@ExcelProperty(index = 7)
+    private String packageNum;
+
+    /**
+     * 与基本单位数量关系（单品）
+     */
+    //@ExcelProperty(index = 31)
+    private String relatedUnitNum_single;
+
+}}}
+   去除`SupplierItemRelationExcelBean.java`中“最大箱包数”字段的校验, 导入时默认为空, 并且允许存储空值
+   {{{#!highlight java
+
+if (!StringUtils.isEmpty(packageNum)) {
+    //throw new ScpBizException(TrantorBizException.ErrorType.VALIDATION_ERROR, "第[" + lineNum + "]行" + "最大箱包数不能为空");
+    if (!Arguments.isNumberic(packageNum)) {
+        throw new ScpBizException(TrantorBizException.ErrorType.VALIDATION_ERROR, "第[" + lineNum + "]行" + "最大箱包数只允许维护数值");
+    }
+    if (Double.parseDouble(packageNum) <= 0) {
+        throw new ScpBizException(TrantorBizException.ErrorType.VALIDATION_ERROR, "第[" + lineNum + "]行" + "最大箱包数只能维护大于0的数；");
+    }
+    if (StringUtil.getDecimalLength(packageNum) > 2) {
+        throw new ScpBizException(TrantorBizException.ErrorType.VALIDATION_ERROR, "第[" + lineNum + "]行" + "最大箱包数最多维护2位小数；");
+    }
+}
+
+}}}
+   去除`SupplierItemRelationExcelBean.java`中“与基本单位数量关系（单品）”字段的校验, 导入时默认为1
+   {{{#!highlight java
+
+if (StringUtils.isEmpty(relatedUnitNum_single)) {
+    //throw new ScpBizException(TrantorBizException.ErrorType.VALIDATION_ERROR, "第[" + lineNum + "]行" + "与基本单位数量关系（单品）不能为空");
+    //导入时默认为1
+    relatedUnitNum_single = "1";
+}else{
+    if (!Arguments.isNumberic(relatedUnitNum_single)) {
+        throw new ScpBizException(TrantorBizException.ErrorType.VALIDATION_ERROR, "第[" + lineNum + "]行" + "与基本单位数量关系（单品）" + "字段只允许维护数值");
+    }
+    if (Double.parseDouble(relatedUnitNum_single) < 0) {
+        throw new ScpBizException(TrantorBizException.ErrorType.VALIDATION_ERROR, "第[" + lineNum + "]行" + "与基本单位数量关系（单品）" + "字段不能小于0");
+    }
+}
+
+}}}
+
+ * 采购商端逻辑调整
+  * 新品列表 - 新增'''按照逻辑新增赋值方法, 注意调用之前判断是否为采购商''''
+   {{{#!highlight java
+
+/**
+ * 新品箱包一致性维护
+ *
+ * @param item
+ * @return void
+ * @author apr
+ * @date 2021/5/24 16:05
+ */
+public void packageNumSet(ItemRelation item, Map<String, ItemRelation> itemRelationMap) {
+    Material m = item.getMaterial();
+    List<ItemPackage> itemPackages = m.get(Item.itemPackages_field);//箱包记录
+
+    boolean xbOK = false;
+    if (!CollectionUtils.isEmpty(itemPackages)) {//有箱包
+         for (ItemPackage packages : itemPackages) {
+            switch (packages.getForm()) {
+                case PackageFormDict.XB://包装形态==箱包
+                    BigDecimal relatedUnitNum = new BigDecimal(packages.getRelatedUnitNum());//与基本单位数量关系
+                    BigDecimal minOrderQuantity = m.getMinOrderQuantity();//最小要货量
+
+                    BigDecimal result = relatedUnitNum.divide(minOrderQuantity, 10, BigDecimal.ROUND_HALF_EVEN); //倍数
+                    //判断是否能整除
+                    xbOK = ( new BigDecimal(result.intValue() ).compareTo(result) == 0);
+                    break;
+            }
+        }
+    }
+    if(!xbOK)
+        throw new ActionErrorException("[" + m.getName() + "]的箱包数不是最小要货量的整数倍，请处理；");
+
+    //条形码
+    String unifyCode = m.getUnifiedCode();
+    if (Arguments.notEmpty(itemRelationMap.keySet())) {/** 老品 */
+        ItemRelation itemRelationFromDB = itemRelationMap.get(unifyCode);
+        Material materialFromDB = itemRelationFromDB.getMaterial();
+        List<ItemPackage> itemPackagesFromDB = materialFromDB.get(Item.itemPackages_field);
+        if (!CollectionUtils.isEmpty(itemPackagesFromDB)) {
+            itemPackagesFromDB.forEach(packages -> {
+                switch (packages.getForm()) {
+                    case PackageFormDict.XB:
+                        /*
+                         * 老品 SAP
+                         * 赋值 [最大箱包数] = [source=SAP] 的 [最大箱包数]
+                         */
+                        if( DataSourceDict.SAP.equals(packages.getSource()) ){//
+                            m.setPackageNum( materialFromDB.getPackageNum() );
+                        }
+                        /*
+                         * 老品 NEW_ITEM
+                         * 赋值 [最大箱包数] = [source=NEW_ITEM] 的 [最大箱包数]
+                         */
+                        else if( DataSourceDict.NEW_ITEM.equals(packages.getSource()) ){//老品2
+                            //new_item中的ItemRelation不是new的是查的, customAuditStatus非空, 见itemService.queryByItemUnifiedCodes
+                            String status = itemRelationFromDB.getCustomAuditStatus();
+                            if( NewItemAuditStatus.WAITING_QUALITY_CHECK.equals(status)
+                                || NewItemAuditStatus.WAITING_TAX_AUDIT.equals(status)
+                                || NewItemAuditStatus.QUALITY_CHECK_FAILED.equals(status)
+                                || NewItemAuditStatus.WAITING_COMMODITY_DEPARTMENT_AUDIT.equals(status)
+                                || NewItemAuditStatus.AUDIT_PASS.equals(status)
+                                || NewItemAuditStatus.PUBLISHED.equals(status) ){
+                                m.setPackageNum( materialFromDB.getPackageNum() );
+                            }
+                        }
+                        break;
+                }
+            });
+        }
+    } else {
+        /*
+         * 新品 有箱包记录
+         * 赋值 [最大箱包数] = [ 商品包装 中 包装形态==箱包 的 与基本单位数量关系 ]
+         */
+        if (!CollectionUtils.isEmpty(itemPackages)) {
+            for (ItemPackage packages : itemPackages) {
+                switch (packages.getForm()) {
+                    case PackageFormDict.XB://包装形态==箱包
+                        BigDecimal relatedUnitNum = new BigDecimal(packages.getRelatedUnitNum());//与基本单位数量关系
+                        m.setPackageNum( relatedUnitNum );
+                        break;
+                }
+            }
+            /*if(!ok)
+                throw new ActionErrorException("最大箱包数与箱包的与基本单位数量关系值不相等");*/
+        }
+        /*
+         * 新品 无箱包记录
+         * 赋值 [最大箱包数] = [最小要货量]
+         */
+        else {
+            m.setPackageNum( m.getMinOrderQuantity() );
+        }
+
+        item.setMaterial( m );
+    }
+
+    /*
+     * 单品
+     * 校验 [与基本单位数量关系] == 1
+     */
+    boolean dpOK = false;
+    if (!CollectionUtils.isEmpty(itemPackages)) {//
+        for (ItemPackage packages : itemPackages) {
+            switch (packages.getForm()) {
+                case PackageFormDict.DP://包装形态==单品
+                    BigDecimal relatedUnitNum = new BigDecimal(packages.getRelatedUnitNum());//与基本单位数量关系
+                    dpOK = ( BigDecimal.ONE.compareTo( relatedUnitNum ) == 0);
+                    break;
+            }
+        }
+    }
+    if(!dpOK)
+        throw new ActionErrorException("[" + m.getName() + "]的单品的与基本单位数量关系只能维护1");
+}
+
+}}}

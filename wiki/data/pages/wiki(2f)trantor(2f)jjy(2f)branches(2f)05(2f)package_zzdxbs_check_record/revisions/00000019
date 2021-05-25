@@ -1,0 +1,21 @@
+设计原则
+ * 供应商端逻辑调整
+  * `批量导入`取消`最大箱包数`字段的维护, 且允许保存空值
+   
+   对照~- [[attachment:wiki/trantor/jjy/branches/05/package_zzdxbs_check_rules/supplier-new-import.xlsx | 导入模板]] -~的字段和`SupplierItemRelationExcelBean.java`的属性做调整, 
+删除掉java中对应Excel的@, 并且将其他字段的index修改为表中对应的列数
+   {{{#!highlight java
+
+    /**
+     * 最大箱包数
+     */
+    //@ExcelProperty(index = 7)
+    private String packageNum;
+
+    /**
+     * 与基本单位数量关系（单品）（必填）
+     */
+    //@ExcelProperty(index = 31)
+    private String relatedUnitNum_single;
+
+}}}
