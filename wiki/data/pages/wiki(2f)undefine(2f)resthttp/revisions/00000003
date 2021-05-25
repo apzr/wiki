@@ -1,0 +1,12 @@
+
+`HTTP请求方法并不是只有GET和POST，只是最常用的。`
+`据RFC2616标准（现行的HTTP/1.1）得知，通常有以下8种方法：OPTIONS、GET、HEAD、POST、PUT、DELETE、TRACE和CONNECT。`
+ 
+{{{#!csv ,
+类型, URL, 参数, 功能
+POST, http://host:port/users, Data: name = Foobar, 增
+GET, http://host:port/users, , 查
+GET, http://host:port/users/123, , 查
+PUT, http://host:port/users/123, Data: name = New Foobar, 改
+DELETE, http://host:port/users/123, , 删
+}}}

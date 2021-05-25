@@ -1,0 +1,10 @@
+## page was renamed from wiki/java/spring_
+{{{#!highlight
+spring.main.allow-bean-definition-overriding : true
+}}}
+{{{#!highlight
+在SpringCloud中,有两种调用服务时客户端的负载均衡策略,一个是Ribbon,一个是Feign
+Ribbon是一个基于Http端的负载均衡,通过在Configuration中配置RestTemplate来进行调用,可以自定义负载均衡的方式
+Feign是一个通过本地接口的形式来进行调用服务的,其中Feign中默认引入了Ribbon,在线上开发中,我还是比较倾向用Feign,
+因为Feign中以接口的形式进行调用服务,看起来简洁,而且Feign中还可以增加熔断器,来进行服务的熔断和降级,防止服务调用中的服务的雪崩
+}}}

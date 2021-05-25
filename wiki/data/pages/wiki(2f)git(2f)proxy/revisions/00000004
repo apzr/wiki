@@ -1,0 +1,79 @@
+ 配置代理
+ {{{#!highlight
+git config http.proxy http://14.119.115.179:3128
+git config https.proxy https://14.119.115.179:3128
+
+git config --global http.proxy http://14.119.115.179:3128
+git config --global https.proxy https://14.119.115.179:3128
+}}}
+
+ 取消代理设置
+ {{{#!highlight
+git config --unset http.proxy
+git config --unset https.proxy
+
+git config --global --unset http.proxy
+git config --global --unset https.proxy
+}}}
+
+ 查看代理配置
+ {{{#!highlight
+git config http.proxy
+git config https.proxy
+
+git config --global http.proxy
+git config --global https.proxy
+}}}
+
+ 查看config配置
+ {{{#!highlight
+git config --global -e
+}}}
+
+
+ 提交流程
+ {{{#!highlight
+Administrator@PCDXIT MINGW64 /f/moin (master)
+$ git add .
+
+Administrator@PCDXIT MINGW64 /f/moin (master)
+$ git commit -m "test"
+[master d3d5677] test
+1 file changed, 0 insertions(+), 0 deletions(-)
+create mode 100644 test.txt
+
+Administrator@PCDXIT MINGW64 /f/moin (master)
+$ git push -u origin master
+Enumerating objects: 4, done.
+Counting objects: 100% (4/4), done.
+Delta compression using up to 8 threads
+Compressing objects: 100% (2/2), done.
+Writing objects: 100% (3/3), 313 bytes | 313.00 KiB/s,  done.
+Total 3 (delta 0), reused 0 (delta 0), pack-reused 0
+To https://github.com/apzr/wiki.git
+   a790211..d3d5677  master -> master
+Branch 'master' set up to track remote branch 'master'  from 'origin'.
+}}}
+
+ 更新远程已经重命名了的本地branch
+ {{{#!highlight
+Administrator@PCDXIT MINGW64 /f/moin (main)
+$ dir
+README.md  wiki
+
+Administrator@PCDXIT MINGW64 /f/moin (main)
+$ git branch -m main master
+
+Administrator@PCDXIT MINGW64 /f/moin (master)
+$ git fetch origin
+From https://github.com/apzr/wiki
+* [new branch]      master     -> origin/master
+
+Administrator@PCDXIT MINGW64 /f/moin (master)
+$ git branch -u origin/master master
+Branch 'master' set up to track remote branch 'master'  from 'origin'.
+
+Administrator@PCDXIT MINGW64 /f/moin (master)
+$ git remote set-head origin -a
+origin/HEAD set to master
+}}}

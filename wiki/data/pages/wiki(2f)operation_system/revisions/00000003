@@ -1,0 +1,46 @@
+
+[[ /windows | windows ]]
+
+[[ /linux | Linux ]]
+
+
+
+linux数字权限释义
+{{{#!highlight bash
+chmod 754 filename
+}}}
+ {{{#!csv ,
+权限, 数值, 二进制, , 
+r, 4, 00000100, 7 =4 + 2 + 1, 读写运行
+w, 2, 00000010, 5 = 4 + 1, 读运行
+x, 1, 00000001, 4 = 4, 读
+}}}
+
+Linux查看path
+{{{#!highlight bash
+[root@localhost ~]# export
+declare -x CLASSPATH=".:/usr/local/java/jdk1.8.0_221/lib:/usr/local/java/jdk1.8.0_221/jre/lib:"
+declare -x HISTCONTROL="ignoredups"
+declare -x HISTSIZE="1000"
+declare -x HOME="/root"
+declare -x HOSTNAME="localhost.localdomain"
+declare -x JAVA_HOME="/usr/local/java/jdk1.8.0_221"
+declare -x JAVA_PATH="/usr/local/java/jdk1.8.0_221/bin:/usr/local/java/jdk1.8.0_221/jre/bin"
+declare -x JRE_HOME="/usr/local/java/jdk1.8.0_221/jre"
+...
+...
+...
+declare -x XDG_SESSION_ID="1584"
+}}}
+
+命令行打开
+{{{#!highlight Batch
+我的电脑
+explorer.exe ::{20D04FE0-3AEA-1069-A2D8-08002B30309D}
+网上邻居
+explorer.exe ::{208D2C60-3AEA-1069-A2D7-08002B30309D}
+回收站
+explorer.exe ::{645FF040-5081-101B-9F08-00AA002F954E}
+IE
+iexplore -new
+}}}

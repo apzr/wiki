@@ -1,0 +1,31 @@
+ 配置代理
+ {{{#!highlight
+git config http.proxy http://14.119.115.179:3128
+git config https.proxy https://14.119.115.179:3128
+
+git config --global http.proxy http://14.119.115.179:3128
+git config --global https.proxy https://14.119.115.179:3128
+}}}
+
+ 取消代理设置
+ {{{#!highlight
+git config --unset http.proxy
+git config --unset https.proxy
+
+git config --global --unset http.proxy
+git config --global --unset https.proxy
+}}}
+
+ 查看代理配置
+ {{{#!highlight
+git config http.proxy
+git config https.proxy
+
+git config --global http.proxy
+git config --global https.proxy
+}}}
+
+ 查看config配置
+ {{{#!highlight
+git config --global -e
+}}}

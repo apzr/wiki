@@ -1,0 +1,15 @@
+转码
+{{{#!highlight python
+    #print sys.getdefaultencoding()
+    reload(sys)
+    sys.setdefaultencoding('utf8')  
+    #print sys.getdefaultencoding()
+}}}
+
+
+update pip
+{{{#!highlight
+WARNING: You are using pip version 20.2.1; however, version 21.0.1 is available.
+You should consider upgrading via the
+'e:\program_flies\python\python.exe -m pip install --upgrade pip' command.
+}}}

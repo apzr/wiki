@@ -1,0 +1,99 @@
+swagger2
+{{{#!highlight Bacth
+mvn swagger2markup:convertSwagger2markup
+mvn generate-resources
+}}}
+{{{#!highlight XML
+       <!-- swagger2 api-->
+       <dependency>
+           <groupId>io.springfox</groupId>
+           <artifactId>springfox-swagger2</artifactId>
+           <version>3.0.0</version>
+       </dependency>
+       <!-- 生成ASCIIDOC swagger相关 -->
+       <dependency>
+           <groupId>io.github.swagger2markup</groupId>
+           <artifactId>swagger2markup</artifactId>
+           <version>1.3.1</version>
+       </dependency>
+}}}
+{{{#!highlight XML
+       <!-- 生成ASCIIDOC swagger相关 -->
+       <plugin>
+           <groupId>io.github.swagger2markup</groupId>
+           <artifactId>swagger2markup-maven-plugin</artifactId>
+           <version>1.2.0</version>
+           <configuration>
+               <!--项目启动端口-->
+               <swaggerInput>http://localhost:8088/v2/api-docs</swaggerInput>
+               <!-- 生成为单个文档，输出路径
+               <outputFile>src/main/doc/api</outputFile>-->
+               <!-- 生成为多个文档，输出路径 -->
+               <outputDir>docs/generated</outputDir>
+               <config>
+                   <!-- CONFLUENCE_MARKUP  ASCIIDOC  MARKDOWN-->
+                   <swagger2markup.markupLanguage>ASCIIDOC</swagger2markup.markupLanguage>
+                   <swagger2markup.pathsGroupedBy>TAGS</swagger2markup.pathsGroupedBy>
+               </config>
+           </configuration>
+       </plugin>
+
+
+       <!--生成HTML和 PDF-->
+       <plugin>
+           <groupId>org.asciidoctor</groupId>
+           <artifactId>asciidoctor-maven-plugin</artifactId>
+           <version>1.5.3</version>
+           <!-- Include Asciidoctor PDF for pdf generation -->
+           <dependencies>
+               <dependency>
+                   <groupId>org.asciidoctor</groupId>
+                   <artifactId>asciidoctorj-pdf</artifactId>
+                   <version>1.5.0-alpha.10.1</version>
+               </dependency>
+               <dependency>
+                   <groupId>org.jruby</groupId>
+                   <artifactId>jruby-complete</artifactId>
+                   <version>1.7.21</version>
+               </dependency>
+           </dependencies>
+           <!-- Configure generic document generation settings -->
+           <configuration>
+               <sourceDirectory>docs/generated</sourceDirectory>
+               <sourceHighlighter>coderay</sourceHighlighter>
+               <attributes>
+                   <toc>left</toc>
+               </attributes>
+           </configuration>
+           <!-- Since each execution can only handle one backend, run
+                separate executions for each desired output type -->
+           <executions>
+               <execution>
+                   <id>output-html</id>
+                   <phase>generate-resources</phase>
+                   <goals>
+                       <goal>process-asciidoc</goal>
+                   </goals>
+                   <configuration>
+                       <backend>html5</backend>
+                       <outputDirectory>docs/output/html</outputDirectory>
+                   </configuration>
+               </execution>
+
+
+               <execution>
+                   <id>output-pdf</id>
+                   <phase>generate-resources</phase>
+                   <goals>
+                       <goal>process-asciidoc</goal>
+                   </goals>
+                   <configuration>
+                       <backend>pdf</backend>
+                       <outputDirectory>docs/output/pdf</outputDirectory>
+                   </configuration>
+               </execution>
+
+
+           </executions>
+       </plugin>
+}}}

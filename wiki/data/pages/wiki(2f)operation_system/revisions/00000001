@@ -1,0 +1,15 @@
+windows杀掉相关名字的全部进程
+{{{#!highlight bash
+taskkill /F /IM powershell.exe /T
+}}}
+
+linux数字权限释义
+{{{#!highlight bash
+chmod 754 filename
+}}}
+ {{{#!csv ,
+权限, 数值, 二进制, , 
+r, 4, 00000100, 7 =4 + 2 + 1, 读写运行
+w, 2, 00000010, 5 = 4 + 1, 读运行
+x, 1, 00000001, 4 = 4, 读
+}}}

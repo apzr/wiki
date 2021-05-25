@@ -1,0 +1,5 @@
+
+windows杀掉相关名字的全部进程
+{{{#!highlight bash
+taskkill /F /IM powershell.exe /T
+}}}

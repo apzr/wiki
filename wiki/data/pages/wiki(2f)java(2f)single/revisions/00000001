@@ -1,0 +1,38 @@
+java8单例
+{{{#!highlight java
+    public class Obj{
+        private static Obj OBJ;
+        public static Obj newInstance(){ 
+            return OBJ = Optional.ofNullable(OBJ).orElse(new Obj()); 
+        }
+    }
+}}}
+{{{#!highlight java
+    public class Obj{
+        private static Obj OBJ;
+        public static Obj newInstance() {
+            if (OBJ == null) {
+                synchronized (Obj.class) {
+                    if (OBJ == null) {
+                        OBJ = new Obj();
+                    }
+                }
+            }
+            return OBJ;
+        }
+    }
+}}}
+
+{{{#!highlight java
+    /**
+     * 生成缓存键
+     *
+     * @param params
+     * @return
+     */
+    public String keyGen(Object... params){
+        StringBuilder key = new StringBuilder();
+        Arrays.stream(params).forEach(p -> { key.append(p==null?"null":p.toString()).append(":"); });
+        return key.toString();//.hashCode();
+    }
+}}}

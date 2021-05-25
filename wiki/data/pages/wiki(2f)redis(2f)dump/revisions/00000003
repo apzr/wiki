@@ -1,0 +1,31 @@
+## page was renamed from wiki/redis/note
+
+
+
+redis-dump导出
+{{{#!highlight
+redis-dump -u 127.0.0.1:6379 > test.json
+# 指定数据库
+redis-dump -u 127.0.0.1:6379 -d 15 > test.json
+# 有密码
+redis-dump -u :123456@192.168.0.112:6379 > test.json
+}}}
+
+redis-dump导入
+{{{#!highlight
+< test.json redis-load -u 127.0.0.1:6379
+# 有密码
+< test.json redis-load -u :123456@127.0.0.1:6379
+}}}
+
+以二进制形式导入,解决乱码问题
+{{{#!highlight
+E:\>< test.json redis-load -u 127.0.0.1:6379
+ERROR (Yajl::ParseError): lexical error: invalid bytes in UTF8 string.
+26923,"type":"set","value":["��\u0000\u0005sr\u0000Corg.spri
+(right here) ------^
+
+E:\>< test.json redis-load -n -u 127.0.0.1:6379
+
+E:\>
+}}}
