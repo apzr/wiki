@@ -1,0 +1,36 @@
+## page was renamed from wiki/trantor/jjy/branches/05/final
+详见`branch/uxlt/material210513-01`中代码所涉及到的字段改动
+ ~- 基本为`Integer`, `BigDecimal`的类型转换以及空指针直接`toString()`的问题 -~
+ 
+ 涉及到的字段如下 
+ {{{#!highlight java
+ ItemConvert::toMD101Request
+
+/**
+ * 物料组
+ */
+bean.setMatkl(materialCategory.getOuterId()); //Null Pointer
+/**
+ * 商品小类编码
+ */
+bean.setZmatkl(materialCategory4.getOuterId()); //Null Pointer
+
+/**
+ * 门店调价上限
+ */
+bean.setZtjsx(material.get(Item.storeAdjustLimit_field).toString()); //Null Pointer, Integer to String
+
+/**
+ * 计划交货时间
+ */
+bean.setAplfz(material.get(Item.plannedDeliveryTime_field).toString()); //Null Pointer, Integer to String
+/**
+ * 最小订单数量
+ */
+bean.setMinbm(material.get(Item.minFormQuantity_field).toString()); //Null Pointer, BigDecimal to String
+
+/**
+ * 最小要货量
+ */
+bean.setZzxyhl(df.format(material.getMinOrderQuantity()));    //IllegalArgumentException
+}}}

@@ -1,0 +1,41 @@
+{{{#!highlight java
+
+//判断是否是最小要货量的整数倍
+ItemUtil::PackageNumCheck
+
+//判断新品老品  
+ItemServiceImpl::QueryByItemUnifiedCodes
+
+
+}}}
+
+{{{#!highlight java
+
+/**
+ * 物料组
+ */
+bean.setMatkl(materialCategory.getOuterId()); //Null Pointer
+/**
+ * 商品小类编码
+ */
+bean.setZmatkl(materialCategory4.getOuterId()); //Null Pointer
+
+/**
+ * 门店调价上限
+ */
+bean.setZtjsx(material.get(Item.storeAdjustLimit_field).toString()); //Integer cast to String
+
+/**
+ * 计划交货时间
+ */
+bean.setAplfz(material.get(Item.plannedDeliveryTime_field).toString()); //Integer cast to String
+/**
+ * 最小订单数量
+ */
+bean.setMinbm(material.get(Item.minFormQuantity_field).toString()); //BigDecimal cast to String
+
+/**
+ * 最小要货量
+ */
+bean.setZzxyhl(df.format(material.getMinOrderQuantity()));    //IllegalArgumentException
+}}}

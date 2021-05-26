@@ -1,12 +1,12 @@
-# Data saved '2021-05-17 11:09:32' for id '1620713629.26.35291'
-aliasname=apr
+# Data saved '2021-05-26 09:13:29' for id '1620713629.26.35291'
+aliasname=Ap
 bookmarks{}=
 css_url=
 date_fmt=
 datetime_fmt=
 disabled=0
-edit_on_doubleclick=1
-edit_rows=20
+edit_on_doubleclick=0
+edit_rows=50
 editor_default=text
 editor_ui=theonepreferred
 email=iswallow1l2l@126.com
@@ -15,7 +15,7 @@ enc_password={PASSLIB}$6$rounds=656000$4h2ecbLcZqyDX7H.$41WukdEmEqMOBpUUX0ub/MxW
 jabber_subscribed_events[]=
 jid=
 language=zh
-last_saved=1621220972.81
+last_saved=1621991609.66
 mailto_author=1
 name=AprilZ
 quicklinks[]=
@@ -23,13 +23,13 @@ real_language=
 recoverpass_key=
 remember_last_visit=0
 remember_me=1
-show_comments=0
+show_comments=1
 show_fancy_diff=1
 show_nonexist_qm=1
 show_page_trail=1
 show_toolbar=1
-show_topbottom=0
+show_topbottom=1
 subscribed_pages[]=
-theme_name=modern
+theme_name=moniker19
 tz_offset=0
 wikiname_add_spaces=0

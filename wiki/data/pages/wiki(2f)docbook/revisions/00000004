@@ -1,0 +1,46 @@
+Home
+
+ https://xmlgraphics.apache.org/fop/
+
+Download(Version 2.6)
+
+ https://xmlgraphics.apache.org/fop/download.html
+
+Quick Start
+
+ https://xmlgraphics.apache.org/fop/quickstartguide.html
+
+解压文件
+ 
+ 相当于安装
+
+系统需求
+ 必须
+ * Java 1.7 or later Runtime Environment.
+ * Apache™ FOP 
+ 可选
+ * [[ https://xmlgraphics.apache.org/fop/2.6/graphics.html | Graphics libraries]].
+ * [[ https://xmlgraphics.apache.org/fop/2.6/pdfencryption.html | PDF encryption ]].
+ * [[ https://xmlgraphics.apache.org/fop/2.6/graphics.html#batik | Graphical environment to process SVG ]]
+配置文件
+ 
+ * 复制`{fop-dir}/conf/fop.xconf`本例是E:\program_flies_86\fop-2.6\fop\conf到任意位置
+ * 编辑配置文件(默认就可以, 其他的见注释)
+ * 配置`配置文件`的位置
+  * Cmd: 见参数`-c`
+   {{{
+
+}}}
+  * Using a Configuration File
+   * Instead of setting the parameters manually in code as shown above you can also set many values from an XML configuration file:
+   {{{
+import org.apache.fop.configuration.Configuration;
+import org.apache.fop.configuration.DefaultConfigurationBuilder;
+
+/*..*/
+
+DefaultConfigurationBuilder cfgBuilder = new DefaultConfigurationBuilder();
+Configuration cfg = cfgBuilder.buildFromFile(new File("C:/Temp/mycfg.xml"));
+fopFactoryBuilder = new FopFactoryBuilder(baseURI).setConfiguration(cfg);
+}}}
+   The layout of the configuration file is described on the Configuration page.
