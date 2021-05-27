@@ -1,0 +1,385 @@
+{{{#!highlight java
+
+	// 供应商&采购商 新品列表 新增 点击保存 箱包一致性维护
+	Material material = itemRelation.getMaterial();
+	String unifyCode = material==null?null:material.getUnifiedCode();
+	Map<String, ItemRelation> itemRelationMap = this.itemService.queryByItemUnifiedCodes(Lists.newArrayList(unifyCode));
+	itemUtil.packageNumSet(itemRelation, itemRelationMap.get(unifyCode), partnerInfo.getPartnerType().equals(PartnerType.PURCHASER) );
+
+	// 供应商&采购商 新品列表 新增 点击提交 箱包一致性维护
+	Material material = itemRelation.getMaterial();
+	String unifyCode = material==null?null:material.getUnifiedCode();
+	Map<String, ItemRelation> itemRelationMap = this.itemService.queryByItemUnifiedCodes(Lists.newArrayList(unifyCode));
+	itemUtil.packageNumSet(itemRelation, itemRelationMap.get(unifyCode), partnerInfo.getPartnerType().equals(PartnerType.PURCHASER) );
+
+	// 供应商 新品列表 编辑新品 箱包一致性维护
+	ItemRelation itemRelationFromDB = itemRelationRepo.queryDetailById(itemRelation.getId());
+	itemUtil.packageNumSet(itemRelation, itemRelationFromDB, false);
+
+	// 采购商 新品列表 编辑新品 箱包一致性维护
+	ItemRelation itemRelationFromDB = itemRelationRepo.queryDetailById(itemRelation.getId());
+	itemUtil.packageNumSet(itemRelation, itemRelationFromDB, true);
+
+	// 箱包单位一致性维护
+	ItemRelation itemRelation = itemRelationRepo.queryDetailById(Long.valueOf(bean.getId()));
+	itemUtil.packageNumSet(bean, itemRelation.getMaterial(), lineNum+1);
+
+	//采购商 批量导入
+	String unifyCode = bean.getUnifyCode();
+	itemUtil.packageNumSet(bean, getMaterial(unifyCode), lineNum + 1);
+
+	//供应商 批量导入
+	String unifyCode = bean.getUnifyCode();
+	itemUtil.packageNumSet(bean, getMaterial(unifyCode), lineNum + 1);
+
+
+}}}
+
+{{{#!highlight java
+
+    /**
+     * 箱包一致性维护
+     *
+     * 采购商 新品列表 新增新品 点击保存
+     * 供应商 新品列表 新增新品 点击保存
+     *
+     * 供应商 新品列表 新增新品 点击提交
+     * 采购商 新品列表 新增新品 点击提交
+     *
+     * 采购商 新品列表 编辑新品
+     * 供应商 新品列表 编辑新品
+     *
+     * @param item
+     * @return void
+     * @author apr
+     * @date 2021/5/24 16:05
+     */
+    public void packageNumSet(ItemRelation item, ItemRelation itemFromDB, Boolean isPurchaser) {
+        Material m = item.getMaterial();
+
+        log.warn("pack in isPurchaser :\t{}", isPurchaser);
+        log.warn("pack in item_relation :\t{}", item);
+        log.warn("pack in material :\t{}", m);
+        log.warn("pack in item_relation_from_db :\t{}", itemFromDB);
+
+        List<ItemPackage> itemPackages = m.get(Item.itemPackages_field);//包装记录
+
+        if ( itemFromDB !=null ) {//老品
+            ItemPackage packXBFromDB = getItemPackageByType(itemFromDB.getMaterial(), PackageFormDict.XB);
+            if( itemFromDB !=null && itemFromDB.getMaterial()!=null && packXBFromDB !=null ){
+                if( DataSourceDict.SAP.equals(packXBFromDB.getSource()) ){
+                    /*
+                     * 老品 SAP
+                     * 赋值 [最大箱包数] = [source=SAP] 的 [最大箱包数]
+                     */
+                    m.setPackageNum( itemFromDB.getMaterial().getPackageNum() );
+                } else if( DataSourceDict.NEW_ITEM.equals(packXBFromDB.getSource()) ){
+                    /*
+                     * 老品 NEW_ITEM
+                     * 赋值 [最大箱包数] = [source=NEW_ITEM] 的 [最大箱包数]
+                     */
+                    //new_item中的ItemRelation不是new的是查的, customAuditStatus非空, 见itemService.queryByItemUnifiedCodes
+                    String status = itemFromDB.getCustomAuditStatus();
+                    if( statusOK(status) ){
+                        m.setPackageNum( itemFromDB.getMaterial().getPackageNum() );
+                    }
+                }
+            }
+        } else {//新品
+            if(isPurchaser){
+                ItemPackage packXB = getItemPackageByType(itemPackages, PackageFormDict.XB);
+                if (packXB!=null) {//有箱包记录
+                    /*
+                     * 校验 整数倍
+                     */
+                    BigDecimal relatedUnitNumXB = new BigDecimal(packXB.getRelatedUnitNum());//与基本单位数量关系
+                    BigDecimal minOrderQuantity = m.getMinOrderQuantity();//最小要货量
+                    if( !canDivide(relatedUnitNumXB, minOrderQuantity) )
+                        throw new ActionErrorException("[" + m.getName() + "]的箱包数不是最小要货量的整数倍，请处理");
+                    /*
+                     * 赋值 [最大箱包数] = [ 商品包装 中 包装形态==箱包 的 与基本单位数量关系 ]
+                     */
+                    m.setPackageNum( new BigDecimal(packXB.getRelatedUnitNum()) );
+                } else {//无箱包记录
+                    /*
+                     * 赋值 [最大箱包数] = [最小要货量]
+                     */
+                    m.setPackageNum( m.getMinOrderQuantity() );
+                }
+            }else{
+                //供应商新品两种清空
+                // 1 新增, 为空不用动
+                // 2 编辑, 为原值不用动
+            }
+
+
+		}
+
+        /*
+         * 单品
+         * 校验 [与基本单位数量关系] == 1
+         */
+        ItemPackage packDP = getItemPackageByType(itemPackages, PackageFormDict.DP);
+        BigDecimal relatedUnitNumDP = new BigDecimal(packDP.getRelatedUnitNum());//与基本单位数量关系
+        if( ( BigDecimal.ONE.compareTo( relatedUnitNumDP ) != 0) )
+            throw new ActionErrorException("[" + m.getName() + "]的箱包数不是最小要货量的整数倍，请处理");
+
+        //回置属性
+        item.setMaterial( m );
+        log.warn("pack out item_relation :\t{}",item);
+        log.warn("pack out material :\t{}",m);
+    }
+
+    /**
+     * 采购商 新品列表 批量完善 箱包一致性维护
+     *
+     * @param excel
+     * @param materialFromDB
+     * @param index
+     * @return void
+     * @author apr
+     * @date 2021/5/27 14:11
+     */
+    public void packageNumSet(CompleteItemRelationExcelBean excel, Material materialFromDB, int index) {
+        log.warn("pack in - CompleteItemRelationExcelBean packageNum:\t{}", excel.getPackageNum());
+        log.warn("pack in - material_from_db :\t{}", materialFromDB);
+        log.warn("pack in - index :\t{}", index);
+
+        if (materialFromDB !=null ) {/** 老品 */
+            ItemPackage packXBFromDB = getItemPackageByType(materialFromDB, PackageFormDict.XB);
+            if( packXBFromDB !=null ){
+                if( DataSourceDict.SAP.equals(packXBFromDB.getSource()) ){//SAP
+                    /*
+                     * 赋值 [最大箱包数] = [source=SAP] 的 [最大箱包数]
+                     */
+                    BigDecimal num = materialFromDB.getPackageNum();
+                    excel.setPackageNum( num==null ? null : num.toString() );
+                } else if( DataSourceDict.NEW_ITEM.equals(packXBFromDB.getSource())){//NEW_ITEM
+                    /*
+                     * 赋值 [最大箱包数] = [source=NEW_ITEM] 的 [最大箱包数]
+                     */
+                    //new_item中的ItemRelation不是new的是查的, customAuditStatus非空, 见itemService.queryByItemUnifiedCodes
+                    BigDecimal num = materialFromDB.getPackageNum();
+                    excel.setPackageNum( num==null ? null : num.toString() );
+                }
+            }
+        } else {//新品
+            if (Objects.nonNull(excel.getPackageUnit_box())) {//有箱包记录
+                /*
+                 * 校验 整数倍
+                 */
+                BigDecimal relatedUnitNum = new BigDecimal(excel.getRelatedUnitNum_box());//与基本单位数量关系
+                BigDecimal minOrderQuantity = new BigDecimal(excel.getMinQuantity());//最小要货量
+                if(!canDivide(relatedUnitNum, minOrderQuantity))
+                    throw new ActionErrorException("第["+index+"]行商品的“与基本单位数量关系（箱包）不是最小要货量的整数倍，请处理");
+                /*
+                 * 赋值 最大箱包数 = 箱包的[与基本单位数量关系”]
+                 */
+                excel.setPackageNum( excel.getRelatedUnitNum_box() );
+            } else {//无箱包记录
+                /*
+                 * 赋值 [最大箱包数] = [最小要货量]
+                 */
+                excel.setPackageNum( excel.getMinQuantity() );
+            }
+        }
+
+        log.warn("pack out - CompleteItemRelationExcelBean packageNum:\t{}", excel.getPackageNum());
+    }
+
+    /**
+     * 采购商 新品列表 批量导入 箱包一致性维护
+     *
+     * @param excel
+     * @param materialFromDB
+     * @param index
+     * @return void
+     * @author apr
+     * @date 2021/5/27 14:11
+     */
+    public void packageNumSet(PurchaserItemRelationExcelBean excel, Material materialFromDB, int index) {
+        log.warn("pack in - PurchaserItemRelationExcelBean packageNum:\t{}", excel.getPackageNum());
+        log.warn("pack in - material_from_db :\t{}", materialFromDB);
+        log.warn("pack in - index :\t{}", index);
+
+        if (materialFromDB !=null ) {/** 老品 */
+            ItemPackage packXBFromDB = getItemPackageByType(materialFromDB, PackageFormDict.XB);
+            if( packXBFromDB !=null ){
+                if( DataSourceDict.SAP.equals(packXBFromDB.getSource()) ){//SAP
+                    /*
+                     * 赋值 [最大箱包数] = [source=SAP] 的 [最大箱包数]
+                     */
+                    BigDecimal num = materialFromDB.getPackageNum();
+                    excel.setPackageNum( num==null ? null : num.toString() );
+                } else if( DataSourceDict.NEW_ITEM.equals(packXBFromDB.getSource())){//NEW_ITEM
+                    /*
+                     * 赋值 [最大箱包数] = [source=NEW_ITEM] 的 [最大箱包数]
+                     */
+                    BigDecimal num = materialFromDB.getPackageNum();
+                    excel.setPackageNum( num==null ? null : num.toString() );
+                }
+            }
+        } else {//新品
+            if (Objects.nonNull(excel.getPackageUnit_box())) {//有箱包记录
+                /*
+                 * 校验 整数倍
+                 */
+                BigDecimal relatedUnitNum = new BigDecimal(excel.getRelatedUnitNum_box());//与基本单位数量关系
+                BigDecimal minOrderQuantity = new BigDecimal(excel.getMinQuantity());//最小要货量
+                if(!canDivide(relatedUnitNum, minOrderQuantity))
+                    throw new ActionErrorException("第["+index+"]行商品的“与基本单位数量关系（箱包）不是最小要货量的整数倍，请处理");
+                /*
+                 * 赋值 最大箱包数 = 箱包的[与基本单位数量关系”]
+                 */
+                excel.setPackageNum( excel.getRelatedUnitNum_box() );
+            } else {//无箱包记录
+                /*
+                 * 赋值 [最大箱包数] = [最小要货量]
+                 */
+                excel.setPackageNum( excel.getMinQuantity() );
+            }
+        }
+
+        log.warn("pack out - PurchaserItemRelationExcelBean packageNum:\t{}", excel.getPackageNum());
+    }
+
+    /**
+     * 采购商 新品列表 批量导入 箱包一致性维护
+     *
+     * @param excel
+     * @param materialFromDB
+     * @param index
+     * @return void
+     * @author apr
+     * @date 2021/5/27 14:11
+     */
+    public void packageNumSet(SupplierItemRelationExcelBean excel, Material materialFromDB, int index) {
+        log.warn("pack in - SupplierItemRelationExcelBean packageNum:\t{} relatedUnitNum_single:\t{}", excel.getPackageNum(), excel.getRelatedUnitNum_single());
+        log.warn("pack in - material_from_db :\t{}", materialFromDB);
+        log.warn("pack in - index :\t{}", index);
+
+        //导入时默认为空
+        excel.setPackageNum( null );
+        //导入时默认为1
+        excel.setRelatedUnitNum_single( "1" );
+
+        log.warn("pack in - SupplierItemRelationExcelBean packageNum:\t{} relatedUnitNum_single:\t{}", excel.getPackageNum(), excel.getRelatedUnitNum_single());
+    }
+
+    /**
+     * 判断用d0是否能整除d1
+     *
+     * @param d0 
+     * @param d1
+     * @return boolean
+     * @author apr
+     * @date 2021/5/26 15:24
+     */
+    private boolean canDivide(BigDecimal d0, BigDecimal d1){
+        boolean canDivide = false;
+
+        if(d0 != null &&  d1 != null){
+            BigDecimal result = d0.divide(d1, 10, BigDecimal.ROUND_HALF_EVEN); //倍数
+            canDivide  = ( new BigDecimal(result.intValue() ).compareTo(result) == 0);
+        }
+
+        log.warn("can divide: {}/{} = {}", d0, d1, canDivide);
+
+        return canDivide;
+    }
+
+    /**
+     * 审核状态
+     * 是
+     * 待质检、待税审、质检不通过、待商品部审核、审核成功、发布成功
+     *
+     * @param status
+     * @return boolean
+     * @author apr
+     * @date 2021/5/26 15:24
+     */
+    private boolean statusOK(String status){
+
+        return     NewItemAuditStatus.WAITING_QUALITY_CHECK.equals(status)
+                || NewItemAuditStatus.WAITING_TAX_AUDIT.equals(status)
+                || NewItemAuditStatus.QUALITY_CHECK_FAILED.equals(status)
+                || NewItemAuditStatus.WAITING_COMMODITY_DEPARTMENT_AUDIT.equals(status)
+                || NewItemAuditStatus.AUDIT_PASS.equals(status)
+                || NewItemAuditStatus.PUBLISHED.equals(status);
+    }
+
+    /**
+     * 获得指定类型的包装
+     *
+     * @param itemPackages
+     * @param type
+     * @return
+     * @author apr
+     * @date 2021/5/26 15:33
+     */
+    private ItemPackage getItemPackageByType(List<ItemPackage> itemPackages, String type){
+        ItemPackage pack = null;
+        log.warn("get package by type:{}", type);
+        if (!CollectionUtils.isEmpty(itemPackages)) {//有箱包
+            for (ItemPackage packages : itemPackages) {
+                log.warn("current package type {}", packages.getForm());
+                if (type.equals( packages.getForm() )) {
+                    log.warn("get a package {} with {}", packages, type);
+                    pack = packages;//与基本单位数量关系
+                }
+            }
+        }
+
+        return pack;
+    }
+
+    /**
+     * 获得指定类型的包装
+     *
+     * @param material
+     * @param type
+     * @return
+     * @author apr
+     * @date 2021/5/26 15:33
+     */
+    private ItemPackage getItemPackageByType(Material material, String type){
+        ItemPackage pack = null;
+
+        if(material!=null){
+            List<ItemPackage> itemPackagesFromDB = material.get(Item.itemPackages_field);
+            pack = getItemPackageByType(itemPackagesFromDB, type);
+        }
+
+        return pack;
+    }
+
+
+}}}
+
+{{{#!highlight java
+
+    /**
+     *
+     * @return
+     */
+    private Material getMaterial(String unifiedCode){
+        Material m = null;
+
+        if ( !StringUtils.isEmpty(unifiedCode) ) {
+            Material material = materialRepo.findSapMaterialByUnifiedCode(unifiedCode);
+            if (!Objects.isNull(material)) {
+                m = material;
+            }
+
+            Map<String, ItemRelation> itemRelationMap = this.itemService.queryByItemUnifiedCodes(Lists.newArrayList(unifiedCode));
+            ItemRelation item = itemRelationMap.get(unifiedCode);
+            if (item != null) {
+                if (checkStrList.contains(item.getCustomAuditStatus())) {
+                    m = item.getMaterial();
+                }
+            }
+        }
+
+        return m;
+    }
+}}}

@@ -1,0 +1,24 @@
+java8单例
+{{{#!highlight java
+    public class Obj{
+        private static Obj OBJ;
+        public static Obj newInstance(){ 
+            return OBJ = Optional.ofNullable(OBJ).orElse(new Obj()); 
+        }
+    }
+}}}
+{{{#!highlight java
+    public class Obj{
+        private static Obj OBJ;
+        public static Obj newInstance() {
+            if (OBJ == null) {
+                synchronized (Obj.class) {
+                    if (OBJ == null) {
+                        OBJ = new Obj();
+                    }
+                }
+            }
+            return OBJ;
+        }
+    }
+}}}
