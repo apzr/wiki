@@ -1,0 +1,75 @@
+{{{#!highlight sql
+-- 查询 品类 lvl=2 id=162
+SELECT * 
+FROM material_center__material_category 
+WHERE `level` = 2
+AND `name` = '水果'
+	
+-- 查询 物料组 lvl=3 id=315 SelfMaterialCategor=162
+SELECT * 
+FROM material_center__material_category 
+WHERE  `level` = 3
+AND `name` = '浆果'
+	
+-- 查询 商品小类 lvl=4 id=343 SelfMaterialCategor=315
+SELECT * 
+FROM material_center__material_category 
+WHERE `level` = 4
+AND `name` = '车厘子'
+
+-- 修改商品
+UPDATE material_center__material
+SET Level2ItemMaterialCategory='162', Level3ItemMaterialCategory='315', Level4ItemMaterialCategory='343', 
+WHERE unifiedCode = '2955708'
+
+-- 验证
+select Level2ItemMaterialCategory, Level3ItemMaterialCategory, Level4ItemMaterialCategory
+from material_center__material where unifiedCode = '2955708'
+}}}
+
+{{{#!highlight sql
+select * from material_center__material where unifiedCode = '2955708'
+
+select attributes from material_center__material where unifiedCode = '2955708'
+-- 250g
+UPDATE material_center__material
+SET attributes='250g'
+WHERE unifiedCode = '2955708'
+
+select dateType from material_center__material where unifiedCode = '2955708'
+-- 管理日期类型
+UPDATE material_center__material
+SET dateType='0'
+WHERE unifiedCode = '2955708'
+
+select purchaseTeam from material_center__material where unifiedCode = '2955708'
+-- 采购组
+UPDATE material_center__material
+SET purchaseTeam='S01'
+WHERE unifiedCode = '2955708'
+
+select purchaseName from material_center__material where unifiedCode = '2955708'
+-- 采购员
+UPDATE material_center__material
+SET purchaseName='测试采购员'
+WHERE unifiedCode = '2955708'
+
+
+select factoryCode from material_center__material where  unifiedCode = '2955708'
+-- 厂家代码
+UPDATE material_center__material
+SET factoryCode='TEST'
+WHERE unifiedCode = '2955708'
+
+select suggestRetailPrice from material_center__material where  unifiedCode = '2955708'
+-- 建议零售价
+UPDATE material_center__material
+SET suggestRetailPrice=12.34
+WHERE unifiedCode = '2955708'
+
+select brand from material_center__material  where  unifiedCode = '2955708'
+-- 价格管控类型
+UPDATE material_center__material
+SET brand='207151'
+WHERE unifiedCode = '2955708'
+}}}

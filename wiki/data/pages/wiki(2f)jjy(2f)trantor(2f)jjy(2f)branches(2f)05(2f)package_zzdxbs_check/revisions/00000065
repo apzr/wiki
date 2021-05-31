@@ -1,0 +1,11 @@
+## page was renamed from wiki/trantor/jjy/branches/05/package_zzdxbs_check
+{{{#!highlight java
+
+//判断是否是最小要货量的整数倍
+ItemUtil::PackageNumCheck
+
+//判断新品老品  
+ItemServiceImpl::QueryByItemUnifiedCodes
+
+
+}}}

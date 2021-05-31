@@ -1,0 +1,60 @@
+## page was renamed from wiki/feedback_center/db
+{{{
+数据库服务器地址 192.168.11.83
+数据库名称 jsfyzx
+用户 jsfx
+密码 1qaz@WSX
+}}}
+
+|| 表名 || 注释 ||
+|| t_type_h || 业态主表 ||
+|| t_type_d || 业态分组子表 ||
+|| t_source_type || 来源类型表 ||
+|| t_shop_info || 门店信息表 ||
+|| t_report_record || 数据记录表 ||
+|| t_record_img || 记录-图片关系表 ||
+|| t_path || 图片读取路径表（暂不使用） ||
+|| t_classify_h || 项目主表 ||
+|| t_classify_d || 项目分类子表 ||
+|| t_area_h || 战区主表 ||
+|| t_area_d || 区域子表 ||
+|| sys_user || 系统用户表 ||
+|| sys_role_user || 用户角色关系表 ||
+|| sys_role_menu || 角色菜单关系表 ||
+|| sys_role || 系统角色表 ||
+|| sys_menu || 系统菜单表 ||
+|| sys_log || 系统日志表 ||
+|| sys_job || 系统其他相关表 ||
+|| sys_dict_type || 系统其他相关表 ||
+|| sys_dict_item || 系统其他相关表 ||
+|| act_ru_variable || 系统其他相关表 ||
+|| act_ru_task || 系统其他相关表 ||
+|| act_ru_job || 系统其他相关表 ||
+|| act_ru_identitylink || 系统其他相关表 ||
+|| act_ru_execution || 系统其他相关表 ||
+|| act_ru_event_subscr || 系统其他相关表 ||
+|| act_re_procdef || 系统其他相关表 ||
+|| act_re_model || 系统其他相关表 ||
+|| act_re_deployment || 系统其他相关表 ||
+|| act_procdef_info || 系统其他相关表 ||
+|| act_id_user || 系统其他相关表 ||
+|| act_id_membership || 系统其他相关表 ||
+|| act_id_info || 系统其他相关表 ||
+|| act_id_group || 系统其他相关表 ||
+|| act_hi_varinst || 系统其他相关表 ||
+|| act_hi_taskinst || 系统其他相关表 ||
+|| act_hi_procinst || 系统其他相关表 ||
+|| act_hi_identitylink || 系统其他相关表 ||
+|| act_hi_detail || 系统其他相关表 ||
+|| act_hi_comment || 系统其他相关表 ||
+|| act_hi_attachment || 系统其他相关表 ||
+|| act_hi_actinst || 系统其他相关表 ||
+|| act_ge_property || 系统其他相关表 ||
+|| act_ge_bytearray || 系统其他相关表 ||
+|| act_evt_log || 系统其他相关表 ||
+|| act_assignee || 系统其他相关表 ||
+|| v_area || 区域大区视图 ||
+|| v_classify || 分类大类视图 ||
+|| v_shop_classify || 统计视图 ||
+|| v_shop_info || 门店信息视图 ||
+|| v_type || 业态分组视图|| ||  ||

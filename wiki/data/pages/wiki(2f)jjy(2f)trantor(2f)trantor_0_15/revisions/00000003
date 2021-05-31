@@ -1,0 +1,18 @@
+## page was renamed from wiki/trantor/trantor_0_15
+Docker Image
+{{{
+- MetaStoreManagement Image:
+  registry.cn-hangzhou.aliyuncs.com/terminus/trantor-metastore-management:0.15.0
+
+- MetaStore Image:
+  registry.cn-hangzhou.aliyuncs.com/terminus/trantor-metastore:0.15.0
+
+- Trantor Console:
+  registry.cn-hangzhou.aliyuncs.com/terminus/trantor-console:1.15.0-beta.29
+
+- Trantor Workspace:
+  registry.cn-hangzhou.aliyuncs.com/terminus/trantor-workspace:1.15.0-beta.27
+
+- DataStore：
+  registry.cn-hangzhou.aliyuncs.com/terminus/datastore:5.2.0.36.20201211
+}}}

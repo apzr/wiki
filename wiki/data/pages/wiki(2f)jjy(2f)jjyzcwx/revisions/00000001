@@ -1,0 +1,42 @@
+'''jjyzcwx'''
+
+`code git`
+{{{
+http://121.201.110.228:10080/user/login
+user zhangwei
+pwd longteng123
+}}}
+
+`sqlserver数据库`
+{{{
+192.168.199.85
+user user_test
+pwd Test#2020
+}}}
+
+`easyconnect`
+{{{
+http://60.217.64.169:2280
+szwm
+Yxlt6322
+}}}
+
+`task`
+{{{
+HR编码(emp_id)：
+02120112
+
+密码：
+ABC123!@
+
+对应了两个用户809180、900062(userid) 
+}}
+
+`备注`
+{{{
+apache-tomcat-9.0.43
+jdk7u80
+}}}
+
+|| 900062 || 张晓 || 083844E05994BBE7 || 02120112 ||
+|| 809180 || 张晓 || 083844E05994BBE7 || 02120112 ||
