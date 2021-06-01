@@ -1,0 +1,22 @@
+## page was renamed from wiki/jjy/trantor/jjy/branches/05/new_item_status
+||<#ffe0e0> 状态 ||<#ffe0e0> 代码 ||<#ffe0e0> 备注 ||
+|| 待申请 || PENDING || ||
+|| 待完善 || WAITING_PURCHASER_AUDIT || ||
+|| 采购不通过 || PURCHASER_AUDIT_FAILED || ||
+|| 待审核 || WAITING_CATEGORY_AUDIT || 待资深品类经理审核 ||
+|| 审核不通过 || AUDIT_FAILED_CATEGORY || 待资深品类经理审核失败 ||
+|| 审核未合作 || AUDIT_NOT_COOPERATION || ||
+|| 待总监审核 || WAITING_DIRECTOR_AUDIT || ||
+|| 待发起评估 || WAITING_START_EVALUATE || ||
+|| 待评估 || WAITING_EVALUATE || ||
+|| 评估失败 || EVALUATE_FAILED || ||
+|| 待税审 || WAITING_TAX_AUDIT || ||
+|| 待商品部审核 || WAITING_COMMODITY_DEPARTMENT_AUDIT || ||
+|| 商品部审核不通过 || FAILED_COMMODITY_DEPARTMENT_AUDIT || ||
+|| 评估成功 || EVALUATE_PASS || ||
+|| 待质检 || WAITING_QUALITY_CHECK || ||
+|| 质检不通过 || QUALITY_CHECK_FAILED || ||
+|| 质检成功 || QUALITY_CHECK_PASS || ||
+|| 发布成功 || PUBLISHED || ||
+|| 审核作废 || VOID_REVIEW || ||
+|| 审核成功 || AUDIT_PASS || ||

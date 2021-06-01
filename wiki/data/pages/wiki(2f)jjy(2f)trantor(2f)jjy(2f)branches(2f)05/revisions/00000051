@@ -1,0 +1,31 @@
+## page was renamed from wiki/trantor/jjy/branches/05
+ * [[ /branches_list |  分支&账号 ]]
+
+ * [[ /sync_sap | 供应商_新品创建_传输SAP时_增加_MD101品类传输 ]]
+
+  * [[ /item_status_workflow |  新品_审核状态流程 ]]
+
+  * [[ /food_catalog |  食品类_类目参考 ]]
+
+  * [[ /material_vs_item |  物料_商品_推送类_属性对应参考 ]]
+
+  * [[ /sync_sap_final |  此问题原因为Item做MD101转换问题 ]]
+
+ * [[ /package_zzdxbs_check | 管控_新品创建_[箱包单位-基本单位数量关系]_[主数据-最大箱包数]_一致 ]]
+ 
+  * [[ /package_zzdxbs_check_rules |  需求概述 ]]
+
+  * [[ /package_zzdxbs_check_record |  实现流程 ]]
+
+  * [[ /key_code |  关键代码 ]]
+
+  * [[ /modify_item_attr | Item attr modification for Test ]]
+
+ * [[ /bacth_complete_check | 采购_批量完善_原因描述不正确_系统提醒 ]]
+
+
+----
+
+|| [[attachment:MD101.xlsx]] ||
+|| [[attachment:new.docx | 新版方案 ]] ||
+|| [[attachment:old.docx | 旧版方案 ]] ||
