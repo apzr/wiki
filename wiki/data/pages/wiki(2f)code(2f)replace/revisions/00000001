@@ -1,0 +1,36 @@
+
+# -*- coding: utf-8 -*-
+import os
+import re
+import sys
+
+reload(sys)
+sys.setdefaultencoding('utf8')
+
+def swap( str ):
+    "左边右边的字符换位置"
+    
+    pattern = re.compile(' [a-zA-Z]+ ')
+    enList = pattern.findall(str)
+    #print ' '+''.join(enList)+' '
+    
+    pattern = re.compile(' ([\x80-\xffa-zA-Z\-\(\)\d]{3})+ ')
+    cnList = pattern.findall(str)
+    print ' '+''.join(cnList)+' '
+    
+    remove_0=re.sub(r' [a-zA-Z]+ ', ' '+''.join(enList)+' ', str)
+    remove_1=re.sub(r' ([\x80-\xffa-zA-Z\-\(\)\d]{3})+ ', ' '+''.join(cnList)+' ', remove_0)
+
+    return ' '+''.join(enList)+' '+'~'+' '+''.join(cnList)+' '
+    
+dirIn = 'D:/Documents/Desktop/replace.txt'
+dirOut = 'D:/Documents/Desktop/replace_out.txt'
+
+with open(dirIn, 'r') as fileIn:
+    fileOut = open(dirOut, "w")
+    
+    for num,value in  enumerate(fileIn,1):
+        #print value
+        fileOut.write( swap(value)+'\r\n' )
+ 
+    fileOut.close()
