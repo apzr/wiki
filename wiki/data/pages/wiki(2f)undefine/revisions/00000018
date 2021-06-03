@@ -1,0 +1,19 @@
+[[/tcp_port_status | TCP端口状态]]
+
+[[/http_responce_status_code | HTTP状态码]]
+
+[[/hosts | HOSTS备份]]
+
+[[/resthttp | REST HTTP ]]
+
+== o2o deploy ==
+{{{
+cd /opt/doublebass-service/v2.3/
+./wechat-service.deploy.sh 
+docker logs [-f] --tail=999 {id}
+}}}
+
+== moinmoin export html ==
+{{{
+moin --config-dir=E:\program_flies\moin\1.9.11 --wiki-url=http://localhost/wiki/trantor/code/code_position export dump --target-dir=E:\program_flies\moin\output --username=AprilZ
+}}}

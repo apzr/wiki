@@ -1,0 +1,211 @@
+===== Home =====
+
+https://xmlgraphics.apache.org/fop/
+
+===== Download(Version 2.6) =====
+
+https://xmlgraphics.apache.org/fop/download.html
+
+===== Quick Start =====
+
+https://xmlgraphics.apache.org/fop/quickstartguide.html
+
+===== 解压文件 =====
+ 
+相当于安装
+
+===== 系统需求 =====
+ 
+ * 必须
+  * Java 1.7+
+  * Apache™ FOP 
+ 
+ * 可选
+  * [[ https://xmlgraphics.apache.org/fop/2.6/graphics.html | Graphics libraries]].
+  * [[ https://xmlgraphics.apache.org/fop/2.6/pdfencryption.html | PDF encryption ]].
+  * [[ https://xmlgraphics.apache.org/fop/2.6/graphics.html#batik | Graphical environment to process SVG ]]
+
+<<Anchor(启动)>> 
+===== 启动(`fop.bat`, `fop.cmd`, 可配置环境变量) =====
+ 
+{{{#!highligh batch
+#用法
+  Fop [options] [-fo|-xml] infile [-xsl file] [-awt|-pdf|-mif|-rtf|-tiff|-png|-pcl|-ps|-txt|-at [mime]|-print] <outfile>
+
+#参数
+ [OPTIONS]
+  -version          print FOP version and exit
+  -d                debug mode
+  -x                dump configuration settings
+  -q                quiet mode
+  -c cfg.xml        use additional configuration file cfg.xml
+  -l lang           the language to use for user information
+  -nocs             disable complex script features
+  -r                relaxed/less strict validation (where available)
+  -dpi xxx          target resolution in dots per inch (dpi) where xxx is a number
+  -s                for area tree XML, down to block areas only
+  -v                run in verbose mode (currently simply print FOP version and continue)
+
+  -o [password]     PDF file will be encrypted with option owner password
+  -u [password]     PDF file will be encrypted with option user password
+  -noprint          PDF file will be encrypted without printing permission
+  -nocopy           PDF file will be encrypted without copy content permission
+  -noedit           PDF file will be encrypted without edit content permission
+  -noannotations    PDF file will be encrypted without edit annotation permission
+  -nofillinforms    PDF file will be encrypted without fill in forms permission
+  -noaccesscontent  PDF file will be encrypted without extract text and graphics permission
+  -noassembledoc    PDF file will be encrypted without assemble the document permission
+  -noprinthq        PDF file will be encrypted without print high quality permission
+  -a                enables accessibility features (Tagged PDF etc., default off)
+  -pdfprofile prof  PDF file will be generated with the specified profile
+                    (Examples for prof: PDF/A-1b or PDF/X-3:2003)
+
+  -conserve         enable memory-conservation policy (trades memory-consumption for disk I/O)
+                    (Note: currently only influences whether the area tree is serialized.)
+
+  -cache            specifies a file/directory path location
+  -flush            flushes the current font cache file
+
+ [INPUT]
+  infile            xsl:fo input file (the same as the next)
+                    (use '-' for infile to pipe input from stdin)
+  -fo  infile       xsl:fo input file
+  -xml infile       xml input file, must be used together with -xsl
+  -atin infile      area tree input file
+  -ifin infile      intermediate format input file
+  -imagein infile   image input file (piping through stdin not supported)
+  -xsl stylesheet   xslt stylesheet
+
+  -param name value <value> to use for parameter <name> in xslt stylesheet
+                    (repeat '-param name value' for each parameter)
+
+  -catalog          use catalog resolver for input XML and XSLT files
+ [OUTPUT]
+  outfile           input will be rendered as PDF into outfile
+                    (use '-' for outfile to pipe output to stdout)
+  -pdf outfile      input will be rendered as PDF (outfile req'd)
+  -pdfa1b outfile   input will be rendered as PDF/A-1b compliant PDF
+                    (outfile req'd, same as "-pdf outfile -pdfprofile PDF/A-1b")
+  -awt              input will be displayed on screen
+  -rtf outfile      input will be rendered as RTF (outfile req'd)
+  -pcl outfile      input will be rendered as PCL (outfile req'd)
+  -ps outfile       input will be rendered as PostScript (outfile req'd)
+  -afp outfile      input will be rendered as AFP (outfile req'd)
+  -tiff outfile     input will be rendered as TIFF (outfile req'd)
+  -png outfile      input will be rendered as PNG (outfile req'd)
+  -txt outfile      input will be rendered as plain text (outfile req'd)
+  -at [mime] out    representation of area tree as XML (outfile req'd)
+                    specify optional mime output to allow the AT to be converted
+                    to final format later
+  -if [mime] out    representation of document in intermediate format XML (outfile req'd)
+                    specify optional mime output to allow the IF to be converted
+                    to final format later
+  -print            input file will be rendered and sent to the printer
+                    see options with "-print help"
+  -out mime outfile input will be rendered using the given MIME type
+                    (outfile req'd) Example: "-out application/pdf D:\out.pdf"
+                    (Tip: "-out list" prints the list of supported MIME types)
+  -svg outfile      input will be rendered as an SVG slides file (outfile req'd)
+                    Experimental feature - requires additional fop-sandbox.jar.
+
+  -foout outfile    input will only be XSL transformed. The intermediate
+                    XSL-FO file is saved and no rendering is performed.
+                    (Only available if you use -xml and -xsl parameters)
+
+
+例
+  fop foo.fo foo.pdf
+  fop -fo foo.fo -pdf foo.pdf (does the same as the previous line)
+  fop -xml foo.xml -xsl foo.xsl -pdf foo.pdf
+  fop -xml foo.xml -xsl foo.xsl -foout foo.fo
+  fop -xml - -xsl foo.xsl -pdf -
+  fop foo.fo -mif foo.mif
+  fop foo.fo -rtf foo.rtf
+  fop foo.fo -print
+  fop foo.fo -awt
+}}}
+
+
+===== 配置文件 =====
+
+ * 复制`{fop-dir}/conf/fop.xconf`本例是E:\program_flies_86\fop-2.6\fop\conf到任意位置
+
+ * 编辑配置文件(默认就可以, 其他的见注释)
+
+ * 配置`配置文件`的位置
+  * Cmd: 见[[#启动]]
+  * Using a Configuration File
+   * Instead of setting the parameters manually in code as shown above you can also set many values from an XML configuration file:
+   {{{
+import org.apache.fop.configuration.Configuration;
+import org.apache.fop.configuration.DefaultConfigurationBuilder;
+
+/*..*/
+
+DefaultConfigurationBuilder cfgBuilder = new DefaultConfigurationBuilder();
+Configuration cfg = cfgBuilder.buildFromFile(new File("C:/Temp/mycfg.xml"));
+fopFactoryBuilder = new FopFactoryBuilder(baseURI).setConfiguration(cfg);
+}}}
+  The layout of the configuration file is described on the Configuration page.
+
+===== Moinmoin导出 =====
+
+ * 需要安装[[ http://pypi.python.org/pypi/PyXML | PyXML ]]
+  * [[ http://somethinkodd.com/PyXML/PyXML-0.8.4.win32-py2.6.exe | PyXML 0.8.4 for Python 2.6, Windows Installer ]]
+  * [[ http://somethinkodd.com/PyXML/PyXML-0.8.4.win32-py2.7.exe | PyXML 0.8.4 for Python 2.7, Windows Installer ]]
+  * 安装提示`Python version 2.7 required, which wsa not found in the registry`, 新建`register.py`保存后运行
+   {{{#!highlighter python
+#
+# script to register Python 2.0 or later for use with win32all
+# and other extensions that require Python registry settings
+#
+# written by Joakim Loew for Secret Labs AB / PythonWare
+#
+# source:
+# http://www.pythonware.com/products/works/articles/regpy20.htm
+#
+# modified by Valentine Gogichashvili as described in http://www.mail-archive.com/distutils-sig@python.org/msg10512.html
+ 
+import sys
+ 
+from _winreg import *
+ 
+# tweak as necessary
+version = sys.version[:3]
+installpath = sys.prefix
+ 
+regpath = "SOFTWARE\\Python\\Pythoncore\\%s\\" % (version)
+installkey = "InstallPath"
+pythonkey = "PythonPath"
+pythonpath = "%s;%s\\Lib\\;%s\\DLLs\\" % (
+    installpath, installpath, installpath
+)
+ 
+def RegisterPy():
+    try:
+        reg = OpenKey(HKEY_CURRENT_USER, regpath)
+    except EnvironmentError as e:
+        try:
+            reg = CreateKey(HKEY_CURRENT_USER, regpath)
+            SetValue(reg, installkey, REG_SZ, installpath)
+            SetValue(reg, pythonkey, REG_SZ, pythonpath)
+            CloseKey(reg)
+        except:
+            print "*** Unable to register!"
+            return
+        print "--- Python", version, "is now registered!"
+        return
+    if (QueryValue(reg, installkey) == installpath and
+        QueryValue(reg, pythonkey) == pythonpath):
+        CloseKey(reg)
+        print "=== Python", version, "is already registered!"
+        return
+    CloseKey(reg)
+    print "*** Unable to register!"
+    print "*** You probably have another Python installation!"
+ 
+if __name__ == "__main__":
+    RegisterPy()
+}}}
+ * 在待导出的页面操作选项中选择`输出Docbook格式`
+ * 将输出页面另存为

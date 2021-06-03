@@ -1,0 +1,78 @@
+===== Download =====
+https://www.apache.org/dyn/closer.lua/zookeeper/zookeeper-3.7.0/apache-zookeeper-3.7.0-bin.tar.gz
+
+===== Homepage =====
+https://zookeeper.apache.org/releases.html
+
+===== Older releases =====
+https://archive.apache.org/dist/zookeeper/
+
+===== Documentation =====
+https://zookeeper.apache.org/doc/r3.7.0/index.html
+
+===== Config =====
+{{{
+E:\program_flies\zookeeper-3.4.8\conf\zoo_sample.cfg
+copy && rename
+E:\program_flies\zookeeper-3.4.8\conf\zoo.cfg
+}}}
+
+===== zoo.cfg =====
+{{{
+dataDir=E:/program_flies/zookeeper-3.4.8/data
+dataLogDir=E:/program_flies/zookeeper-3.4.8/log
+}}}
+
+===== Run server =====
+{{{
+E:\program_flies\zookeeper-3.4.8\bin\zkServer.cmd
+
+
+2021-05-06 11:10:27,541 [myid:] - INFO  [main:Environment@100] - Server environment:java.io.tmpdir=C:\Users\ADMINI~1\AppData\Local\Temp\
+2021-05-06 11:10:27,541 [myid:] - INFO  [main:Environment@100] - Server environment:java.compiler=<NA>
+2021-05-06 11:10:27,543 [myid:] - INFO  [main:Environment@100] - Server environment:os.name=Windows 7
+2021-05-06 11:10:27,543 [myid:] - INFO  [main:Environment@100] - Server environment:os.arch=amd64
+2021-05-06 11:10:27,543 [myid:] - INFO  [main:Environment@100] - Server environment:os.version=6.1
+2021-05-06 11:10:27,543 [myid:] - INFO  [main:Environment@100] - Server environment:user.name=Administrator
+2021-05-06 11:10:27,544 [myid:] - INFO  [main:Environment@100] - Server environment:user.home=C:\Users\Administrator
+2021-05-06 11:10:27,545 [myid:] - INFO  [main:Environment@100] - Server environment:user.dir=E:\program_flies\zookeeper-3.4.8\bin
+2021-05-06 11:10:27,562 [myid:] - INFO  [main:ZooKeeperServer@787] - tickTime set to 2000
+2021-05-06 11:10:27,563 [myid:] - INFO  [main:ZooKeeperServer@796] - minSessionTimeout set to -1
+2021-05-06 11:10:27,565 [myid:] - INFO  [main:ZooKeeperServer@805] - maxSessionTimeout set to -1
+2021-05-06 11:10:27,895 [myid:] - INFO  [main:NIOServerCnxnFactory@89] - binding to port 0.0.0.0/0.0.0.0:2181
+2021-05-06 11:10:44,152 [myid:] - INFO  [NIOServerCxn.Factory:0.0.0.0/0.0.0.0:2181:NIOServerCnxnFactory@192] - Accepted socket connection from /0:0:0:0:0:0:0:1:59866
+2021-05-06 11:10:44,158 [myid:] - INFO  [NIOServerCxn.Factory:0.0.0.0/0.0.0.0:2181:ZooKeeperServer@900] - Client attempting to establish new session at /0:0:0:0:0:0:0:1:59866
+2021-05-06 11:10:44,161 [myid:] - INFO  [SyncThread:0:FileTxnLog@199] - Creating new log file: log.1
+2021-05-06 11:10:44,175 [myid:] - INFO  [SyncThread:0:ZooKeeperServer@645] - Established session 0x1793fa7bc460000 with negotiated timeout 30000 for client /0:0:0:0:0:0:0:1:59866
+}}}
+
+===== Test start =====
+{{{
+E:\program_flies\zookeeper-3.4.8\bin\zkCli.cmd
+
+
+2021-05-06 11:10:43,799 [myid:] - INFO  [main:Environment@100] - Client environment:java.io.tmpdir=C:\Users\ADMINI~1\AppData\Local\Temp\
+2021-05-06 11:10:43,799 [myid:] - INFO  [main:Environment@100] - Client environment:java.compiler=<NA>
+2021-05-06 11:10:43,799 [myid:] - INFO  [main:Environment@100] - Client environment:os.name=Windows 7
+2021-05-06 11:10:43,799 [myid:] - INFO  [main:Environment@100] - Client environment:os.arch=amd64
+2021-05-06 11:10:43,799 [myid:] - INFO  [main:Environment@100] - Client environment:os.version=6.1
+2021-05-06 11:10:43,800 [myid:] - INFO  [main:Environment@100] - Client environment:user.name=Administrator
+2021-05-06 11:10:43,800 [myid:] - INFO  [main:Environment@100] - Client environment:user.home=C:\Users\Administrator
+2021-05-06 11:10:43,800 [myid:] - INFO  [main:Environment@100] - Client environment:user.dir=E:\program_flies\zookeeper-3.4.8\bin
+2021-05-06 11:10:43,801 [myid:] - INFO  [main:ZooKeeper@438] - Initiating client connection, connectString=localhost:2181 sessionTimeout=30000 watcher=org.apach
+e.zookeeper.ZooKeeperMain$MyWatcher@5ce65a89
+Welcome to ZooKeeper!
+2021-05-06 11:10:44,151 [myid:] - INFO  [main-SendThread(0:0:0:0:0:0:0:1:2181):ClientCnxn$SendThread@1032] - Opening socket connection to server 0:0:0:0:0:0:0:1
+/0:0:0:0:0:0:0:1:2181. Will not attempt to authenticate using SASL (unknown error)
+2021-05-06 11:10:44,152 [myid:] - INFO  [main-SendThread(0:0:0:0:0:0:0:1:2181):ClientCnxn$SendThread@876] - Socket connection established to 0:0:0:0:0:0:0:1/0:0
+:0:0:0:0:0:1:2181, initiating session
+JLine support is enabled
+[zk: localhost:2181(CONNECTING) 0] 2021-05-06 11:10:44,176 [myid:] - INFO  [main-SendThread(0:0:0:0:0:0:0:1:2181):ClientCnxn$SendThread@1299] - Session establis
+hment complete on server 0:0:0:0:0:0:0:1/0:0:0:0:0:0:0:1:2181, sessionid = 0x1793fa7bc460000, negotiated timeout = 30000
+
+
+WATCHER::
+
+
+WatchedEvent state:SyncConnected type:None path:null
+}}}

@@ -1,0 +1,337 @@
+## page was renamed from wiki/trantor/jjy/branches/05/sync_sap
+## page was renamed from wiki/trantor/jjy/branches/sync_sap
+## page was renamed from wiki/trantor/jjy/sync_sap
+ * 在同步SAP过程中，MD101是要推送过去的东西
+ {{{#!highlight java
+    //商品
+    ItemRelation itemRelationDetail = itemRelationRepo.queryDetailById(itemRelation.getId());
+
+    //物料
+    Material material = itemRelation.getMaterial();
+    
+    //MD101
+    MD101SheetBean bean = new MD101SheetBean();
+    
+    //TODO:转换
+    ...
+
+    //封装MD101SheetBean
+    List<MD101SheetBean> sheets = Lists.newArrayList();
+    sheets.add(bean);
+
+    //封装MD101Request 
+    MD101Request md101Request = new MD101Request();
+    md101Request.setSheet(sheets);
+    
+    //推送
+    Object reponsesObject = dalaranGenericHandler.invoke(
+        DalaranGenericHandler.DalaranGenericInterfaceEnum.ITEM_SAP_FACADE.getClassFullName(),
+        ItemSapFacade.itemInfoDetailSyncSap,
+        Lists.newArrayList( MD101Request.class.getName() ),
+        Lists.newArrayList( md101Request )
+    );
+    
+}}}
+
+ * 具体调用测试通过如下操作
+ {{http://localhost/wiki/jjy/trantor/jjy/branches/05/sync_sap?action=AttachFile&do=get&target=sync_sap_cmd.jpg}}
+
+ * `Item.java`是商品 是材料类`Material.class`的子类, 具体转换成md101过程中有如下记录<<BR>>
+ 
+  * 商品类目
+
+  {{{#!highlight java
+    //MD101Sheetbean
+
+    //*** Item 的父类 Material ***
+    @TModelField(
+        name = "物料分类",
+        nullable = false
+    )
+    @NotNull(
+        message = "物料分类不能为空"
+    )
+    @RelationMeta(
+        name = "MaterialMaterialCategory",
+        modelClass = MaterialCategory.class
+    )
+    private MaterialCategory category;
+
+}}}
+
+  * 2级分类
+
+  {{{#!highlight java
+    //MD101SheetBean    
+    /**
+     * 柜组
+     */
+    private String zglbm;
+    
+    //Item
+    @TModelField(name = "2级类目")
+    @RelationMeta(name = "Level2ItemMaterialCategory", modelClass = MaterialCategory.class)
+    private MaterialCategory secondCategory;
+
+    @Reference(fromField = Item.secondCategory_field, mappingField = MaterialCategory.outerId_field, onChange = NEVER)
+    @TModelField(name = "2级类目sap编码")
+    private String secondCategoryOutCode;
+}}}
+
+  * 3级分类
+
+  {{{#!highlight java
+    //MD101SheetBean
+    /**
+     * 物料组
+     */
+    private String matkl;
+    
+    //Item
+    @TModelField(name = "物料组")
+    @RelationMeta(name = "Level3ItemMaterialCategory", modelClass = MaterialCategory.class)
+    private MaterialCategory thirdCategory;
+
+}}}
+
+  * 4级分类
+
+  {{{#!highlight java
+    //MD101SheetBean
+    /**
+     * 商品小类编码
+     */
+    private String zmatkl;
+    
+    //Item
+    @TModelField(name = "商品小类")
+    @RelationMeta(name = "Level4ItemMaterialCategory", modelClass = MaterialCategory.class)
+    private MaterialCategory fourthCategory;
+}}}
+
+ * 通过测试环境点击"同步SAP"连接操作之后发现日志报错
+ {{{
+2021-05-19 14:19:26.943ERROR[jjy-b2b-scp]  - [http-nio-0.0.0.0-8080-exec-6] i.t.trantor.framework.TrantorWebAdvice  : handleException error with request info: RequestInfo(path: [http://jjy-b2b-scp.services--test-561.svc.cluster.local:8080/api/trantor/action/exe], referer: [http://scp-console.test.jjyyx.com/])
+java.lang.NullPointerException: null
+	at io.terminus.jjy.b2b.scp.convert.ItemConvert.toMD101Request(ItemConvert.java:474)
+	at io.terminus.jjy.b2b.scp.action.item.apply.ItemRelationAction.syncDrp(ItemRelationAction.java:1277)
+	at io.terminus.jjy.b2b.scp.action.item.apply.ItemRelationAction$$FastClassBySpringCGLIB$$48530abe.invoke(&lt;generated&gt;)
+	...
+        ...
+}}}
+ `NullPointerException at io.terminus.jjy.b2b.scp.convert.ItemConvert.toMD101Request(ItemConvert.java:474)`
+ 查看java代码后增加`thirdCategory`
+ {{{#!highlight java 
+    473    MaterialCategory materialCategory = material.get(Item.thirdCategory_field);
+    474    bean.setMatkl(materialCategory.getOuterId());
+}}}
+
+ * 同步品类的代码
+ 新增`Category`属性并赋值`material.category.outerId`
+ {{{#!highlight java
+    ...
+    log.warn("MD101商品推送开始, Code:{}", itemRelation.getCode());
+    ...
+    ...
+    //同步sap 增加品类传输
+    MaterialCategory category = material.getCategory();
+    if(Objects.nonNull(category)) {
+        //添加转换md101的参数获取日志
+        log.warn("MD101 2级类目 柜组 {}", (MaterialCategory) material.get(Item.secondCategory_field));
+        log.warn("MD101 2级类目 柜组 sap编码 {}", (String) material.get(Item.secondCategoryOutCode_field));
+        log.warn("MD101 3级类目 物料组 {}", (MaterialCategory) material.get(Item.thirdCategory_field));
+        log.warn("MD101 4级类目 商品小类 {}", (MaterialCategory) material.get(Item.fourthCategory_field));
+        log.warn("MD101 物料 品类? {}", category);
+            
+        bean.setCategory(category.getOuterId());
+    }
+    ...
+    log.warn("MD101商品推送SAP入参, {}", JSON.toJSONString(md101Request));
+}}}
+
+ * 同步成功的日志记录
+ {{{#!highlight prolog
+2021-05-20 08:33:44.033WARN[jjy-b2b-scp]  - [http-nio-0.0.0.0-8080-exec-2] i.t.jjy.b2b.scp.convert.ItemConvert     : MD101 Material Category MaterialCategory(parent=null, name=农产, level=2, hasChildren=true, outerId=1003, path=160-839, status=ENABLE)
+2021-05-20 08:33:44.033WARN[jjy-b2b-scp]  - [http-nio-0.0.0.0-8080-exec-2] i.t.jjy.b2b.scp.convert.ItemConvert     : MD101 Material Third null
+2021-05-20 08:33:44.033WARN[jjy-b2b-scp]  - [http-nio-0.0.0.0-8080-exec-2] i.t.jjy.b2b.scp.convert.ItemConvert     : MD101 Material Fourth null
+2021-05-20 08:33:44.450WARN[jjy-b2b-scp]  - [http-nio-0.0.0.0-8080-exec-2] i.t.jjy.b2b.scp.convert.ItemConvert     : MD101商品推送SAP入 品类 农产 品类oid 1003
+}}}
+
+ * 同步成功, 但是品类为空的日志记录
+ {{{#!highlight prolog
+2021-05-20 14:04:22.346WARN[jjy-b2b-scp]  - [http-nio-0.0.0.0-8080-exec-10] i.t.jjy.b2b.scp.convert.ItemConvert     : MD101 Material Second null
+2021-05-20 14:04:22.347WARN[jjy-b2b-scp]  - [http-nio-0.0.0.0-8080-exec-10] i.t.jjy.b2b.scp.convert.ItemConvert     : MD101 Material Third null
+2021-05-20 14:04:22.347WARN[jjy-b2b-scp]  - [http-nio-0.0.0.0-8080-exec-10] i.t.jjy.b2b.scp.convert.ItemConvert     : MD101 Material Fourth null
+2021-05-20 14:04:22.422WARN[jjy-b2b-scp]  - [http-nio-0.0.0.0-8080-exec-10] i.t.jjy.b2b.scp.convert.ItemConvert     : MD101商品推送SAP入参, [json字符串, 见下]
+}}}
+
+  {{{#!highlight JSON
+{
+    "sheet": [
+        {
+            "breit1": "20.000",
+            "breit2_1": "6.000",
+            "breit3_1": "6.000",
+            "brgew1": "1.200",
+            "brgew2": "6.000",
+            "brgew3": "6.000",
+            "category": "1001",
+            "datab": "20210520",
+            "datai": "99991231",
+            "dummy_prd_incl_eew_ps": "",
+            "ean11": "22222912",
+            "ean112": "44444912",
+            "ean113": "33333912",
+            "esokz": "1",
+            "exsys": "SCP",
+            "flag": "1",
+            "gewei1": "KG",
+            "gewei2": "KG",
+            "gewei3": "KG",
+            "groes": "盒",
+            "hoehe1": "15.000",
+            "hoehe2": "6.000",
+            "hoehe3": "6.000",
+            "jiekno": "MD101",
+            "laeng1": "43.000",
+            "laeng2": "6.000",
+            "laeng3": "6.000",
+            "lifnr": "61000053",
+            "maktx": "我太太太难了呀",
+            "matnr": "20200921010048",
+            "meabm1": "CM",
+            "meabm2": "CM",
+            "meabm3": "CM",
+            "meinh2": "HU4",
+            "meinh3": "GU9",
+            "meins": "SU1",
+            "mhdhb": "365",
+            "mhdrz": "274",
+            "mstae": "10",
+            "mtart": "default",
+            "mwskz": "J0",
+            "netpr": "399",
+            "raube": "0",
+            "taklv": "4",
+            "tempb": "0",
+            "umrez2": "6",
+            "umrez3": "6",
+            "voleh1": "CCM",
+            "voleh2": "CCM",
+            "voleh3": "CCM",
+            "volum1": "12900.000",
+            "volum2": "216.000",
+            "volum3": "216.000",
+            "wherl": "FR",
+            "wmaab": "H",
+            "zb2b": "20200921010048",
+            "zbrand": "3390",
+            "zcdhf": "2",
+            "zdzcq": "",
+            "zglbm": "1001",
+            "zhcode": "WTTTNLY",
+            "zlsbs": "NONE",
+            "zpcbg": "X",
+            "zsfsx": "",
+            "zsmade": "1",
+            "zspjc": "我太太太难了呀",
+            "zyjts": "91",
+            "zzdbh": "",
+            "zzdlsj": "699.00",
+            "zzdpfj": "699.00",
+            "zzdxbs": "1.00",
+            "zzjbg": "",
+            "zzxyhl": "0.00"
+        }
+    ]
+}
+
+}}}
+测试环境日志记录( 上为失败的, 下为成功的)
+ {{{
+ 2021-05-21 13:55:01.173 ERROR [jjy-b2b-scp,f90694f0-1555-4ffa-bcd0-e6b2a3decb30,d0fa26f8-0a36-4210-bde8-fc638a362dcb] - [http-nio-0.0.0.0-8080-exec-5] i.t.t.f.a.e.LocalServerActionExecutor   : local action invoke failure: [ key: material_center_ProtocolLine_ItemRelationAction::syncDrp ], error: java.lang.ClassCastException: java.lang.Integer cannot be cast to java.lang.String
+	at io.terminus.jjy.b2b.scp.convert.ItemConvert.toMD101Request(ItemConvert.java:490)
+	at io.terminus.jjy.b2b.scp.action.item.apply.ItemRelationAction.syncDrp(ItemRelationAction.java:1277)
+	at io.terminus.jjy.b2b.scp.action.item.apply.ItemRelationAction$$FastClassBySpringCGLIB$$48530abe.invoke(<generated>)
+	at org.springframework.cglib.proxy.MethodProxy.invoke(MethodProxy.java:218)
+}}}
+	
+ {{{
+2021-05-21 13:55:45.166 WARN  [jjy-b2b-scp,0d71e29e-a385-4a18-bc3b-2daf89d82eaa,76899d4a-0495-40aa-b717-06d12fd2d554] - [http-nio-0.0.0.0-8080-exec-2] i.t.jjy.b2b.scp.convert.ItemConvert     : MD101商品推送开始, Code:PA20201010000008
+2021-05-21 13:55:45.168 WARN  [jjy-b2b-scp,0d71e29e-a385-4a18-bc3b-2daf89d82eaa,76899d4a-0495-40aa-b717-06d12fd2d554] - [http-nio-0.0.0.0-8080-exec-2] i.t.jjy.b2b.scp.convert.ItemConvert     : MD101 物料 品类** MaterialCategory(parent=null, name=农产, level=2, hasChildren=true, outerId=1003, path=160-839, status=ENABLE)
+2021-05-21 13:55:45.203 WARN  [jjy-b2b-scp,0d71e29e-a385-4a18-bc3b-2daf89d82eaa,76899d4a-0495-40aa-b717-06d12fd2d554] - [http-nio-0.0.0.0-8080-exec-2] i.t.jjy.b2b.scp.convert.ItemConvert     : MD101商品推送SAP入参, {"sheet":[{"breit1":"4.000","brgew1":"2.000","category":"1003","datab":"20210521","datai":"99991231","dummy_prd_incl_eew_ps":"","ean11":"20201010901","esokz":"1","exsys":"SCP","flag":"1","gewei1":"KG","groes":"75","hoehe1":"3.000","jiekno":"MD101","laeng1":"2.000","lifnr":"61000053","maktx":"不在5952位","matnr":"20201010000008","meabm1":"CM","meins":"IN6","mhdhb":"365","mhdrz":"274","mstae":"10","mtart":"default","mwskz":"J9","netpr":"36.66","raube":"1","taklv":"8","tempb":"1","voleh1":"CCM","volum1":"24.000","wherl":"CN","wherr":"103","wmaab":"H","zb2b":"20201010000008","zbrand":"211679","zcdhf":"1","zdzcq":"","zglbm":"1003","zguide":"32.65","zhcode":"BZ5952W","zpcbg":"","zsfsx":"","zsmade":"1","zspjc":"不在5952位","zyjts":"91","zzdbh":"","zzdlsj":"66.00","zzdpfj":"66.00","zzdxbs":"1.00","zzjbg":"","zzxyhl":"0.00"}]}
+}}}
+
+  {{{#!highlight JSON
+{
+    "breit1": "4.000",
+    "brgew1": "2.000",
+    "category": "1003",
+    "datab": "20210521",
+    "datai": "99991231",
+    "dummy_prd_incl_eew_ps": "",
+    "ean11": "20201010901",
+    "esokz": "1",
+    "exsys": "SCP",
+    "flag": "1",
+    "gewei1": "KG",
+    "groes": "75",
+    "hoehe1": "3.000",
+    "jiekno": "MD101",
+    "laeng1": "2.000",
+    "lifnr": "61000053",
+    "maktx": "不在5952位",
+    "matnr": "20201010000008",
+    "meabm1": "CM",
+    "meins": "IN6",
+    "mhdhb": "365",
+    "mhdrz": "274",
+    "mstae": "10",
+    "mtart": "default",
+    "mwskz": "J9",
+    "netpr": "36.66",
+    "raube": "1",
+    "taklv": "8",
+    "tempb": "1",
+    "voleh1": "CCM",
+    "volum1": "24.000",
+    "wherl": "CN",
+    "wherr": "103",
+    "wmaab": "H",
+    "zb2b": "20201010000008",
+    "zbrand": "211679",
+    "zcdhf": "1",
+    "zdzcq": "",
+    "zglbm": "1003",
+    "zguide": "32.65",
+    "zhcode": "BZ5952W",
+    "zpcbg": "",
+    "zsfsx": "",
+    "zsmade": "1",
+    "zspjc": "不在5952位",
+    "zyjts": "91",
+    "zzdbh": "",
+    "zzdlsj": "66.00",
+    "zzdpfj": "66.00",
+    "zzdxbs": "1.00",
+    "zzjbg": "",
+    "zzxyhl": "0.00"
+}
+}}}
+查看失败的日志
+ {{{#!highlight java
+        //原来直接set, Integer赋给String报cast错
+        bean.setZtjsx(
+                Objects.isNull( material.get(Item.storeAdjustLimit_field) )
+                        ? ""
+                        : material.get(Item.storeAdjustLimit_field).toString()
+        );
+
+        //Integer
+        bean.setAplfz(
+                Objects.isNull( material.get(Item.plannedDeliveryTime_field) )
+                        ? ""
+                        : material.get(Item.plannedDeliveryTime_field).toString()
+        );
+
+}}}

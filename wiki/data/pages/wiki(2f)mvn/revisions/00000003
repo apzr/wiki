@@ -1,0 +1,9 @@
+===== 安装本地依赖 =====
+{{{#!highlight
+mvn install:install-file -Dfile=wxpay-sdk-3.0.9.jar -DgroupId=com.yuepong.jdev -DartifactId=jdev-redis -Dversion=1.0.1 -Dpackaging=jar
+}}}
+
+===== 拉包 =====
+{{{#!highlight
+mvn dependency:get -DremoteRepositories=http://192.168.0.207:7081/repository/maven-snapshots/ -DgroupId=com.yuepong.jdev -DartifactId=jdev-redis -Dversion=1.0-20210413.063037-11
+}}}

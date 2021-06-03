@@ -1,0 +1,73 @@
+## page was renamed from wiki/sql/useage
+## page was renamed from wiki/mysql/useage
+## page was renamed from mysql/useage
+##常用查询
+
+更新t_mobil_pic表中pic_code字段
+{{{#!highlight sql
+UPDATE t_mobile_pic
+SET pic_code = user_code + CONVERT ( VARCHAR ( 8 ), create_date, 112 ) + replace( CONVERT ( VARCHAR ( 8 ), create_date, 108 ), ':', '' )
+}}}
+
+查看数据库里正在执行的sql语句，可能无法看全完整sql语句
+{{{#!highlight SQL
+show processlist;
+}}}
+查看正在执行的完整sql语句，完整显示
+{{{#!highlight SQL
+show full processlist;
+}}}
+ 
+查看数据库的配置参数信息，例如：my.cnf里参数的生效情况
+{{{#!highlight SQL
+show variables;
+show variables like '%log_bin%';
+}}}
+ 
+查看当前会话的数据库状态信息
+{{{#!highlight SQL
+show session status;
+}}}
+ 
+查看整个数据库运行状态信息，很重要，要分析并做好监控
+{{{#!highlight SQL
+show global status;
+}}}
+ 
+显示innodb 引擎的性能状态
+{{{#!highlight SQL
+show engine innodb status;
+}}}
+
+{{{#!highlight SQL
+show full processlist; （登陆数据库现场抓，连续执行2次，超过2秒）
+}}}
+
+{{{#!highlight SQL
+mysql -uroot -pyanqi -e 'show full processlist;'|egrep -v 'sleep'   # 应优先选用此方法，在命令行模式可以对结果进行过滤。 
+mysqldumpslow -s c -t 20 host-slow.log # 或使用这个语句：可以对运行中的慢语句进行排序：  
+}}}
+ 
+将上边抓到的慢语句，进行一个索引检查，开是否因没有索引照成的慢语句
+explain语句检查索引执行情况
+
+
+
+
+{{{#!highlight
+mysql> explain select * from test where name='oldgirl'\G；
+
+```*************************** 1. row ***************************```
+           id: 1
+  select_type: SIMPLE
+        table: test
+         type: ALL
+possible_keys: NULL  
+          key: NULL   ``#没有走索引``
+      key_len: NULL
+          ref: NULL
+         rows: 8 ``#未建索引，查询了8次``
+        Extra: Using where
+1 row in set (0.00 sec)
+}}}
+ ~- 注：百行的数据不需要索引 -~

@@ -1,0 +1,10 @@
+===== `RestTemplate - @LoadBalanced` =====
+{{{#!highlight
+RestTemplate只是类似于HttpClient的一个发送REST风格的请求的类
+是没有办法去识别所谓的EUREKA服务名的
+要用@LoadBalanced注解修饰的RestTemplate才能实现服务名的调用
+@LoadBalanced是Netflix的ribbon中的一个负载均衡的注解，这个注解加上之后，有3件事情要处理：
+    1. 从负载均衡器中选一个对应的服务实例(所有的服务名实例都放在负载均衡器中的serverlist)。
+    2. 从1中挑选的实例请求内容。
+    3. 由服务名转为真正使用的ip地址
+}}}

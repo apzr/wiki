@@ -1,0 +1,82 @@
+=== TCP端口状态 ===
+
+查看端口状态
+ {{{#!hhighlight bash
+Linux
+# netstat -antupl |grep [端口]
+Windows
+# netstat -na 活动连接    
+# telenet 127.0.0.1:8082 
+linux查询TCP的连接
+# netstat -ant|awk '/^tcp/ {++S[$NF]} END {for(a in S) print (a,S[a])}'
+  LAST_ACK 14
+  SYN_RECV 348
+  ESTABLISHED 70
+  FIN_WAIT1 229
+  FIN_WAIT2 30
+  CLOSING 33
+  TIME_WAIT 18122
+}}}
+
+端口状态说明
+ {{{#!hhighlight bash
+LISTEN：提供某种服务，侦听远方TCP端口的连接请求，当提供的服务没有被连接时，处于LISTENING状态，端口是开放的，等待被连接 。
+SYN_SENT：客户端调用connect，发送一个SYN请求建立一个连接，在发送连接请求后等待匹配的连接请求，此时状态为SYN_SENT。
+SYN_RECV：在收到和发送一个连接请求后，等待对方对连接请求的确认，当服务器收到客户端发送的同步信号时，将标志位ACK和SYN置1发送给客户端，此时服务器端处于SYN_RCVD状态，如果连接成功了就变为ESTABLISHED，正常情况下SYN_RCVD状态非常短暂。
+ESTABLISHED：表示两台机器正在传输数据。
+FIN_WAIT1：等待远程TCP连接中断请求，或先前的连接中断请求的确认，主动关闭端应用程序调用close，TCP发出FIN请求主动关闭连接，之后进入FIN_WAIT1状态。
+FIN_WAIT2：从远程TCP等待连接中断请求，主动关闭端接到ACK后，就进入了FIN-WAIT-2 .这是在关闭连接时，客户端和服务器两次握手之后的状态，是著名的半关闭的状态了，在这个状态下，应用程序还有接受数据的能力，但是已经无法发送数据，但是也有一种可能是，客户端一直处于FIN_WAIT_2状态，而服务器则一直处于WAIT_CLOSE状态，而直到应用层来决定关闭这个状态。
+CLOSE_WAIT: 等待从本地用户发来的连接中断请求 ，被动关闭端TCP接到FIN后，就发出ACK以回应FIN请求(它的接收也作为文件结束符传递给上层应用程序),并进入CLOSE_WAIT
+CLOSING：等待远程TCP对连接中断的确认,处于此种状态比较少见 。 
+LAST_ACK: 等待原来的发向远程TCP的连接中断请求的确认,被动关闭端一段时间后，接收到文件结束符的应用程序将调用CLOSE关闭连接,TCP也发送一个 FIN,等待对方的ACK.进入LAST-ACK。
+TIME_WAIT：在主动关闭端接收到FIN后，TCP就发送ACK包，并进入TIME-WAIT状态,等待足够的时间以确保远程TCP接收到连接中断请求的确认,很大程度上保证了双方都可以正常结束,但是也存在问题，须等待2MSL时间的过去才能进行下一次连接。
+CLOSED：被动关闭端在接受到ACK包后，就进入了closed的状态，连接结束，没有任何连接状态。
+}}}
+
+TCP正常连接建立和终止所对应的状态图
+
+ {{http://localhost/wiki/undefine/tcp_port_status?action=AttachFile&do=get&target=1.png}}
+
+TCP状态迁移过程图
+
+ {{http://localhost/wiki/undefine/tcp_port_status?action=AttachFile&do=get&target=2.png}}
+
+TCP三次握手通俗理解
+
+ {{http://localhost/wiki/undefine/tcp_port_status?action=AttachFile&do=get&target=3.png}}
+
+TCP四次挥手通俗理解
+
+ {{http://localhost/wiki/undefine/tcp_port_status?action=AttachFile&do=get&target=4.png}}
+
+如何尽量处理TIMEWAIT过多?
+
+ 编辑内核文件/etc/sysctl.conf，加入以下内容：
+ {{{#!hhighlight bash
+net.ipv4.tcp_syncookies =1
+#表示开启SYN Cookies。当出现SYN等待队列溢出时，启用cookies来处理，可防范少量SYN攻击，默认为0，表示关闭；
+net.ipv4.tcp_tw_reuse =1
+#表示开启重用。允许将TIME-WAIT sockets重新用于新的TCP连接，默认为0，表示关闭；
+net.ipv4.tcp_tw_recycle =1
+#表示开启TCP连接中TIME-WAIT sockets的快速回收，默认为0，表示关闭。
+net.ipv4.tcp_fin_timeout 
+#修改系默认的 TIMEOUT 时间
+}}}
+
+ 如果以上配置调优后性能还不理想，可继续修改一下配置：
+ {{{#!hhighlight bash
+# vi /etc/sysctl.conf
+net.ipv4.tcp_keepalive_time = 1200
+#表示当keepalive起用的时候，TCP发送keepalive消息的频度。缺省是2小时，改为20分钟。
+net.ipv4.ip_local_port_range = 1024 65000
+#表示用于向外连接的端口范围。缺省情况下很小：32768到61000，改为1024到65000。
+net.ipv4.tcp_max_syn_backlog = 8192
+#表示SYN队列的长度，默认为1024，加大队列长度为8192，可以容纳更多等待连接的网络连接数。
+net.ipv4.tcp_max_tw_buckets = 5000
+#表示系统同时保持TIME_WAIT套接字的最大数量，如果超过这个数字，TIME_WAIT套接字将立刻被清除并打印警告信息。
+默认为180000，改为5000。对于Apache、Nginx等服务器，上几行的参数可以很好地减少TIME_WAIT套接字数量，但是对于 Squid，效果却不大。此项参数可以控制TIME_WAIT套接字的最大数量，避免Squid服务器被大量的TIME_WAIT套接字拖死。
+}}}
+ 解决思路，简单来说，就是打开系统的TIMEWAIT重用和快速回收
+ {{{#!hhighlight bash
+ #> /sbin/sysctl -p   让参数生效
+}}}

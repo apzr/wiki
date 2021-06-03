@@ -1,0 +1,12 @@
+===== 新建仓库 =====
+{{{#!highlight
+1. make a new gist on github then copy url
+
+2. git clone https://your.new.empty.git
+
+3. copy your files to the git forder
+
+4. git add
+   git commit -m "comment"
+   git push -u origin master
+}}}

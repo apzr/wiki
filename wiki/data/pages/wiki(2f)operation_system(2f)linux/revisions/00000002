@@ -1,0 +1,27 @@
+==== 数字权限释义 ====
+{{{#!highlight bash
+chmod 754 filename
+}}}
+ {{{#!csv ,
+权限, 数值, 二进制, , 
+r, 4, 00000100, 7 =4 + 2 + 1, 读写运行
+w, 2, 00000010, 5 = 4 + 1, 读运行
+x, 1, 00000001, 4 = 4, 读
+}}}
+
+==== 查看path ====
+{{{#!highlight bash
+[root@localhost ~]# export
+declare -x CLASSPATH=".:/usr/local/java/jdk1.8.0_221/lib:/usr/local/java/jdk1.8.0_221/jre/lib:"
+declare -x HISTCONTROL="ignoredups"
+declare -x HISTSIZE="1000"
+declare -x HOME="/root"
+declare -x HOSTNAME="localhost.localdomain"
+declare -x JAVA_HOME="/usr/local/java/jdk1.8.0_221"
+declare -x JAVA_PATH="/usr/local/java/jdk1.8.0_221/bin:/usr/local/java/jdk1.8.0_221/jre/bin"
+declare -x JRE_HOME="/usr/local/java/jdk1.8.0_221/jre"
+...
+...
+...
+declare -x XDG_SESSION_ID="1584"
+}}}

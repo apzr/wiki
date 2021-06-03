@@ -1,0 +1,139 @@
+== Cannot start service XXXX: container is marked for removal and cannot be started ==
+
+===== 启动报错 =====
+ {{{
+C:\Users\Administrator>trantor run 0.10
+正在拉取 Trantor 基础环境镜像....
+Pulling mysql (registry.cn-hangzhou.aliyuncs.com/terminus/trantor-mysql:5.7)...
+5.7: Pulling from terminus/trantor-mysql
+Digest: sha256:13e08e4dc11522bf169ed7426887def466bf2b18f755734e7e01f0d757116eca
+Status: Image is up to date for registry.cn-hangzhou.aliyuncs.com/terminus/trantor-mysql:5.7
+Pulling nacos (registry.cn-hangzhou.aliyuncs.com/terminus/trantor-nacos:latest)...
+latest: Pulling from terminus/trantor-nacos
+Digest: sha256:ab9a49756f23ba89c389e855a5ec0ae8d81adf6875c43817e8f7091b5b56d401
+Status: Image is up to date for registry.cn-hangzhou.aliyuncs.com/terminus/trantor-nacos:latest
+Pulling datastore (registry.cn-hangzhou.aliyuncs.com/terminus/datastore:4.1.0.2)...
+4.1.0.2: Pulling from terminus/datastore
+Digest: sha256:0b384e4293788971c9cd45ebb63c49ee69dfeb7d8a4d79a8c9f1c8a9d73f6129
+Status: Image is up to date for registry.cn-hangzhou.aliyuncs.com/terminus/datastore:4.1.0.2
+Pulling gateway (registry.cn-hangzhou.aliyuncs.com/terminus/trantor-gateway:0.10.0)...
+0.10.0: Pulling from terminus/trantor-gateway
+Digest: sha256:2b70b5b2f666dfaa656b32577fdfb238ef393385d6abb4e49876af7365e87137
+Status: Image is up to date for registry.cn-hangzhou.aliyuncs.com/terminus/trantor-gateway:0.10.0
+Pulling metastore (registry.cn-hangzhou.aliyuncs.com/terminus/trantor-metastore:200708.140400)...
+200708.140400: Pulling from terminus/trantor-metastore
+Digest: sha256:2a6cf493c58f6372a085a795e01e1813c6638244ad7f2cf70f4b3eea1b9e6be2
+Status: Image is up to date for registry.cn-hangzhou.aliyuncs.com/terminus/trantor-metastore:200708.140400
+Pulling console (registry.cn-hangzhou.aliyuncs.com/terminus/trantor-console:0.10.8)...
+0.10.8: Pulling from terminus/trantor-console
+Digest: sha256:5db7a2711ac421d1158f0e6ccb65a4d7720f334b2d0de907adb1aba641e30a40
+Status: Image is up to date for registry.cn-hangzhou.aliyuncs.com/terminus/trantor-console:0.10.8
+Pulling workspace (registry.cn-hangzhou.aliyuncs.com/terminus/trantor-workspace:0.10.17)...
+0.10.17: Pulling from terminus/trantor-workspace
+Digest: sha256:3139a063b3e5caccaac0e637fbc9e143f619ae4f45d90ebd578eea46c61c4141
+Status: Image is up to date for registry.cn-hangzhou.aliyuncs.com/terminus/trantor-workspace:0.10.17
+Starting trantor-console ...
+Starting trantor-console   ... error
+Starting trantor-mysql   ...
+Starting trantor-workspace ...
+Starting trantor-gateway   ...
+
+
+Starting trantor-gateway   ... error
+Starting trantor-workspace ... error
+Starting trantor-mysql     ... error
+
+
+ERROR: for trantor-workspace  Cannot start service workspace: container is marked for removal and cannot be started
+
+
+ERROR: for trantor-mysql  Cannot start service mysql: container is marked for removal and cannot be started
+
+
+ERROR: for console  Cannot start service console: container is marked for removal and cannot be started
+
+
+ERROR: for gateway  Cannot start service gateway: container is marked for removal and cannot be started
+
+
+ERROR: for workspace  Cannot start service workspace: container is marked for removal and cannot be started
+
+
+ERROR: for mysql  Cannot start service mysql: container is marked for removal and cannot be started
+ERROR: Encountered errors while bringing up the project.
+启动 Trantor 基础环境失败, 复制或截图下方信息咨询 Trantor 支持
+Fail
+}}}
+
+===== 尝试解决 =====
+ Try just shutting down and restarting the services:
+ {{{
+docker-compose down
+docker-compose up -d
+}}}
+ the first command should pull down any "marked for removal" containers. You may also just need to restart the system to fix any deadlock conditions if that doesn't work
+
+===== 输出 =====
+ {{{
+C:\Users\Administrator>docker-compose down
+ERROR:
+        Can't find a suitable configuration file in this directory or any
+        parent. Are you in the right directory?
+
+
+        Supported filenames: docker-compose.yml, docker-compose.yaml
+}}}
+ 目录不对
+
+===== everything搜索docker-compose.yml，定位目录E:\program_flies\trantor\lib\runtime\0.10重试 =====
+ {{{
+C:\Users\Administrator>e:E:\>E:\>cd E:\program_flies\trantor\lib\runtime\0.10E:\program_flies\trantor\lib\runtime\0.10>docker-compose downStopping trantor-nacos ... doneRemoving trantor-metastore ... doneRemoving trantor-datastore ... doneRemoving trantor-gateway   ... doneRemoving trantor-mysql     ... doneRemoving trantor-console   ... doneRemoving trantor-nacos     ... doneRemoving trantor-workspace ... doneRemoving network 010_default
+}}}
+
+===== 重试 =====
+ {{{
+E:\program_flies\trantor\lib\runtime\0.10>cd e:\program_flies\trantor\bin
+
+
+e:\program_flies\trantor\bin>trantor run 0.10
+正在拉取 Trantor 基础环境镜像....
+Pulling mysql (registry.cn-hangzhou.aliyuncs.com/terminus/trantor-mysql:5.7)...
+5.7: Pulling from terminus/trantor-mysql
+Digest: sha256:13e08e4dc11522bf169ed7426887def466bf2b18f755734e7e01f0d757116eca
+Status: Image is up to date for registry.cn-hangzhou.aliyuncs.com/terminus/trantor-mysql:5.7
+Pulling nacos (registry.cn-hangzhou.aliyuncs.com/terminus/trantor-nacos:latest)...
+latest: Pulling from terminus/trantor-nacos
+Digest: sha256:ab9a49756f23ba89c389e855a5ec0ae8d81adf6875c43817e8f7091b5b56d401
+Status: Image is up to date for registry.cn-hangzhou.aliyuncs.com/terminus/trantor-nacos:latest
+Pulling datastore (registry.cn-hangzhou.aliyuncs.com/terminus/datastore:4.1.0.2)...
+4.1.0.2: Pulling from terminus/datastore
+Digest: sha256:0b384e4293788971c9cd45ebb63c49ee69dfeb7d8a4d79a8c9f1c8a9d73f6129
+Status: Image is up to date for registry.cn-hangzhou.aliyuncs.com/terminus/datastore:4.1.0.2
+Pulling gateway (registry.cn-hangzhou.aliyuncs.com/terminus/trantor-gateway:0.10.0)...
+0.10.0: Pulling from terminus/trantor-gateway
+Digest: sha256:2b70b5b2f666dfaa656b32577fdfb238ef393385d6abb4e49876af7365e87137
+Status: Image is up to date for registry.cn-hangzhou.aliyuncs.com/terminus/trantor-gateway:0.10.0
+Pulling metastore (registry.cn-hangzhou.aliyuncs.com/terminus/trantor-metastore:200708.140400)...
+200708.140400: Pulling from terminus/trantor-metastore
+Digest: sha256:2a6cf493c58f6372a085a795e01e1813c6638244ad7f2cf70f4b3eea1b9e6be2
+Status: Image is up to date for registry.cn-hangzhou.aliyuncs.com/terminus/trantor-metastore:200708.140400
+Pulling console (registry.cn-hangzhou.aliyuncs.com/terminus/trantor-console:0.10.8)...
+0.10.8: Pulling from terminus/trantor-console
+Digest: sha256:5db7a2711ac421d1158f0e6ccb65a4d7720f334b2d0de907adb1aba641e30a40
+Status: Image is up to date for registry.cn-hangzhou.aliyuncs.com/terminus/trantor-console:0.10.8
+Pulling workspace (registry.cn-hangzhou.aliyuncs.com/terminus/trantor-workspace:0.10.17)...
+0.10.17: Pulling from terminus/trantor-workspace
+Digest: sha256:3139a063b3e5caccaac0e637fbc9e143f619ae4f45d90ebd578eea46c61c4141
+Status: Image is up to date for registry.cn-hangzhou.aliyuncs.com/terminus/trantor-workspace:0.10.17
+Creating network "010_default" with the default driver
+Creating trantor-mysql     ... done
+Creating trantor-console   ... done
+Creating trantor-nacos     ... done
+Creating trantor-workspace ... done
+Creating trantor-gateway   ... done
+Creating trantor-datastore ... done
+Creating trantor-metastore ... done
+开始检测容器健康，轮询5s一次
+}}}
+
+'''最后发现好像是初始执行trantor命令的时候是在c:\下，没有cd到安装目录盘或者是安装目录下的bn'''

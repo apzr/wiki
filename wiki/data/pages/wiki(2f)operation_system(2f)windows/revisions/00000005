@@ -1,0 +1,55 @@
+==== Chrome书签位置 ====
+{{{#!highlight 
+C:\Users\Administrator\AppData\Local\Google\Chrome\User Data\Default\Bookmarks
+}}}
+
+==== 杀掉相关名字的全部进程 ====
+{{{#!highlight bash
+taskkill /F /IM powershell.exe /T
+}}}
+
+
+==== 命令行打开 ====
+{{{#!highlight Batch
+我的电脑
+explorer.exe ::{20D04FE0-3AEA-1069-A2D8-08002B30309D}
+网上邻居
+explorer.exe ::{208D2C60-3AEA-1069-A2D7-08002B30309D}
+回收站
+explorer.exe ::{645FF040-5081-101B-9F08-00AA002F954E}
+IE
+iexplore -new
+}}}
+
+==== 右键添加打开cmd ====
+{{{#!highlight batch
+Windows Registry Editor Version 5.00
+
+[HKEY_CLASSES_ROOT\Directory\shell\OpenCmdHere]
+@="在此处打开命令窗口"
+"Icon"="cmd.exe"
+
+[HKEY_CLASSES_ROOT\Directory\shell\OpenCmdHere\command]
+@="cmd.exe /s /k pushd \"%V\""
+
+[HKEY_CLASSES_ROOT\Directory\Background\shell\OpenCmdHere]
+@="在此处打开命令窗口"
+"Icon"="cmd.exe"
+
+[HKEY_CLASSES_ROOT\Directory\Background\shell\OpenCmdHere\command]
+@="cmd.exe /s /k pushd \"%V\""
+
+[HKEY_CLASSES_ROOT\Drive\shell\OpenCmdHere]
+@="在此处打开命令窗口"
+"Icon"="cmd.exe"
+
+[HKEY_CLASSES_ROOT\Drive\shell\OpenCmdHere\command]
+@="cmd.exe /s /k pushd \"%V\""
+
+[HKEY_CLASSES_ROOT\LibraryFolder\background\shell\OpenCmdHere]
+@="在此处打开命令窗口"
+"Icon"="cmd.exe"
+
+[HKEY_CLASSES_ROOT\LibraryFolder\background\shell\OpenCmdHere\command]
+@="cmd.exe /s /k pushd \"%V\""
+}}}

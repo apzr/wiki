@@ -1,0 +1,53 @@
+===== 问题现象 =====
+{{{
+C:\Users\Administrator>pip
+Traceback (most recent call last):
+  File "e:\program_flies\python\lib\runpy.py", line 194, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File "e:\program_flies\python\lib\runpy.py", line 87, in _run_code
+    exec(code, run_globals)
+  File "E:\program_flies\Python\Scripts\pip.exe\__main__.py", line 4, in <module>
+ModuleNotFoundError: No module named 'pip'
+}}}
+ ~- 一般是因为pip版本没更新导致的 -~
+
+===== 解决方法 =====
+{{{
+python -m ensurepip
+python -m pip install --upgrade pip
+}}}
+
+===== 执行结果 =====
+{{{
+C:\Users\Administrator>python -m ensurepip
+Looking in links: c:\Users\ADMINI~1\AppData\Local\Temp\tmpduxq2j_p
+Requirement already satisfied: setuptools in e:\program_flies\python\lib\site-packages (49.2.1)
+Processing c:\users\administrator\appdata\local\temp\tmpduxq2j_p\pip-20.2.1-py2.py3-none-any.whl
+Installing collected packages: pip
+Successfully installed pip-20.2.1
+
+C:\Users\Administrator>python -m pip install --upgrade pip
+Looking in indexes: https://pypi.tuna.tsinghua.edu.cn/simple
+Collecting pip
+  Downloading https://pypi.tuna.tsinghua.edu.cn/packages/cd/6f/43037c7bcc8bd8ba7c9074256b1a11596daa15555808ec748048c1507f08/pip-21.1.1-py3-none-any.whl (1.5 MB)
+     |████████████████████████████████| 1.5 MB 33 kB/s
+Installing collected packages: pip
+  Attempting uninstall: pip
+    Found existing installation: pip 20.2.1
+    Uninstalling pip-20.2.1:
+      Successfully uninstalled pip-20.2.1
+Successfully installed pip-21.1.1
+
+C:\Users\Administrator>pip list
+WARNING: Ignoring invalid distribution -ip (e:\program_flies\python\lib\site-packages)
+Package                       Version
+----------------------------- ---------
+alabaster                     0.7.12
+APScheduler                   3.2.0
+Babel                         2.9.0
+beautifulsoup4                4.9.3
+bs4                           0.0.1
+certifi                       2020.12.5
+chardet                       3.0.4
+Click                         7.0
+}}}

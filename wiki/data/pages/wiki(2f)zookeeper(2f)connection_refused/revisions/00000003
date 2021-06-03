@@ -1,0 +1,22 @@
+===== 错误现象 =====
+{{{
+2021-05-06 11:54:25.552  INFO 13664 --- [127.0.0.1:2182)] org.apache.zookeeper.ClientCnxn          : Opening socket connection to server 127.0.0.1/127.0.0.1:2182. Will not attempt to authenticate using SASL (unknown error)
+2021-05-06 11:54:26.553  WARN 13664 --- [127.0.0.1:2182)] org.apache.zookeeper.ClientCnxn          : Session 0x0 for server null, unexpected error, closing socket connection and attempting reconnect
+
+
+java.net.ConnectException: Connection refused: no further information
+    at sun.nio.ch.SocketChannelImpl.checkConnect(Native Method)
+    at sun.nio.ch.SocketChannelImpl.finishConnect(SocketChannelImpl.java:715)
+    at org.apache.zookeeper.ClientCnxnSocketNIO.doTransport(ClientCnxnSocketNIO.java:361)
+    at org.apache.zookeeper.ClientCnxn$SendThread.run(ClientCnxn.java:1141)
+
+}}}
+
+===== 服务器中检查以下内容 =====
+ * zookeeper的服务没有开启 - `执行./zkServer.sh start`
+
+ * 访问不到zookeeper中心 - `需要关闭防火墙：service iptables stop 否则访问不到2181端口`
+
+ * 配置中的zookeeper的ip地址是否写错 - `检查相关文件`
+
+ * 配置中的zookeeper的ip更新后是否重启 - `同上`
