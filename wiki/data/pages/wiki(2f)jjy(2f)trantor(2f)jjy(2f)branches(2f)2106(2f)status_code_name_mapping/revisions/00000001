@@ -1,0 +1,7 @@
+在这里详述 wiki/jjy/trantor/jjy/branches/2106/status_code_name_mapping。
+
+{{{#!highlight sql
+
+SELECT * FROM  meta_store__dictionary_item_meta WHERE label = '采购不通过'
+
+}}}

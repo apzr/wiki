@@ -1,0 +1,7 @@
+
+
+{{{#!highlight sql
+
+SELECT * FROM  meta_store__dictionary_item_meta WHERE label = '采购不通过'
+
+}}}

@@ -1,0 +1,30 @@
+`SQL`
+{{{#!highlight sql
+
+SELECT * FROM  meta_store__dictionary_item_meta WHERE label = '采购不通过'
+
+}}}
+
+TABLE - `meta_store__dictionary_item_meta`
+|| resourceKey || `custom_NewItemAuditStatus_PURCHASER_AUDIT_FAILED` || 资源识别标识  ||
+|| icon || `None` || 字典项图标  ||
+|| active || `1` || 激活  ||
+|| modificationType || `Static` || 资源类型  ||
+|| label || `采购不通过` || 字典项名称  ||
+|| createdAt || `2020/8/25 15:36` || 创建时间  ||
+|| isDeleted || `0` || 是否删除  ||
+|| iconColor || `Black` || 图标颜色  ||
+|| name ||  || 资源名称  ||
+|| originalKey || `PURCHASER_AUDIT_FAILED` || 资源标识  ||
+|| id || `96c150674ffcad47f41d510555031c76` ||  ||
+|| digester || `41c50715c386d66d15427cf4a1eec579` || digester  ||
+|| key || `custom_custom_NewItemAuditStatus_PURCHASER_AUDIT_FAILED` ||  ||
+|| status || `Enable` ||  ||
+|| desc ||  || 资源描述  ||
+|| updatedAt || `2020/8/29 9:40` || 更新时间  ||
+|| CreatedBy ||  || 创建人  ||
+|| UpdatedBy ||  || 最后修改人  ||
+|| FromDictionary || `9cdecb0e9cd3673fb420c78de352e003` || 字典项  ||
+|| FromModule || `custom` || 所属模块  ||
+|| displayOrder || `19` ||  ||
+|| deletedAt ||  ||  ||

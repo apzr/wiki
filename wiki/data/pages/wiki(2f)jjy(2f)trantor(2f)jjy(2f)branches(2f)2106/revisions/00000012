@@ -1,0 +1,22 @@
+ > [[ /branches_list |  分支 ]]
+
+ > [[ /batch_submit_item_enter_to_apply | 批量提交待申请的新品 ]]
+  
+  >> [[ /status_code_name_mapping | 状态代码与文字 ]]
+
+  >>
+
+ > [[ /batch_up_quality_report | 批量修改质检报告 ]]
+ 
+ > [[ /sync_sap_unify  | 自动同步SAP侧 -> 协同侧条形码 ]]
+ 
+ > [[ /switch_on_create_old  | 协同侧增加参数管控开关：老品操作是否允许在协同侧发起 ]]
+  
+  >> 
+
+ <<BR>>
+
+ || [[attachment:MD215.xlsx | MD215 ]] ||
+ || [[attachment:MD154.xlsx | MD154 ]] ||
+ || [[attachment:request.xlsx | 需求 ]] ||
+ || [[attachment:time.xlsx | 进度排期 ]] ||
