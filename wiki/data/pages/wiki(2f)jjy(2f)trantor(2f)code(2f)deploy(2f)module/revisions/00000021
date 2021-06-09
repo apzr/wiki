@@ -1,0 +1,17 @@
+## page was renamed from wiki/trantor/code/deploy/module
+## page was renamed from wiki/trantor/deploy/module
+
+===== 打包命令 =====
+{{{#!highlight batch
+mvn clean deploy -Dtrantor.deploy -DskipTests
+}}}
+
+[[ ../../../code | 打开交付控制台并登陆账号 ]] 
+----
+<<ImageLink(发布模块1.jpg, ,width=, height=, alt=发布模块1)>>
+----
+<<ImageLink(发布模块2.jpg, ,width=, height=, alt=发布模块2)>>
+----
+<<ImageLink(发布模块3.jpg, ,width=80%, height=80%, alt=发布模块3)>>
+
+===== 最后在查看页面右上点击 完成计划 =====
