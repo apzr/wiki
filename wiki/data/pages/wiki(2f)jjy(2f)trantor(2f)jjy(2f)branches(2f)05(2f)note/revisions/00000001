@@ -1,0 +1,21 @@
+===== 新品创建规则 =====
+ * 新品ID生成规则 后产生单号准入单号生成规则：PC+年（4）+月（2）+流水（7） 共计15位
+ * 准入商品编码生成规则：商品：八位数字，1开头，后面7位流水号，比如10000001
+
+ {{{#!highlight java
+
+
+@Data
+@TModel(name = "新品创建")
+public class NewItemApply extends BaseModel<Long> {
+    @TModelField(name = "批次号")
+    @TextMeta(length = 15, rule = "STRING(PC)+TIMES(yyyy-MM)+INCRE(1,7,5,1)")
+    private String code;
+
+    @TModelField(name = "供应商商品列表")
+    @RelationMeta(modelClass = ProtocolLine.class, name = "NewItemApplySupplierItems")
+    private List<ProtocolLine> itemRelations;
+}
+
+
+}}}
