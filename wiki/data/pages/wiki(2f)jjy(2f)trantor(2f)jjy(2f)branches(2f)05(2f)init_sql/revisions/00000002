@@ -1,0 +1,108 @@
+## page was renamed from wiki/jjy/trantor/jjy/branches/05/sql
+===== 更新最大箱包 =====
+{{{#!highlight sql
+
+-- 创建临时表
+DROP TABLE IF EXISTS `tmp_package`;
+CREATE TABLE IF NOT EXISTS `tmp_package`(
+	`package_id` BIGINT,
+	`form` VARCHAR(40) ,
+	`material_id` BIGINT,
+	`relatedUnitNum` VARCHAR(40) ,
+	`packageNum` VARCHAR(40)
+)
+
+DELETE FROM `tmp_package`
+-- select * from tmp_package
+
+-- 更新临时表
+INSERT INTO `tmp_package`(package_id,form, material_id, relatedUnitNum, packageNum)  (
+	SELECT
+		package.id AS `package_id`, -- 箱包id
+		package.form, -- 箱包形态
+		package.ItemRelationPackage AS `material_id`, -- 商品id
+		package.relatedUnitNum, -- 与基本单位数量关系
+		material.packageNum -- 最大箱包数
+	FROM
+		custom__item_package package -- 箱包表
+	LEFT JOIN material_center__material material -- 商品表
+	ON material.id = package.ItemRelationPackage -- 箱包&商品关联key
+	WHERE
+		ItemRelationPackage IN ( 
+			SELECT ProtocolLineMaterial -- 协议商品id
+			FROM material_center__protocol_line -- 商品协议表
+			WHERE customAuditStatus NOT IN ( 'PUBLISHED', 'VOID_REVIEW' ) -- 已发布, 已作废
+		) 
+	AND form = 'XB' -- 形态为箱包
+	AND convert(package.relatedUnitNum,decimal(18,2)) != material.packageNum -- 与基本单位数量关系 != 最大箱包数
+)
+
+-- 从临时表中更新主表
+UPDATE material_center__material mcm, tmp_package tmp 
+SET mcm.packageNum = CONVERT ( tmp.relatedUnitNum, DECIMAL ( 18, 2 ) ) 
+WHERE mcm.id = tmp.material_id;
+
+-- 删除临时表
+DROP TABLE IF EXISTS `tmp_package`;
+
+}}}
+
+===== 数据提取_最大箱包数不是最小要货量倍数 =====
+{{{#!highlight sql
+
+-- 最大箱包数不是最小要货量倍数
+SELECT
+	material.id,
+	material.packageNum, -- 最大箱包数
+	material.minOrderQuantity -- 最小要货
+FROM
+  material_center__material material -- 商品表
+WHERE
+	material.id IN ( 
+		SELECT ProtocolLineMaterial -- 协议商品id
+		FROM material_center__protocol_line -- 商品协议表
+		WHERE customAuditStatus NOT IN ( 'PUBLISHED', 'VOID_REVIEW' ) -- 已发布, 已作废
+	) 
+AND material.packageNum mod convert(material.minOrderQuantity,decimal(18,2))  != 0 -- 不是倍数
+-- 测试数据库只允许导入到如下指定目录, SHOW VARIABLES LIKE "secure_file_priv";
+INTO OUTFILE '/var/lib/mysql-files/packageNum_not_minOrderQuantity.csv' 
+FIELDS TERMINATED BY ',' 
+OPTIONALLY ENCLOSED BY '"' 
+LINES TERMINATED BY '\r\n';
+
+}}}
+
+===== 数据提取_最大箱包数不是箱包的与基本单位数量关系倍数 =====
+{{{#!highlight sql
+
+
+
+-- 最大箱包数不是箱包的与基本单位数量关系倍数
+SELECT
+	package.ItemRelationPackage AS `material_id`, -- 商品id
+	package.relatedUnitNum, -- 与基本单位数量关系
+	material.packageNum, -- 最大箱包数
+	package.id AS `package_id`, -- 箱包id
+	package.form -- 箱包形态
+FROM
+	custom__item_package package -- 箱包表
+LEFT JOIN material_center__material material -- 商品表
+ON material.id = package.ItemRelationPackage -- 箱包&商品关联key
+WHERE
+	ItemRelationPackage IN ( 
+		SELECT ProtocolLineMaterial -- 协议商品id
+		FROM material_center__protocol_line -- 商品协议表
+		WHERE customAuditStatus NOT IN ( 'PUBLISHED', 'VOID_REVIEW' ) -- 已发布, 已作废
+	) 
+AND form = 'XB' -- 形态为箱包
+AND material.packageNum mod convert(package.relatedUnitNum,decimal(18,2))  != 0 -- 不是倍数
+-- 测试数据库只允许导入到如下指定目录, SHOW VARIABLES LIKE "secure_file_priv";
+INTO OUTFILE '/var/lib/mysql-files/packageNum_not_relatedUnitNum.csv' 
+FIELDS TERMINATED BY ',' 
+OPTIONALLY ENCLOSED BY '"' 
+LINES TERMINATED BY '\r\n';
+
+
+
+
+}}}
