@@ -1,0 +1,13 @@
+图片啊
+
+{{{
+<<ImageLink(1.png, ,width=, height=, alt=问题2)>>
+}}}
+
+{{{
+{{attachment:Image7.png||align="top"}} 
+}}}
+
+{{{
+<<svg(attachment[,width=width,[height=height]])>>
+}}}

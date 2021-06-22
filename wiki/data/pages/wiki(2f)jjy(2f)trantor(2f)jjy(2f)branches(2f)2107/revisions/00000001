@@ -1,0 +1,78 @@
+==== custom__supply_plan >>> SupplyPlan.class ====
+
+{{{#!csv
+ ATTR, TYPE, NULL, Visual, DESC
+ submitDate, datetime, False, False, 提交时间
+ planStatus, varchar256, False, False, 状态
+ source, varchar256, False, False, 单据来源
+ createdAt, datetime, True, False, 创建时间
+ isDeleted, tinyint4, True, False, 是否删除
+ formulationCode, varchar256, False, False, 配方单号
+ applyTopic, varchar256, False, False, 要货主题
+ storeName, varchar256, False, False, 要货门店
+ id, bigint20, True, False, ♢♢♢♢♢♢♢♢♢♢♢♢♢♢♢♢♢♢♢♢♢♢♢♢♢♢♢♢♢♢♢♢♢♢♢♢♢♢♢♢♢
+ clerkName, varchar256, False, False, 制单人
+ cancelReason, varchar256, False, False, 取消原因
+ updatedAt, datetime, True, False, 更新时间
+ planType, varchar256, False, False, 要货单类型
+ applyArea, varchar256, False, False, 要货区域
+ goodsGroup, varchar256, False, False, 要货柜组
+ planCode, varchar256, False, False, 要货单号
+ lastCreatedAt, datetime, False, False, 原制单日期
+ clerkCode, varchar256, False, False, 制单人编码
+ UpdatedBy, bigint20, False, False,  更新者
+ CreatedBy, bigint20, False, False,  创建者
+ StoreRelation, bigint20, False, False, 门店编码
+ deletedAt, bigint20, False, False,  删除时间
+ 
+}}}
+
+==== custom__supply_plan_line >>> SupplyPlanLine.class ====
+
+{{{#!csv
+ ATTR, TYPE, NULL, Visual, DESC
+ minAmount, int11, False, False, 最小要货量
+ cancelAmount, int11, False, False, 取消数量
+ orderNum, int11, False, False, 序号
+ suggestAmount, int11, False, False, 建议数量
+ remark, varchar256, False, False, 行备注
+ supplierCode, varchar256, False, False, 供应商代码
+ source, varchar256, False, False, 行来源
+ avgSalesLastWeekend, int11, False, False, 上周六至周日日均销量 
+ specifications, varchar256, False, False, 规格：这个java文件里边得空提示错误，目前为@NotNull(message = "商品名称不能为空")
+ deadLine, varchar256, False, False, 截单时间
+ createdAt, datetime, True, False, 创建时间
+ packagesAmount, int11, False, False, 箱包数
+ sellDays, int11, False, False, 预期可售天数
+ supplyPlanCode, varchar256, False, False, 要货单号
+ daySalesLastWeek, int11, False, False, 上周对应当天日销量
+ isDeleted, tinyint4, True, False, 是否标记为删除
+ id, bigint20, True, False, 
+ quantityOnShiping, int11, False, False, 在途库存
+ updatedAt, datetime, True, False, 更新时间
+ supplierName, varchar256, False, False, 供应商名称
+ amount, int11, False, False, 要货数量
+ quantity, int11, False, False, 目前库存
+ avgSalesLastWeekDay, int11, False, False, 上周一至周五日均销量
+ avgSalesLastWeek, int11, False, False, 上周日均销量
+ yesterDaySales, int11, False, False, 本期昨日销量
+ product80, varchar256, False, False, 是否80商品
+ materialCode, varchar256, False, False, 商品编码
+ counter, varchar256, False, False, 专柜类型
+ companyRankLastWeek, int11, False, False, 上周公司排名
+ barCode, varchar256, False, False, 条形码
+ materialName, varchar256, False, False, 商品名称
+ unit, varchar256, False, False, 单位
+ measure, varchar256, False, False, 计量单位
+ normalPrice, decimal9-2, False, False, 正常售价
+ daySales, int11, False, False, 同期日均销量
+ UpdatedBy, bigint20, False, False, 更新者
+ CreatedBy, bigint20, False, False, 创建者
+ SupplyPlanLines, bigint20, False, False, 
+ deletedAt, bigint20, False, False, 删除时间
+ salesClassTomorrow, varchar256, False, False, 明日促销分类
+ salesVolumeDayPromotion, decimal9-2, False, False, 促销日均销量
+ submittedQuantity, int11, False, False, 已提交数量
+ pendingQuantity, int11, False, False, 待提交数量
+ 
+}}}
