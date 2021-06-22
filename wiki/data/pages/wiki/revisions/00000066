@@ -1,0 +1,107 @@
+#format text_markdown
+
+<html>
+ <head>
+  <title>Index</title>
+  <basefont face="微软雅黑" size="2" />
+  <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+  <meta name="exporter-version" content="YXBJ Windows/602988 (zh-CN, DDL); Windows/6.1.1 (Win64); EDAMVersion=V2;"/>
+  <style>
+
+	body {
+		height: 100%;
+		text-align: center;
+	}
+
+	body:before {
+		content: '';
+		height: 100%;
+		display: inline-block;
+		vertical-align: middle;
+	}
+
+	button {
+		background: #11aeec;
+		color: #fff;
+		border: none;
+		position: relative;
+		height: 30px;
+		font-size: 1.6em;
+		padding: 0  2em;
+		margin: 2px 0;   
+		cursor: pointer;
+		transition: 600ms ease all;
+		outline: none;
+		border-radius:3px;
+
+	}
+
+	button:hover {
+		background: #fff;
+		color: #009ddb;
+	}
+
+	button:before, button:after {
+		content: '';
+		position: absolute;
+		top: 0;
+		right: 0;
+		height: 2px;
+		width: 0;
+		background: #009ddb;
+		transition: 300ms ease all;
+	}
+
+	button:after {
+		right: inherit;
+		top: inherit;
+		left: 0;
+		bottom: 0;
+	}
+
+	button:hover:before, button:hover:after {
+		width: 100%;
+		transition: 600ms ease all;
+	}
+  </style>
+
+ </head>
+
+ <body>
+	<div>
+	  <button id="btn1" onclick=JavaScript:window.open("/wiki/undefine")>TODO</button>
+	  <button id="btn2" onclick=JavaScript:window.open("/wiki/code")>Code Backup</button>
+	  <button id="btn3" onclick=JavaScript:window.open("/wiki/utorrent")>μTorrent</button>
+	  <button onclick=JavaScript:window.open("/wiki/operation_system")>OS</button>
+	</div>
+	<div>
+	  <button onclick=JavaScript:window.open("/wiki/java")>JAVA</button>
+	  <button onclick=JavaScript:window.open("/wiki/sql")>SQL</button>
+	  <button onclick=JavaScript:window.open("/wiki/python")>Python</button>
+	  <button onclick=JavaScript:window.open("/wiki/java_script")>JavaScript</button>
+	</div>
+	<div>
+	  <button onclick=JavaScript:window.open("/wiki/idea")>IDEA</button>
+	  <button onclick=JavaScript:window.open("/wiki/git")>GIT</button>
+	  <button onclick=JavaScript:window.open("/wiki/mvn")>MAVEN</button>
+	  <button onclick=JavaScript:window.open("/wiki/docker")>Docker</button>
+	  <button onclick=JavaScript:window.open("/wiki/docbook")>ApacheFOP</button>
+	</div>
+	<div>
+	  <button onclick=JavaScript:window.open("/wiki/nacos")>Nacos</button>
+	  <button onclick=JavaScript:window.open("/wiki/redis")>Redis</button>
+	  <button onclick=JavaScript:window.open("/wiki/rockermq")>RocketMQ</button>
+	  <button onclick=JavaScript:window.open("/wiki/pulsar")>Pulsar</button>
+	</div>
+	<div>
+	  <button onclick=JavaScript:window.open("/wiki/swagger2")>Swagger 2</button>
+	  <button onclick=JavaScript:window.open("/wiki/eureka")>Eureka</button>
+	  <button onclick=JavaScript:window.open("/wiki/zookeeper")>Zookeeper</button>
+	  <button onclick=JavaScript:window.open("/wiki/dubbo")>DUBBO</button>
+	</div>
+	<div>
+	  <button onclick=JavaScript:window.open("/wiki/jjy")>家家悦</button>
+	</div>
+ </body>
+
+</html>

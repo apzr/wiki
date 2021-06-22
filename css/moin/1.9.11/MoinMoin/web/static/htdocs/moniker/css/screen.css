@@ -7,15 +7,235 @@
 @import url(calendar.css);
 @import url(RicksCorner.css);
 
+/* ------------------ */
+/* moon stars */
+/* ------------------ */
 
+body {
+	position: relative
+}
+
+#night {
+	background: #022436 url(../img/e_stars.png) repeat 20% 20%;
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	z-index: -100;
+	-webkit-animation: stars-anim 3000s infinite linear;
+	-moz-animation: stars-anim 3000s infinite linear;
+	-o-animation: stars-anim 3000s infinite linear;
+	animation: stars-anim 3000s infinite linear
+}
+
+#star {
+	background: url(../img/smallstars.png) repeat 20% 20%;
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	opacity: 1;
+	z-index: -50;
+	-webkit-animation: light 30s infinite alternate;
+	-moz-animation: light 30s infinite alternate;
+	-o-animation: light 30s infinite alternate;
+	animation: light 30s infinite alternate
+}
+
+#moon {
+	background: url(../img/e_moon2.png) no-repeat 35% 35%;
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	opacity: 1;
+	z-index: -25;
+	-webkit-animation: moon-anim 2500s infinite linear;
+	-moz-animation: moon-anim 2500s infinite linear;
+	-o-animation: moon-anim 2500s infinite linear;
+	animation: moon-anim 2500s infinite linear
+}
+
+@media only screen and (max-width:480px) {
+	#moon {
+		background: url(../img/e_moon2_sm.png) no-repeat 35% 35%
+	}
+}
+
+@media only screen and (min-width:481px) and (max-width:767px) {
+	#moon {
+		background: url(../img/e_moon2_md.png) no-repeat 35% 35%
+	}
+}
+
+@-webkit-keyframes moon-anim {
+	from {
+		background-position: 0 2%
+	}
+
+	to {
+		background-position: 110% 2%
+	}
+}
+
+@-moz-keyframes moon-anim {
+	from {
+		background-position: 0 2%
+	}
+
+	to {
+		background-position: 110% 2%
+	}
+}
+
+@-o-keyframes moon-anim {
+	from {
+		background-position: 0 2%
+	}
+
+	to {
+		background-position: 110% 2%
+	}
+}
+
+@keyframes moon-anim {
+	from {
+		background-position: 0 2%
+	}
+
+	to {
+		background-position: 110% 2%
+	}
+}
+
+@-webkit-keyframes stars-anim {
+	from {
+		background-position: 5% 600%
+	}
+
+	to {
+		background-position: 1300% 5%
+	}
+}
+
+@-moz-keyframes stars-anim {
+	from {
+		background-position: 5% 600%
+	}
+
+	to {
+		background-position: 1300% 5%
+	}
+}
+
+@-o-keyframes stars-anim {
+	from {
+		background-position: 5% 600%
+	}
+
+	to {
+		background-position: 1300% 5%
+	}
+}
+
+@keyframes stars-anim {
+	from {
+		background-position: 5% 600%
+	}
+
+	to {
+		background-position: 1300% 5%
+	}
+}
+
+@-webkit-keyframes light {
+	0% {
+		opacity: .1
+	}
+
+	25% {
+		opacity: .35
+	}
+
+	50% {
+		opacity: .95
+	}
+
+	100% {
+		opacity: .2
+	}
+}
+
+@-moz-keyframes light {
+	0% {
+		opacity: .1
+	}
+
+	25% {
+		opacity: .35
+	}
+
+	50% {
+		opacity: .95
+	}
+
+	100% {
+		opacity: .2
+	}
+}
+
+@-o-keyframes light {
+	0% {
+		opacity: .1
+	}
+
+	25% {
+		opacity: .35
+	}
+
+	50% {
+		opacity: .95
+	}
+
+	100% {
+		opacity: .2
+	}
+}
+
+@keyframes light {
+	0% {
+		opacity: .1
+	}
+
+	25% {
+		opacity: .35
+	}
+
+	50% {
+		opacity: .95
+	}
+
+	100% {
+		opacity: .2
+	}
+}
 
 
 /* ------------------ */
 /* general typography */
 /* ------------------ */
 
+
 html { font-size: 81%; }
-html, body { margin: 0; padding: 0; background-color: #e5e5e5; color: black; }
+html, body { 
+    margin: 0; 
+	padding: 0; 
+	color: black;	
+	background-color: #f5f5f5; 
+}
 
 body {
 	vertical-align: text-top;
@@ -69,7 +289,7 @@ div#page {
 	margin: 10px 15px 10px 185px;
 	padding: 15px 30px;
 	border: 1px solid #cccccc;
-    background-color: white;
+    background-color: #e5e5e5; 
     border-radius: 1px; -moz-border-radius: 1px; -webkit-border-radius: 1px;
     box-shadow: 1px 1px 12px #cccccc; -moz-box-shadow: 1px 1px 12px #cccccc; -webkit-box-shadow: 1px 1px 12px #cccccc;
     }

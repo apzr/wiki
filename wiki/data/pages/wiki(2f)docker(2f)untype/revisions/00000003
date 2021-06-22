@@ -1,0 +1,75 @@
+{{{#!hightlight Bash
+# docker machine
+
+C:\Users\Administrator>docker-machine ssh default
+   ( '>')
+  /) TC (\   Core is distributed with ABSOLUTELY NO WARRANTY.
+ (/-_--_-\)           www.tinycorelinux.net
+
+[1;32mdocker@default[0m:[1;34m~[0m$ ll
+-bash: ll: command not found
+[1;32mdocker@default[0m:[1;34m~[0m$ ls
+[1;32mdocker@default[0m:[1;34m~[0m$ cd /var/lib/boot2docker/profile
+}}}
+
+{{{#!hightlight Bash
+# docker根目录
+
+[root@localhost docker]# docker info | grep "Docker Root Dir"
+Docker Root Dir: /var/lib/docker
+[root@localhost docker]#
+}}}
+
+{{{#!hightlight Bash
+[root@localhost ~]# docker system df
+TYPE            TOTAL     ACTIVE    SIZE      RECLAIMABLE
+Images          56        25        11.5GB    6.224GB (54%)
+Containers      25        25        703MB     0B (0%)
+Local Volumes   4         4         1.818GB   0B (0%)
+Build Cache     0         0         0B        0B
+}}}
+
+{{{#!hightlight Bash
+docker rm      #删除一个或多个 容器
+docker rmi     #删除一个或多个 镜像
+docker prune   #删除不再使用的 docker 对象
+}}}
+
+{{{#!hightlight Bash
+docker images #查看镜像
+docker run imagesID #启动镜像
+docker run -it -d -p 127.0.0.1:5000:5000 docker.io/centos:latest /bin/bash #将容器的5000端口映射到127.0.0.1:5000上
+}}}
+
+{{{#!hightlight Bash
+1、删除容器
+    1）首先需要停止所有的容器
+        docker stop $(docker ps -a -q)
+    2）删除所有的容器（只删除单个时把后面的变量改为image id即可）
+        docker rm $(docker ps -a -q)
+2、删除镜像
+    1）查看host中的镜像
+        docker images
+    2）删除指定id的镜像
+        docker rmi <image id>
+        想要删除untagged images，也就是那些id为的image的话可以用
+        docker rmi $(docker images | grep "^" | awk "{print $3}")
+    3）删除全部的images
+        docker rmi $(docker images -q)
+3、当要删除的iamges和其他的镜像有关联而无法删除时可通过 -f 参数强制删除
+    docker rmi -f $(docker images -q)
+}}}
+
+查看/tmp目录下文件
+
+{{{#!hightlight Bash
+docker exec 7a ls /tmp 7a 为容器简称
+}}}
+
+windows 下安装docker依赖boot2docker镜像默认用户和密码
+
+{{{#!csv ,
+用户, 密码, 连接方式
+docker, tcuser, ssh
+root, , command：sudo -i 
+}}}
