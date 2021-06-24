@@ -1,0 +1,51 @@
+===== 问题现象 =====
+{{{
+2021-06-23T07:32:11.876423Z 0 [Warning] [MY-011070] [Server] 'Disabling symbolic links using --skip-symbolic-links (or equivalent) is the default. Consider not using this option as it' is deprecated and will be removed in a future release.
+2021-06-23T07:32:11.886165Z 0 [System] [MY-010116] [Server] /usr/sbin/mysqld (mysqld 8.0.12) starting as process 1
+mbind: Operation not permitted
+2021-06-23T07:32:37.659755Z 0 [Warning] [MY-011070] [Server] 'Disabling symbolic links using --skip-symbolic-links (or equivalent) is the default. Consider not using this option as it' is deprecated and will be removed in a future release.
+2021-06-23T07:32:37.697939Z 0 [System] [MY-010116] [Server] /usr/sbin/mysqld (mysqld 8.0.12) starting as process 1
+2021-06-23T07:32:38.947464Z 0 [ERROR] [MY-012681] [InnoDB] InnoDB: mmap(137428992 bytes) failed; errno 12
+2021-06-23T07:32:38.949469Z 1 [ERROR] [MY-012956] [InnoDB] InnoDB: Cannot allocate memory for the buffer pool
+2021-06-23T07:32:38.949729Z 1 [ERROR] [MY-012930] [InnoDB] InnoDB: Plugin initialization aborted with error Generic error.
+2021-06-23T07:32:38.951764Z 1 [ERROR] [MY-010334] [Server] Failed to initialize DD Storage Engine
+2021-06-23T07:32:38.975019Z 0 [ERROR] [MY-010020] [Server] Data Dictionary initialization failed.
+2021-06-23T07:32:38.975763Z 0 [ERROR] [MY-010119] [Server] Aborting
+2021-06-23T07:32:39.019655Z 0 [System] [MY-010910] [Server] /usr/sbin/mysqld: Shutdown complete (mysqld 8.0.12)  MySQL Community Server - GPL.
+2021-06-23T07:32:53.241388Z 0 [Warning] [MY-011070] [Server] 'Disabling symbolic links using --skip-symbolic-links (or equivalent) is the default. Consider not using this option as it' is deprecated and will be removed in a future release.
+2021-06-23T07:32:53.270319Z 0 [System] [MY-010116] [Server] /usr/sbin/mysqld (mysqld 8.0.12) starting as process 1
+2021-06-23T07:32:54.534222Z 0 [ERROR] [MY-012681] [InnoDB] InnoDB: mmap(137428992 bytes) failed; errno 12
+2021-06-23T07:32:54.537302Z 1 [ERROR] [MY-012956] [InnoDB] InnoDB: Cannot allocate memory for the buffer pool
+2021-06-23T07:32:54.538579Z 1 [ERROR] [MY-012930] [InnoDB] InnoDB: Plugin initialization aborted with error Generic error.
+2021-06-23T07:32:54.539054Z 1 [ERROR] [MY-010334] [Server] Failed to initialize DD Storage Engine
+2021-06-23T07:32:54.540045Z 0 [ERROR] [MY-010020] [Server] Data Dictionary initialization failed.
+2021-06-23T07:32:54.541352Z 0 [ERROR] [MY-010119] [Server] Aborting
+2021-06-23T07:32:54.559314Z 0 [System] [MY-010910] [Server] /usr/sbin/mysqld: Shutdown complete (mysqld 8.0.12)  MySQL Community Server - GPL.
+2021-06-23T07:33:09.783520Z 0 [Warning] [MY-011070] [Server] 'Disabling symbolic links using --skip-symbolic-links (or equivalent) is the default. Consider not using this option as it' is deprecated and will be removed in a future release.
+2021-06-23T07:33:09.796015Z 0 [System] [MY-010116] [Server] /usr/sbin/mysqld (mysqld 8.0.12) starting as process 1
+mbind: Operation not permitted
+2021-06-23T07:33:34.922032Z 0 [Warning] [MY-011070] [Server] 'Disabling symbolic links using --skip-symbolic-links (or equivalent) is the default. Consider not using this option as it' is deprecated and will be removed in a future release.
+2021-06-23T07:33:34.940888Z 0 [System] [MY-010116] [Server] /usr/sbin/mysqld (mysqld 8.0.12) starting as process 1
+mbind: Operation not permitted
+2021-06-23T07:33:45.203236Z 0 [ERROR] [MY-011947] [InnoDB] InnoDB: Cannot open '/var/lib/mysql/ib_buffer_pool' for reading: No such file or directory
+2021-06-23T07:34:22.064541Z 0 [Warning] [MY-011070] [Server] 'Disabling symbolic links using --skip-symbolic-links (or equivalent) is the default. Consider not using this option as it' is deprecated and will be removed in a future release.
+2021-06-23T07:34:22.150395Z 0 [System] [MY-010116] [Server] /usr/sbin/mysqld (mysqld 8.0.12) starting as process 1
+mbind: Operation not permitted
+}}}
+
+===== 解决方法 =====
+`docker-compose.yml`中忽略docker的安全验证即可
+{{{
+version: '3.7'
+  services:
+    mysql:
+      image: mysql
+      container_name: mysql
+#--------------------------------
+      # docker security outh
+      security_opt:
+        - seccomp:unconfined
+#--------------------------------
+      ports:
+        - 3306:3306
+}}}

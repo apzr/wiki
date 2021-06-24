@@ -1,0 +1,49 @@
+===== 进入要修改环境变量的容器 =====
+{{{#!highlight 
+C:\>docker exec -it 7bd /bin/bash
+root@7bd86a5522dc:/# 
+}}}
+
+===== 查看ENV =====
+{{{#!highlight 
+root@7bd86a5522dc:/# env
+
+MYSQL_PORT=3306
+HOSTNAME=7bd86a5522dc
+API_LOG_LEVEL=debug
+JAVA_HOME=/usr/local/openjdk-11
+DEV_MODE=true
+PWD=/
+MYSQL_PASSWORD=password
+HOME=/root
+LANG=C.UTF-8
+TX_LOG_LEVEL=debug
+MQ_LOG_LEVEL=debug
+MYSQL_HOST=mysql
+TERM=xterm
+ES_LOG_LEVEL=debug
+SHLVL=1
+MYSQL_USERNAME=root
+DUBBO_ENABLED=false
+PATH=/usr/local/openjdk-11/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+SQL_API_LOG_LEVEL=debug
+SQL_LOG_LEVEL=debug
+JAVA_VERSION=11.0.11+9
+DDL_FORMAT=CAMELCASE
+_=/usr/bin/env
+root@7bd86a5522dc:/#
+}}}
+
+===== 修改ENV =====
+{{{#!wiki note
+''env <key> <value>''
+<<BR>>
+''env <key1>=<value1> <key2>=<value2> ...''
+}}}
+
+{{{#!highlight
+env MYSQL_HOST=127.0.0.1
+env MYSQL_PORT=3306
+env MYSQL_USERNAME=root MYSQL_PASSWORD=toor
+env MYSQL_HOST=127.0.0.1 MYSQL_PORT=3306 MYSQL_USERNAME=root MYSQL_PASSWORD=toor
+}}}

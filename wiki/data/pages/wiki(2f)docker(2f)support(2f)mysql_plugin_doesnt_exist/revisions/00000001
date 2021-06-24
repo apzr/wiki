@@ -1,0 +1,13 @@
+===== 问题现象 =====
+{{{
+E:\IDEASPACE\biz-parent\docker>docker-compose logs -f --tail=10
+Attaching to mysql-slave1, mysql-slave2, apollo-db, mysql-master, rabbitmq, redis
+...
+mysql-master               | 2021-06-23T06:32:50.076222Z 0 [Warning] [MY-011070] [Server] 'Disabling symbolic links using --skip-symbolic-links (or equivalent) is the default. Consider not using this option as it' is deprecated and will be removed in a future release
+mysql-master               | 2021-06-23T06:32:50.076351Z 0 [System] [MY-010116] [Server] /usr/sbin/mysqld (mysqld 8.0.12) starting as process 1
+mysql-master               | mbind: Operation not permitted
+mysql-master               | 2021-06-23T06:32:59.684187Z 0 [ERROR] [MY-011947] [InnoDB] InnoDB: Cannot open '/var/lib/mysql/ib_buffer_pool' for reading: No such file or directory
+mysql-master               | mysqld: Table 'mysql.plugin' doesn't exist
+mysql-master               | 2021-06-23T06:33:01.080850Z 0 [ERROR] [MY-010735] [Server] Can't open the mysql.plugin table. Please run mysql_upgrade to create it.
+...
+}}}

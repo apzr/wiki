@@ -1,0 +1,520 @@
+===== 问题现象 =====
+ {{{
+E:\IDEASPACE\biz-parent\docker>docker-compose up -d mysql-master mysql-slave1 mysql-slave2 redis rabbitmq apollo-db
+Traceback (most recent call last):
+  File "docker-compose", line 6, in <module>
+  File "compose\cli\main.py", line 71, in main
+  File "compose\cli\main.py", line 124, in perform_command
+  File "compose\cli\command.py", line 41, in project_from_options
+  File "compose\cli\command.py", line 109, in get_project
+  File "compose\config\config.py", line 283, in find
+  File "compose\config\config.py", line 283, in <listcomp>
+  File "compose\config\config.py", line 183, in from_filename
+  File "compose\config\config.py", line 1434, in load_yaml
+  File "site-packages\yaml\__init__.py", line 94, in safe_load
+  File "site-packages\yaml\__init__.py", line 70, in load
+  File "site-packages\yaml\loader.py", line 24, in __init__
+  File "site-packages\yaml\reader.py", line 85, in __init__
+  File "site-packages\yaml\reader.py", line 124, in determine_encoding
+  File "site-packages\yaml\reader.py", line 178, in update_raw
+UnicodeDecodeError: 'gbk' codec can't decode byte 0x8d in position 127: illegal multibyte sequence
+[17576] Failed to execute script docker-compose
+}}}
+
+===== docker.version =====
+ {{{
+E:\IDEASPACE\biz-parent\docker>docker version
+Client:
+ Version:
+
+ API version:
+
+ Go version:
+
+ Git commit:
+
+ Built:
+
+ OS/Arch:
+                       /amd64
+ Experimental:
+
+ Orchestrator:
+
+
+Server: Docker Engine - Community
+ Engine:
+  Version:
+
+  API version:
+                     (minimum version 1.12)
+  Go version:
+
+  Git commit:
+
+  Built:
+
+  OS/Arch:
+                     /amd64
+  Experimental:
+
+ containerd:
+  Version:
+
+  GitCommit:            7ad184331fa3e55e52b890ea95e65ba581ae3429
+ runc:
+  Version:
+
+  GitCommit:            dc9208a3303feef5b3839f4323d9beb36df0a9dd
+ docker-init:
+  Version:
+
+  GitCommit:            fec3683
+}}}
+
+===== docker-compose.version =====
+ {{{
+E:\IDEASPACE\biz-parent\docker>docker-compose version
+docker-compose version 1.20.1, build 5d8c71b2
+docker-py version: 3.1.4
+CPython version: 3.6.4
+OpenSSL version: OpenSSL 1.0.2k  26 Jan 2017
+
+}}}
+
+===== docker-compose.yml =====
+ {{{
+version: '3'
+services:
+  mysql-master:
+    image: mysql:${MYSQL_TAG}   #镜像
+    container_name: mysql-master   #容器名
+    restart: always    #重启容器策略: 1.null 默认策略,退出后不重启  2.on-failure 非正常退出会重启,on-failure:3还能指定尝试重启次数  3.always 容器退出时总是重启  4.unless-stopped 在容器退出时总是重启容器,但是不考虑在Docker守护进程启动时就已经停止了的容器
+    networks:   #配置容器连接的网络,引用顶级networks下的条目
+      - biz-net
+    ports:
+      - 3306:3306   #宿主机与容器的端口映射规则
+    volumes:   #数据卷或者文件挂载到容器
+#      - ./data/mysql/master/mysql:/var/lib/mysql
+      - ./data/mysql/master/mysql-files:/var/lib/mysql-files
+      - ../sql:/sql
+      - ../script/master/init-master.sh:/docker-entrypoint-initdb.d/init-master.sh
+    env_file:
+      - .env
+    environment:
+      - TZ=Asia/Shanghai
+      - MYSQL_ROOT_PASSWORD=${MASTER_MYSQL_ROOT_PASSWORD}
+    command: [
+      "--server-id=${MASTER_SERVER_ID}",
+      "--character-set-server=utf8mb4",
+      "--collation-server=utf8mb4_unicode_ci",
+      "--log-bin=mysql-bin",
+      "--innodb_flush_log_at_trx_commit=1",
+      "--sync_binlog=1"
+    ]
+
+  mysql-slave1:
+    image: mysql:${MYSQL_TAG}
+    container_name: mysql-slave1
+    restart: always
+    networks:
+      - biz-net
+    ports:
+      - 3307:3306
+    volumes:
+#      - ./data/mysql/slave1/mysql:/var/lib/mysql
+      - ./data/mysql/slave1/mysql-files:/var/lib/mysql-files
+      - ../sql:/sql
+      - ../script/slave/init-slave.sh:/docker-entrypoint-initdb.d/init-slave.sh
+    env_file:
+      - .env
+    environment:
+      - TZ=Asia/Shanghai
+      - MYSQL_ROOT_PASSWORD=${SLAVES_MYSQL_ROOT_PASSWORD}
+    depends_on:   #容器依赖关系
+      - mysql-master
+    command: [
+      "--server-id=${SLAVE1_SERVER_ID}",
+      "--character-set-server=utf8mb4",
+      "--collation-server=utf8mb4_unicode_ci",
+      "--log-bin=mysql-bin",
+      "--relay_log=mysql-relay-bin",
+      "--read_only=on"
+    ]
+
+  mysql-slave2:
+    image: mysql:${MYSQL_TAG}
+    container_name: mysql-slave2
+    restart: always
+    networks:
+      - biz-net
+    ports:
+      - 3308:3306
+    volumes:
+#      - ./data/mysql/slave2/mysql:/var/lib/mysql
+      - ./data/mysql/slave2/mysql-files:/var/lib/mysql-files
+      - ../sql:/sql
+      - ../script/slave/init-slave.sh:/docker-entrypoint-initdb.d/init-slave.sh
+    env_file:
+      - .env
+    environment:
+      - TZ=Asia/Shanghai
+      - MYSQL_ROOT_PASSWORD=${SLAVES_MYSQL_ROOT_PASSWORD}
+    depends_on:
+      - mysql-master
+    command: [
+      "--server-id=${SLAVE2_SERVER_ID}",
+      "--character-set-server=utf8mb4",
+      "--collation-server=utf8mb4_unicode_ci",
+      "--log-bin=mysql-bin",
+      "--relay_log=mysql-relay-bin",
+      "--read_only=on"
+    ]
+
+  redis:
+    image: redis:${REDIS_TAG}
+    container_name: redis
+    restart: always
+#      volumes:
+#    - ./data/redis:/data
+    networks:
+      - biz-net
+    ports:
+      - 6379:6379
+    env_file:
+      - .env
+    command: redis-server --requirepass ${REDIS_DEFAULT_PASSWORD}
+
+  rabbitmq:
+    image: rabbitmq:${RABBITMQ_TAG}
+    container_name: rabbitmq
+    restart: always
+#      volumes:
+#    - ./data/rabbitmq:/var/lib/rabbitmq/mnesia
+    networks:
+      - biz-net
+    ports:
+      - 5672:5672
+      - 15672:15672
+    env_file: .env   #从文件添加环境变量
+
+  zk:
+    image: zookeeper:${ZOOKEEPER_TAG}
+    container_name: zk
+    networks:
+      - biz-net
+    ports:
+      - 2181:2181
+    env_file:
+      - .env
+    environment:
+      ZOO_MY_ID: 1
+      ZOO_SERVERS: server.1=zk:2888:3888;2181 server.2=zk2:2888:3888;2181 server.3=zk3:2888:3888;2181
+    depends_on:
+      - zk2
+      - zk3
+  zk2:
+    image: zookeeper:${ZOOKEEPER_TAG}
+    container_name: zk2
+    networks:
+      - biz-net
+    ports:
+      - 2182:2181
+    env_file:
+      - .env
+    environment:
+      ZOO_MY_ID: 2
+      ZOO_SERVERS: server.1=zk:2888:3888;2181 server.2=zk2:2888:3888;2181 server.3=zk3:2888:3888;2181
+  zk3:
+    image: zookeeper:${ZOOKEEPER_TAG}
+    container_name: zk3
+    networks:
+      - biz-net
+    ports:
+      - 2183:2181
+    environment:
+      ZOO_MY_ID: 3
+      ZOO_SERVERS: server.1=zk:2888:3888;2181 server.2=zk2:2888:3888;2181 server.3=zk3:2888:3888;2181
+    env_file:
+      - .env
+
+  apollo:
+    image: nobodyiam/apollo-quick-start:${APOLLO_QUICK_START_TAG}
+    container_name: apollo
+    networks:
+      - biz-net
+    ports:
+      - 8080:8080
+      - 8070:8070
+    depends_on:
+      - apollo-db
+    env_file:
+      - .env
+
+  apollo-db:
+    image: mysql:5.7
+    container_name: apollo-db
+    env_file:
+      - .env
+    environment:
+      TZ: Asia/Shanghai
+      MYSQL_ALLOW_EMPTY_PASSWORD: 'yes'
+    networks:
+      - biz-net
+    ports:
+      - 3316:3306
+    volumes:
+#      - ./data/apollo/mysql:/var/lib/mysql
+      - ./config/apollo:/docker-entrypoint-initdb.d
+
+  elasticsearch:
+    image: elasticsearch:${ELK_TAG}
+    container_name: elasticsearch
+    env_file:
+      - .env
+    environment:
+      - discovery.type=single-node
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - TZ=Asia/Shanghai
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+#    volumes:
+#      - ./data/elasticsearch/data:/usr/share/elasticsearch/data
+#      - ./data/elasticsearch/logs:/usr/share/elasticsearch/logs
+    networks:
+      - biz-net
+    ports:
+      - 9200:9200
+      - 9300:9300
+
+  kibana:
+    image: kibana:${ELK_TAG}
+    container_name: kibana
+    volumes:
+      - ./config/kibana/kibana.yml:/usr/share/kibana/config/kibana.yml
+    networks:
+      - biz-net
+    ports:
+      - 5601:5601
+    depends_on:
+      - elasticsearch
+    env_file:
+      - .env
+
+  logstash:
+    image: logstash:${ELK_TAG}
+    container_name: logstash
+    volumes:
+      - ./config/logstash/logstash.conf:/usr/share/logstash/pipeline/logstash.conf
+    networks:
+      - biz-net
+    ports:
+      - 7002:7002
+    depends_on:
+      - elasticsearch
+      - kibana
+    env_file:
+      - .env
+
+  skywalking-oap:
+    image: apache/skywalking-oap-server:${SKYWALKING_OAP_SERVER_TAG}
+    container_name: skywalking-oap
+    networks:
+      - biz-net
+    ports:
+      - 11800:11800
+      - 12800:12800
+    env_file:
+      - .env
+    environment:
+      - SW_STORAGE=elasticsearch7
+      - TZ=Asia/Shanghai
+      - SW_STORAGE_ES_CLUSTER_NODES=elasticsearch:9200
+    depends_on:
+      - elasticsearch
+
+  skywalking-ui:
+    image: apache/skywalking-ui:${SKYWALKING_UI_SERVER_TAG}
+    container_name: skywalking-ui
+    networks:
+      - biz-net
+    ports:
+      - 8090:8080
+    env_file:
+      - .env
+    environment:
+      - SW_OAP_ADDRESS=skywalking-oap:12800
+      - TZ=Asia/Shanghai
+    depends_on:
+      - skywalking-oap
+
+  eureka:
+    image: waynechu/biz-spring-cloud-eureka:1.0.0-RELEASE
+    networks:
+      - biz-net
+    ports:
+      - 9001-9009:8080
+    environment:
+      - JAVA_OPTS=-Dspring.profiles.active=prd -Denv=DEV -Dapollo.configService=http://apollo:8080 -Ddev_meta=http://apollo:8080 -server -Xms256m -Xmx256m -Xmn100m -Xss256k -XX:+UseConcMarkSweepGC -XX:CMSInitiatingOccupancyFraction=80 -XX:+UseCMSInitiatingOccupancyOnly -XX:AutoBoxCacheMax=20000 -XX:-OmitStackTraceInFastThrow -Djava.rmi.server.hostname=local_ip -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.port=12345 -javaagent:/opt/skywalking-agent/skywalking-agent.jar -Dskywalking.collector.backend_service=skywalking-oap:11800 -Dskywalking.agent.service_name=biz-spring-cloud-eureka
+      - server.port=8080
+      - eureka.client.service-url.defaultZone=http://eureka:8080/eureka/,http://apollo:8080/eureka/
+
+  gateway:
+    image: waynechu/biz-spring-cloud-gateway:1.0.0-RELEASE
+    container_name: gateway
+    networks:
+      - biz-net
+    ports:
+      - 9010:8080
+    environment:
+      - JAVA_OPTS=-Dspring.profiles.active=prd -Denv=DEV -Dapollo.configService=http://apollo:8080 -Ddev_meta=http://apollo:8080 -server -Xms256m -Xmx256m -Xmn100m -Xss256k -XX:+UseConcMarkSweepGC -XX:CMSInitiatingOccupancyFraction=80 -XX:+UseCMSInitiatingOccupancyOnly -XX:AutoBoxCacheMax=20000 -XX:-OmitStackTraceInFastThrow -Djava.rmi.server.hostname=local_ip -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.port=12345 -javaagent:/opt/skywalking-agent/skywalking-agent.jar -Dskywalking.collector.backend_service=skywalking-oap:11800 -Dskywalking.agent.service_name=biz-spring-cloud-gateway
+      - server.port=8080
+      - eureka.client.service-url.defaultZone=http://eureka:8080/eureka/,http://apollo:8080/eureka/
+    depends_on:
+      - apollo
+      - eureka
+
+  boot-admin:
+    image: waynechu/biz-spring-boot-admin:1.0.0-RELEASE
+    container_name: boot-admin
+    networks:
+      - biz-net
+    ports:
+      - 9020:8080
+    environment:
+      - JAVA_OPTS=-Dspring.profiles.active=prd -Denv=DEV -Dapollo.configService=http://apollo:8080 -Ddev_meta=http://apollo:8080 -server -Xms256m -Xmx256m -Xmn100m -Xss256k -XX:+UseConcMarkSweepGC -XX:CMSInitiatingOccupancyFraction=80 -XX:+UseCMSInitiatingOccupancyOnly -XX:AutoBoxCacheMax=20000 -XX:-OmitStackTraceInFastThrow -Djava.rmi.server.hostname=local_ip -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.port=12345 -javaagent:/opt/skywalking-agent/skywalking-agent.jar -Dskywalking.collector.backend_service=skywalking-oap:11800 -Dskywalking.agent.service_name=biz-spring-boot-admin
+      - server.port=8080
+      - eureka.client.service-url.defaultZone=http://eureka:8080/eureka/,http://apollo:8080/eureka/
+    depends_on:
+      - apollo
+      - eureka
+
+  oauth-server:
+    image: waynechu/biz-spring-cloud-oauth-server:1.0.0-SNAPSHOT
+    networks:
+      - biz-net
+    ports:
+      - 9050-9059:8080
+    environment:
+      - JAVA_OPTS=-Dspring.profiles.active=prd -Denv=DEV -Dapollo.configService=http://apollo:8080 -Ddev_meta=http://apollo:8080 -server -Xms256m -Xmx256m -Xmn100m -Xss256k -XX:+UseConcMarkSweepGC -XX:CMSInitiatingOccupancyFraction=80 -XX:+UseCMSInitiatingOccupancyOnly -XX:AutoBoxCacheMax=20000 -XX:-OmitStackTraceInFastThrow -Djava.rmi.server.hostname=local_ip -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.port=12345 -javaagent:/opt/skywalking-agent/skywalking-agent.jar -Dskywalking.collector.backend_service=skywalking-oap:11800 -Dskywalking.agent.service_name=biz-spring-cloud-oauth-server
+      - server.port=8080
+      - eureka.client.service-url.defaultZone=http://eureka:8080/eureka/,http://apollo:8080/eureka/
+    depends_on:
+      - mysql-master
+      - mysql-slave1
+      - mysql-slave2
+      - rabbitmq
+      - redis
+      - apollo
+      - eureka
+
+  archetype-portal:
+    image: waynechu/biz-archetype-portal:1.0.0-SNAPSHOT
+    networks:
+      - biz-net
+    ports:
+      - 9060-9069:8080
+    environment:
+      - JAVA_OPTS=-Dspring.profiles.active=prd -Denv=DEV -Dapollo.configService=http://apollo:8080 -Ddev_meta=http://apollo:8080 -server -Xms256m -Xmx256m -Xmn100m -Xss256k -XX:+UseConcMarkSweepGC -XX:CMSInitiatingOccupancyFraction=80 -XX:+UseCMSInitiatingOccupancyOnly -XX:AutoBoxCacheMax=20000 -XX:-OmitStackTraceInFastThrow -Djava.rmi.server.hostname=local_ip -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.port=12345 -javaagent:/opt/skywalking-agent/skywalking-agent.jar -Dskywalking.collector.backend_service=skywalking-oap:11800 -Dskywalking.agent.service_name=biz-archetype-portal
+      - server.port=8080
+      - eureka.client.service-url.defaultZone=http://eureka:8080/eureka/,http://apollo:8080/eureka/
+    depends_on:
+      - mysql-master
+      - mysql-slave1
+      - mysql-slave2
+      - rabbitmq
+      - redis
+      - apollo
+      - eureka
+
+  service-utility:
+    image: waynechu/biz-spring-cloud-api-service-utility:1.0.0-SNAPSHOT
+    networks:
+      - biz-net
+    ports:
+      - 10030-10039:8080
+    environment:
+      - JAVA_OPTS=-Dspring.profiles.active=prd -Denv=DEV -Dapollo.configService=http://apollo:8080 -Ddev_meta=http://apollo:8080 -server -Xms256m -Xmx256m -Xmn100m -Xss256k -XX:+UseConcMarkSweepGC -XX:CMSInitiatingOccupancyFraction=80 -XX:+UseCMSInitiatingOccupancyOnly -XX:AutoBoxCacheMax=20000 -XX:-OmitStackTraceInFastThrow -Djava.rmi.server.hostname=local_ip -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.port=12345 -javaagent:/opt/skywalking-agent/skywalking-agent.jar -Dskywalking.collector.backend_service=skywalking-oap:11800 -Dskywalking.agent.service_name=service-utility
+      - server.port=8080
+      - eureka.client.service-url.defaultZone=http://eureka:8080/eureka/,http://apollo:8080/eureka/
+    depends_on:
+      - mysql-master
+      - mysql-slave1
+      - mysql-slave2
+      - rabbitmq
+      - redis
+      - apollo
+      - eureka
+
+  service-order:
+    image: waynechu/biz-spring-cloud-api-service-order:1.0.0-SNAPSHOT
+    networks:
+      - biz-net
+    ports:
+      - 10010-10019:8080
+    environment:
+      - JAVA_OPTS=-Dspring.profiles.active=prd -Denv=DEV -Dapollo.configService=http://apollo:8080 -Ddev_meta=http://apollo:8080 -server -Xms256m -Xmx256m -Xmn100m -Xss256k -XX:+UseConcMarkSweepGC -XX:CMSInitiatingOccupancyFraction=80 -XX:+UseCMSInitiatingOccupancyOnly -XX:AutoBoxCacheMax=20000 -XX:-OmitStackTraceInFastThrow -Djava.rmi.server.hostname=local_ip -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.port=12345 -javaagent:/opt/skywalking-agent/skywalking-agent.jar -Dskywalking.collector.backend_service=skywalking-oap:11800 -Dskywalking.agent.service_name=service-order
+      - server.port=8080
+      - eureka.client.service-url.defaultZone=http://eureka:8080/eureka/,http://apollo:8080/eureka/
+    depends_on:
+      - mysql-master
+      - mysql-slave1
+      - mysql-slave2
+      - rabbitmq
+      - zk
+      - redis
+      - apollo
+      - eureka
+
+  service-product:
+    image: waynechu/biz-spring-cloud-api-service-product:1.0.0-SNAPSHOT
+    networks:
+      - biz-net
+    ports:
+      - 10020-10029:8080
+    environment:
+      - JAVA_OPTS=-Dspring.profiles.active=prd -Denv=DEV -Dapollo.configService=http://apollo:8080 -Ddev_meta=http://apollo:8080 -server -Xms256m -Xmx256m -Xmn100m -Xss256k -XX:+UseConcMarkSweepGC -XX:CMSInitiatingOccupancyFraction=80 -XX:+UseCMSInitiatingOccupancyOnly -XX:AutoBoxCacheMax=20000 -XX:-OmitStackTraceInFastThrow -Djava.rmi.server.hostname=local_ip -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.port=12345 -javaagent:/opt/skywalking-agent/skywalking-agent.jar -Dskywalking.collector.backend_service=skywalking-oap:11800 -Dskywalking.agent.service_name=service-product
+      - server.port=8080
+      - eureka.client.service-url.defaultZone=http://eureka:8080/eureka/,http://apollo:8080/eureka/
+    depends_on:
+      - mysql-master
+      - mysql-slave1
+      - mysql-slave2
+      - rabbitmq
+      - redis
+      - apollo
+      - eureka
+
+  dynamic-datasource-test:
+    image: waynechu/biz-spring-cloud-api-dynamic-datasource-test:1.0.0-SNAPSHOT
+    networks:
+      - biz-net
+    ports:
+      - 10040-10049:8080
+    environment:
+      - JAVA_OPTS=-Dspring.profiles.active=prd -Denv=DEV -Dapollo.configService=http://apollo:8080 -Ddev_meta=http://apollo:8080 -server -Xms256m -Xmx256m -Xmn100m -Xss256k -XX:+UseConcMarkSweepGC -XX:CMSInitiatingOccupancyFraction=80 -XX:+UseCMSInitiatingOccupancyOnly -XX:AutoBoxCacheMax=20000 -XX:-OmitStackTraceInFastThrow -Djava.rmi.server.hostname=local_ip -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.port=12345 -javaagent:/opt/skywalking-agent/skywalking-agent.jar -Dskywalking.collector.backend_service=skywalking-oap:11800 -Dskywalking.agent.service_name=dynamic-datasource-test
+      - server.port=8080
+      - eureka.client.service-url.defaultZone=http://eureka:8080/eureka/,http://apollo:8080/eureka/
+    depends_on:
+      - mysql-master
+      - mysql-slave1
+      - mysql-slave2
+      - rabbitmq
+      - redis
+      - apollo
+      - eureka
+
+networks:
+  biz-net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16
+}}}
+
+===== 解决方法 =====
+ {{{
+docker-compose.yml文件去掉中文
+}}}

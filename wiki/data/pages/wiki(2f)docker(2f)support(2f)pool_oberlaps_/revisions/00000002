@@ -1,0 +1,49 @@
+===== 问题现象 =====
+ {{{
+E:\IDEASPACE\biz-parent\docker>docker-compose up -d mysql-master mysql-slave1 mysql-slave2 redis rabbitmq apollo-db
+Creating network "docker_biz-net" with driver "bridge"
+ERROR: Pool overlaps with other one on this address space
+}}}
+
+
+
+===== 解决方法 =====
+这是因为目标网段已经存在的原因，通常这发生在将要创建的networks手动指定了subnet网段地址的时候。有两个选择
+ * 是查看已存在的网段是否有容器正在使用，如果没再用了可以删除该网段对应的网卡，
+ * 修改目标的subnet网段地址。
+  * `docker network ls` - 查看docker网卡
+  {{{
+E:\IDEASPACE\biz-parent\docker>docker network ls
+NETWORK ID          NAME                DRIVER              SCOPE
+7df9e4fdbb49        010_default         bridge              local
+da6fbac178dd        011_default         bridge              local
+32d1c541c8f2        015_default         bridge              local
+c6d423da6b0c        016_default         bridge              local
+fc31498170ea        017_default         bridge              local
+f85b00f15d7b        bridge              bridge              local
+77f50f77faad        host                host                local
+ca8266879fcc        none                null                local
+}}}
+
+  * `docker network rm 网卡id` - 删除docker网卡
+  {{{
+E:\IDEASPACE\biz-parent\docker>docker network rm 7df da6 32d c6d fc3
+7df
+da6
+32d
+c6d
+fc3
+}}}
+  * '''此时问题已解决'''
+  {{{
+E:\IDEASPACE\biz-parent\docker>docker-compose up -d mysql-master mysql-slave1 mysql-slave2 redis rabbitmq apollo-db
+Creating network "docker_biz-net" with driver "bridge"
+Pulling mysql-master (mysql:8.0.12)...
+8.0.12: Pulling from library/mysql
+f17d81b4b692: Pulling fs layer
+c691115e6ae9: Pulling fs layer
+41544cb19235: Pulling fs layer
+254d04f5f66d: Waiting
+4fe240edfdc9: Waiting
+}}}
+  * `docker network inspect 网卡id` - 查看docker网卡的相关详细信息

@@ -1,0 +1,91 @@
+docker rm & docker rmi & docker prune 的差异
+
+{{{#!highlight bash
+docker rm ： 删除一个或多个 容器
+
+docker rmi :  删除一个或多个 镜像
+
+docker prune： 用来删除不再使用的 docker 对象 
+}}}
+ 
+
+Docker rm 命令
+语法
+{{{#!highlight bash
+docker rm [OPTIONS] CONTAINER [CONTAINER...]
+OPTIONS说明：
+
+-f : 通过SIGKILL信号强制删除一个运行中的容器
+
+-l : 移除容器间的网络连接，而非容器本身
+
+-v : 删除与容器关联的卷
+}}}
+ 
+
+实例
+强制删除容器db01、db02：
+{{{#!highlight bash
+docker rm -f db01 db02
+}}} 
+
+移除容器 my-nginx 对容器db01的连接，连接名db01：
+{{{#!highlight bash
+docker rm -l db01 
+}}} 
+
+删除容器 my-nginx，并删除容器挂载的数据卷：
+{{{#!highlight bash
+docker rm -v my-nginx
+}}}
+
+Docker rmi 命令
+语法
+{{{#!highlight bash
+docker rmi [OPTIONS] IMAGE [IMAGE...]
+OPTIONS说明：
+
+-f : 强制删除
+
+--no-prune : 不移除该镜像的过程镜像，默认移除
+}}}
+ 
+
+实例
+强制删除本地镜像 mongo:3.2
+{{{#!highlight bash
+docker rmi -f mongo:3.2
+}}}
+
+ 
+
+Docker prune 命令
+删除 所有未被 tag 标记和未被容器使用的镜像：
+{{{#!highlight bash
+docker image prune
+}}} 
+
+删除 所有未被容器使用的镜像：
+{{{#!highlight bash
+docker image prune -a
+}}} 
+
+删除 所有停止运行的容器：
+{{{#!highlight bash
+docker container prune
+}}} 
+
+删除 所有未被挂载的卷：
+{{{#!highlight bash
+docker volume prune
+}}} 
+
+删除 所有网络：
+{{{#!highlight bash
+docker network prune
+}}}
+
+删除 docker 所有资源：
+{{{#!highlight bash
+docker system prune
+}}}

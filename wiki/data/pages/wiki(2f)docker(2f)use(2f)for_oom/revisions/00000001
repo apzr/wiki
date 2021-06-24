@@ -1,0 +1,18 @@
+===== 启动一个容器并限制资源 =====
+
+启动一个centos容器，限制其内存为1G ，可用cpu数为2
+
+ `[root@localhost ~]# docker run --name os1 -it -m 1g --cpus=2 centos:latest bash`
+
+启动容器后，可以使用docker 的监控指令查看容器的运行状态
+
+ `docker top 容器名： 查看容器的进程，不加容器名即查看所有`
+
+ `docker stats 容器名：查看容器的CPU，内存，IO 等使用信息`
+
+ {{{
+[root@localhost ~]# docker stats os1
+CONTAINER ID        NAME                CPU %               MEM USAGE / LIMIT   MEM %               NET I/O             BLOCK I/O           PIDS
+f9420cbbd2a9        os1                 45.94%              47.09MiB / 1GiB     4.60%               54.6MB / 352kB      0B / 21.1MB         3
+
+}}}

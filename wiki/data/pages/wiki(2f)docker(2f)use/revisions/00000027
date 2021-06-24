@@ -1,0 +1,25 @@
+##常用命令docker
+
+
+[[ /basic | 基础 ]]
+
+[[ /log | 日志 ]]
+
+[[ /for_oom | 限制资源(OutOfMemory) ]]
+
+[[ /port_mapping| 端口映射 ]]
+
+[[ /del_mirror | 删除镜像 ]]
+
+[[ /mirror | 镜像源 ]]
+
+[[ /config | 配置参数 ]]
+
+[[ /env | 环境变量 ]]
+
+{{{#!wiki note
+[[ https://docs.docker.com/engine/reference/commandline/docker/ | 命令文档 ]]
+<<BR>>
+[[ https://docs.docker.com/ | 官方文档 ]]
+
+}}}

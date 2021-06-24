@@ -1,0 +1,9 @@
+[[/cannot_start_service | Cannot start service XXXX ]]
+
+[[ /gbk_codec_cant_decode | UnicodeDecodeError: 'gbk' codec can't decode byte ]]
+
+[[ /pool_oberlaps_ | Pool overlaps with other one on this address space ]]
+
+[[ /operation_not_permitted | mbind: Operation not permitted ]]
+
+[[ /mysql_plugin_doesnt_exist | mysqld: Table 'mysql.plugin' doesn't exist ]]
