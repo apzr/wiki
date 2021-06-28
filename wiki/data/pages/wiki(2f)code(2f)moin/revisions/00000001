@@ -1,0 +1,16 @@
+{{{#highlight bash
+
+@echo off
+
+for /f "tokens=4" %%a in ('route print^|findstr 0.0.0.0.*0.0.0.0') do (
+ set IP=%%a
+)
+echo %IP%
+
+mode con cols=40 lines=10
+
+start /min python "E:/program_flies/moin/1.9.11/wikiserver.py"
+
+start chrome http://localhost/wiki/jjy/trantor/jjy/branches
+
+}}}
