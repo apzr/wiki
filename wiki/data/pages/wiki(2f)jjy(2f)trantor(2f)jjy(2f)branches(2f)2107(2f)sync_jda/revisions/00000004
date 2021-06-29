@@ -1,0 +1,74 @@
+===== 拉取原有定时任务项目jjy-job =====
+为兼容maven仓库版本，修改线上版本代码中的`pom.xml`文件：
+{{{#!highlight xml
+	<acl.version>1.3.6.BUILD-SNAPSHOT</acl.version>
+
+	<scp-api.version>1.3.49-RELEASE</scp-api.version>
+}}}
+
+改为：
+{{{#!highlight xml
+	<acl.version>1.3.7.BUILD-SNAPSHOT</acl.version>
+
+	<scp-api.version>1.3.55-RELEASE</scp-api.version>
+}}}
+
+===== 定位 =====
+ * 搜索'''`补货`'''找到''`DrpOrderService::execAllDrpReplenishmentProposalOrder`''
+
+ * 查看''`DrpOrderServiceImpl::execAllDrpReplenishmentProposalOrder`''找到''`shardProcess()`''方法
+
+ * 最终定位到''`DrpOrderServiceImpl::saveShardDrpReplenishmentProposalOrder`''方法为'''保存drp业务数据到中间表'''的关键代码
+
+{{{#!wiki tip
+ * 通过''`DrpOrderService::execAllDrpReplenishmentProposalOrder`''反查(`右键 ->find usage`)找到定时任务入口方法为''`DrpReplenishmentProposalJobv2::execute`''
+
+ * 通过''`DrpOrderServiceImpl::saveShardDrpReplenishmentProposalOrder`''方法中的''`drpReplenishmentProposalOrderRepo.create(pOrderList)`''
+ 确认临时表为`DrpReplenishmentProposalOrder.class`对应的`custom__drp_replenishment_proposal_order`
+}}}
+
+
+===== drp补货建议临时表 - custom__drp_replenishment_proposal_order =====
+
+目前结构：
+
+ <<ImageLink(temp_table.gif, ,width=, height=, alt=)>>
+
+
+新的需求要在此表中新增字段来兼容接收`JDA源`的数据，
+
+原数据中通过`dataFrom`字段形如`drp-[drpDbNums]`可被识别
+
+本次需求新增数据将`dataFrom`标记为'''`jda-****`'''形式
+
+ || 临时表新增字段 || 类型 || 对应JDA字段 || 备注 ||
+ || `category` || `MaterialCategory`? String? || U_MIDCATEGORY_DESCR || 中类名称 ||
+ || `schedArriveDate` || date || SCHEDARRIVDATE || 计划到达日期 ||
+ || 新增临时表字段 || number || U_FCST_QTY || 未来一周门店预估销售量 ||
+ || `changeFlag` || boolean || U_CHANGE_FLAG || 是否允许修改 (默认1,可) ||
+ || `promotionStartAt` || date || 文档无，待确认 || 促销开始时间 ||
+ || `promotionEndAt` || date || 文档无，待确认 || 促销结束时间 ||
+ || `supplierFactory`  || `Store`? String? || 文档无，待确认 || 供货工厂(物流模式=配送时取中转DC的值到此字段) ||
+
+具体新增字段见[[attachment:new_data_from_jda.xlsx | 对照表 ]]
+
+===== 需求详情 =====
+
+ * jjy-job中新增定时任务
+  1. 新增达拉然接口获取对方JDA临时表数据
+
+  <<BR>>
+  2. 新增方法将1中数据转换后存储到`custom__drp_replenishment_proposal_order`表
+   * 获取1中接口的数据
+   * 数据转换
+    * `isProcessed=0`
+    * '''`dataFrom=jda-[****]`'''
+   * 保存至`custom__drp_replenishment_proposal_order`表
+  
+  <<BR>>
+  3. 新增方法将`custom__drp_replenishment_proposal_order`临时表的数据转存到`requisition_center__purchase_requisition`要货单表
+   * 查询`custom__drp_replenishment_proposal_order`中字段`isProcessed=0`未处理的数据
+   * 数据转换
+    * 标记来源`sourceType = SourceType.JDA` (需要在`io.terminus.srm.requisition.model.dicts.SourceType`中新增字典项`JDA = "JDA"`)
+   * 保存至`requisition_center__purchase_requisition`表
+   * 如无异常，则将临时表`custom__drp_replenishment_proposal_order`中字段`isProcessed=1`标记为已处理成功
