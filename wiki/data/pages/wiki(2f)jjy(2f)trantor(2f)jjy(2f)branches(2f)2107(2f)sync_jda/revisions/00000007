@@ -1,0 +1,202 @@
+== 拉取原有定时任务项目jjy-job ==
+为兼容maven仓库版本，修改线上版本代码中的`pom.xml`文件：
+{{{#!highlight xml
+	<acl.version>1.3.6.BUILD-SNAPSHOT</acl.version>
+
+	<scp-api.version>1.3.49-RELEASE</scp-api.version>
+}}}
+
+改为：
+{{{#!highlight xml
+	<acl.version>1.3.7.BUILD-SNAPSHOT</acl.version>
+
+	<scp-api.version>1.3.55-RELEASE</scp-api.version>
+}}}
+
+== 定位 ==
+ * 搜索'''`补货`'''找到''`DrpOrderService::execAllDrpReplenishmentProposalOrder`''
+
+ * 查看''`DrpOrderServiceImpl::execAllDrpReplenishmentProposalOrder`''找到''`shardProcess()`''方法
+
+ * 最终定位到''`DrpOrderServiceImpl::saveShardDrpReplenishmentProposalOrder`''方法为'''保存drp业务数据到中间表'''的关键代码
+
+{{{#!wiki tip
+ * 通过''`DrpOrderService::execAllDrpReplenishmentProposalOrder`''反查(`右键 ->find usage`)找到定时任务入口方法为''`DrpReplenishmentProposalJobv2::execute`''
+
+ * 通过''`DrpOrderServiceImpl::saveShardDrpReplenishmentProposalOrder`''方法中的''`drpReplenishmentProposalOrderRepo.create(pOrderList)`''
+ 确认临时表为`DrpReplenishmentProposalOrder.class`对应的`custom__drp_replenishment_proposal_order`
+}}}
+
+
+== drp补货建议临时表 - custom__drp_replenishment_proposal_order ==
+
+ <<ImageLink(temp_table.gif, ,width=, height=, alt=)>>
+
+{{{#!wiki note
+新的需求要在此表中新增字段来兼容接收`JDA源`的数据，
+
+原数据中通过`dataFrom`字段形如`drp-[drpDbNums]`可被识别
+
+本次需求新增数据将`dataFrom`标记为'''`jda-****`'''形式
+}}}
+
+ || '''临时表新增字段''' || '''类型''' || '''对应JDA字段''' || '''备注''' ||
+ || `category` || VARCHAR2 || U_MIDCATEGORY_DESCR || 中类名称 ||
+ || `schedArriveDate` || date || SCHEDARRIVDATE || 计划到达日期 ||
+ || 待定 || number || U_FCST_QTY || 未来一周门店预估销售量 ||
+ || `changeFlag` || boolean || U_CHANGE_FLAG || 是否允许修改 (默认1,可) ||
+ || `promoFlag` || boolean || U_PROMO_FLAG || 是否是促销商品 ||
+ || `promoId` || VARCHAR2 || U_PROMO_ID || 是否是促销商品 ||
+ || `promotionStartAt` || date || U_PROMO_STARTDATE || 促销开始时间 ||
+ || `promotionEndAt` || date || U_PROMO_ENDDATE || 促销结束时间 ||
+ || `supplierFactory`  || VARCHAR2 || 根据MD210中的物流模式判断：<<BR>>10配送取SOURCE、20直通外采、21直通转运、30越库外采、31越库转运取U_TRANSLOC；<<BR>>回传用此字段MD001接口用 || 供货工厂(物流模式=配送时取中转DC的值到此字段) ||
+ || `supplier`  || VARCHAR2 || 根据MD210中的物流模式判断：<<BR>>20直通外采、21直通转运、30越库外采、31越库转运、40直送取SOURCE；<<BR>>不展示，回传用此字段MD001接口用 || 供应商<<BR>>''`开发确认一下原来是否已有此字段？`''<<BR>>''`是否是字段LIFNR？`'' ||
+ || 待定  || date || 根据MD210中的物流模式判断：<<BR>>20直通外采、30越库外采取U_TRANSLOCSCHEDARRIVALDATE、40直送取SCHEDARRIVDATE；<<BR>>不展示，回传用此字段MD001接口用 || 汇总交货日期<<BR>>''`开发确认原来是否有此字段？`''<<BR>>''`没有就需要新增`'' ||
+
+ 详见[[attachment:new_data_from_jda.xlsx | 对照表 ]]
+
+== 需求提报要货单表 - requisition_center__purchase_requisition ==
+
+ <<ImageLink(requisition_table.gif, ,width=, height=, alt=)>>
+
+{{{#!wiki note
+
+}}}
+
+ || '''需求提报表新增字段''' || '''类型''' || '''对应临时表字段''' || '''备注''' ||
+ || ``  || `` || 无 || `` ||
+
+
+== 需求详述 ==
+
+ * jjy-job中'''新增'''定时任务：获取JDA接口数据
+  1. 请求__`达拉然接口(待对方确定)`__，获取对方JDA临时表数据
+
+  {{{#!highlight java
+
+/* 
+ * 原有达拉然接口请求示例 1
+ * 
+ * Name: "countReplenishmentProposal"+shard
+ * DrpCountRequest -> DrpCountResponse
+ */
+Object reponsesObject = dalaranGenericHandler.invoke(
+	DalaranGenericHandler.DalaranGenericInterfaceEnum.DRP_STORE_FACADE.getClassFullName(),
+	"countReplenishmentProposal"+shard,
+	Lists.newArrayList(DrpCountRequest.class.getName()),
+	Lists.newArrayList(new DrpCountRequest())
+);
+DrpCountResponse countReponse = JSONObject.parseObject(
+	JSON.toJSONString(reponsesObject), 
+	DrpCountResponse.class
+);
+
+}}}
+
+  {{{#!highlight java
+/* 
+ * 原有达拉然接口请求示例 2
+ * 
+ * Name: "syncStoreReplenishmentProposal"+shard
+ * DrpStoreInfoRequest -> DrpStoreInfoResponse
+ */
+Object reponsesPageObject = dalaranGenericHandler.invoke(
+	DalaranGenericHandler.DalaranGenericInterfaceEnum.DRP_STORE_FACADE.getClassFullName(),
+	"syncStoreReplenishmentProposal"+shard,
+	Lists.newArrayList(DrpStoreInfoRequest.class.getName()),
+	Lists.newArrayList(request)
+);
+DrpStoreInfoResponse drpStoreInfoResponse = JSONObject.parseObject(
+	JSON.toJSONString(reponsesPageObject),
+	DrpStoreInfoResponse.class
+);
+}}}
+
+  {{{#!highlight java
+/* 
+ * 现有需求达拉然接口请求伪代码
+ * 
+ * Name: "methodName"+shard
+ * JDAStoreInfoRequest -> JDAStoreInfoResponse
+ */
+
+//1.初始化接口请求(分页请求)
+JDAStoreInfoRequest jdaStoreInfoRequest = new JDAStoreInfoRequest();
+request.setPageSize(PAGE_SIZE);
+request.setPageNo(pageNo);
+
+//2.执行请求接口数据
+Object jdaStoreInfoResponse = dalaranGenericHandler.invoke(
+	DalaranGenericHandler.DalaranGenericInterfaceEnum.JDA_STORE_FACADE.getClassFullName(),
+	"methodName",
+	Lists.newArrayList(JDAStoreInfoRequest.class.getName()),
+	Lists.newArrayList(jdaStoreInfoRequest)
+);
+
+//3.获得接口请求结果
+JDAStoreInfoResponse jdaStoreInfoResponse = JSONObject.parseObject(
+	JSON.toJSONString(jdaStoreInfoResponse),
+	JDAStoreInfoResponse.class
+);
+
+}}}
+
+  <<BR>>
+  2. '''新增'''方法：将接口数据转换后存储到`custom__drp_replenishment_proposal_order`表
+   * ''数据转换''
+    * `isProcessed=0`
+    * '''`dataFrom=jda-[****]`'''
+   * ''保存''至`custom__drp_replenishment_proposal_order`表
+   {{{#!highlight java
+/* 
+ * 现有需求达拉然接口请求伪代码
+ * 
+ * Name: "methodName"+shard
+ * JDAStoreInfoRequest -> JDAStoreInfoResponse
+ */
+
+//4.处理接口请求结果(此处可改为stream方式)
+List<JDAOrder> orderList = Lists.newArrayListWithExpectedSize(drpStoreInfoResponse.getStoreInfoList().size());                          
+for (JDAStoreInfoResponse.JDAStoreInfo jdaStoreInfo : jdaStoreInfoResponse.getStoreInfoList()) {
+	//4.1属性初始化：转换, 赋值
+	JDAOrder jdaOrder = new JDAOrder();
+	//4.2收集数据
+	orderList.add(jdaOrder)
+}
+
+//5持久化
+jdaReplenishmentProposalOrderRepo.create(orderList);
+
+}}}
+  
+ <<BR>>
+ * '''新增'''定时任务：将`custom__drp_replenishment_proposal_order`临时表的数据转存到`requisition_center__purchase_requisition`要货单表
+  * ''删除'' - `custom__drp_replenishment_proposal_order`中所有来源为jda并且`isProcessed=1`的数据删除
+  * ''查询'' - `custom__drp_replenishment_proposal_order`中所有来源为jda并且`isProcessed=0`的数据,
+  * ''转存''
+   * ''转换'' - 标记来源`sourceType = SourceType.JDA` (需要在`io.terminus.srm.requisition.model.dicts.SourceType`中新增字典项`JDA = "JDA"`)
+   * ''保存'' - 保存至`requisition_center__purchase_requisition`表
+  * ''更新'' - 如无异常，则将临时表`custom__drp_replenishment_proposal_order`中所有当前处理的数据的字段`isProcessed=1`标记为已处理成功
+
+ * '''新增'''字典表
+  * `io.terminus.srm.requisition.model.dicts.SourceType` 来源字典中新增来源属性：
+  {{{#!highlight java
+@Label("自动补货-JDA")
+public static final String REQUSITION_JDA = "REQUSITION_JDA";
+}}}
+  * `io.terminus.srm.requisition.model.dicts` 中新增字典类：
+  {{{#!highlight java
+//修改原因
+//1.正常陈列
+//2.特殊陈列
+//3.临时促销
+//4.库存、在途不准确
+//5.团购商品
+//6.预测有偏差
+}}}
+
+ * '''新增'''属性：`@TModel(需求-采购申请)` - `PurchaseRequisition.class`新增本次添加的属性
+ 
+ 由于`PurchaseRequisition.class`是封装在`io.terminus.srm.requisition.model.*`中，无法直接修改java文件
+  * 解决一：新建`extension`类`PurchaseRequisitionExt.class`继承`PurchaseRequisition`并且添加扩展属性, 在原有代码中涉及到处理`PurchaseRequisition`的片段中将`Class`声明修改为`PurchaseRequisitionExt`；
+  * 解决二：?
