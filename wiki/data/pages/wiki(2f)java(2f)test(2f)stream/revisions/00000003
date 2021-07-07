@@ -1,0 +1,32 @@
+{{{#!highlight Java
+       Optional.ofNullable(usualExplain).ifPresent(p -> {
+           LambdaQueryWrapper<ItemValuePo> itemValuePoLambdaQueryWrapper = new LambdaQueryWrapper<>();
+           itemValuePoLambdaQueryWrapper.eq(ItemValuePo::getDdCode, DDCODE);
+           itemValuePoLambdaQueryWrapper.eq(ItemValuePo::getCode, usualExplainPo.getType());
+           ItemValuePo itemValuePo = itemValueMapper.selectOne(itemValuePoLambdaQueryWrapper);
+       
+           p.setName(  Optional.ofNullable(itemValuePo).map(item -> item.getName()).orElse("") );
+       });
+}}}
+
+{{{#!highlight java
+       Optional.ofNullable(customerBaseDto).map(CustomerBaseDto::getNickname).orElse("")
+
+       //UsualExplain->setName
+       usualExplainList.stream().forEach(usualExplain -> usualExplain.setName(
+           itemValuePoList.stream()
+               .filter(itemValuePo -> StrUtil.equals(itemValuePo.getCode(), usualExplain.getType()))
+               .map(ItemValuePo::getName)
+               .collect(Collectors.joining())
+       ));
+}}}
+
+{{{#!highlight java
+{List}.stream().map(CustomerDtoAssemble::dtoToResponseDto).collect(Collectors.toList())
+}}}
+
+{{{#!highlight java
+public void iterateUsingLambda(Map<String, Integer> map) {
+    map.forEach((k, v) -> System.out.println((k + ":" + v)));
+}
+}}}
