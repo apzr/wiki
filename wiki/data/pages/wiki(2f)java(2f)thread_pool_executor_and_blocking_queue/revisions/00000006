@@ -1,0 +1,148 @@
+查看JDK帮助文档，可以发现该类比较简单，继承自`AbstractExecutorService`，而`AbstractExecutorService`实现了`ExecutorService`接口。
+ 
+`ThreadPoolExecutor`的完整构造方法的签名是：
+ {{{#!highlight java
+ThreadPoolExecutor(int corePoolSize, int maximumPoolSize, long keepAliveTime,TimeUnit unit, BlockingQueue<Runnable> workQueue,ThreadFactory threadFactory, RejectedExecutionHandler handler)`
+}}}
+ 
+其实对于`ThreadPoolExecutor`的构造函数网上有N多的解释的，大多讲得都很好，不过我想先换个方式，从Executors这个类入手。因为他的几个构造工厂构造方法名字取得令人很容易了解有什么特点。但是其实`Executors`类的底层实现便是`ThreadPoolExecutor`
+ 
+'''`ThreadPoolExecutor`是`Executors`类的底层实现'''
+ 
+在JDK帮助文档中，有如此一段话：
+ {{{#!highlight java
+强烈建议程序员使用较为方便的 Executors 工厂方法 
+ Executors.newCachedThreadPool()（无界线程池，可以进行自动线程回收）
+ Executors.newFixedThreadPool(int)（固定大小线程池）
+ Executors.newSingleThreadExecutor()（单个后台线程），
+它们均为大多数使用场景预定义了设置。”
+}}}
+'''可以推断出`ThreadPoolExecutor`与`Executors`类必然关系密切'''。
+ 
+从`newFixedThreadPool`开始看源码
+ * `ExecutorService newFixedThreadPool(int nThreads)` - 固定大小线程池。
+  * `corePoolSize`和`maximumPoolSize`的大小是一样的（实际上，后面会介绍，如果使用无界`queue`的话`maximumPoolSize`参数是没有意义的），
+  * `keepAliveTime`和`unit`的设值表名什么？就是该实现不想keep alive。最后的`BlockingQueue`选择了`LinkedBlockingQueue`，该`queue`有一个特点，他是无界的。
+  {{{#!highlight java
+public static ExecutorService newFixedThreadPool(int nThreads) {  
+    return new ThreadPoolExecutor(nThreads, nThreads, 0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>());  
+}
+}}}
+
+ * `ExecutorService newSingleThreadExecutor()` - 单线程。
+  可以看到，与`fixedThreadPool`很像，只不过`fixedThreadPool`中的入参直接退化为1
+  {{{#!highlight java
+public static ExecutorService newSingleThreadExecutor() {  
+    return new FinalizableDelegatedExecutorService(
+	    new ThreadPoolExecutor(1, 1, 0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>())
+	);
+}
+}}}
+
+ * `ExecutorService newCachedThreadPool()` - 无界线程池，可以进行自动线程回收。
+  * 首先是无界的线程池，所以我们可以发现`maximumPoolSize`为`big big`。
+  * 其次`BlockingQueue`的选择上使用`SynchronousQueue`。可能对于该`BlockingQueue`有些陌生，
+  * 该QUEUE中，每个插入操作必须等待另一个线程的对应移除操作。如先添加一个元素，若继续尝试添加则会阻塞，直到另一个线程取走一个元素，反之亦然。（就是缓冲区为1的生产者消费者模式<<Icon(ohwell.png)>>）
+  
+  注意到介绍中的自动回收线程的特性吗，为什么呢？先不说，但注意到该实现中corePoolSize和maximumPoolSize的大小不同。
+  {{{#!highlight java
+public static ExecutorService newCachedThreadPool() {  
+    return new ThreadPoolExecutor(0, Integer.MAX_VALUE, 60L, TimeUnit.SECONDS, new SynchronousQueue<Runnable>());  
+}  
+}}}
+ 
+先从`BlockingQueue<Runnable> workQueue`这个入参开始说起
+ 
+ 
+所有`BlockingQueue`都可用于传输和保持提交的任务。可以使用此队列与池大小进行交互：
+ * 如果运行的线程少于 corePoolSize，则 Executor 始终首选添加新的线程，而不进行排队。（什么意思？如果当前运行的线程小于corePoolSize，则任务根本不会存放，添加到queue中，而是直接抄家伙（thread）开始运行）
+ * 如果运行的线程等于或多于 corePoolSize，则 Executor 始终首选将请求加入队列，而不添加新的线程。
+ * 如果无法将请求加入队列，则创建新的线程，除非创建此线程超出 maximumPoolSize，在这种情况下，任务将被拒绝。
+
+'''Queue三种类型'''：
+ * 直接提交。工作队列的默认选项是`SynchronousQueue`，它将任务直接提交给线程而不保持它们。在此，如果不存在可用于立即运行任务的线程，则试图把任务加入队列将失败，因此会构造一个新的线程。此策略可以避免在处理可能具有内部依赖性的请求集时出现锁。直接提交通常要求无界`maximumPoolSizes`以避免拒绝新提交的任务。当命令以超过队列所能处理的平均数连续到达时，此策略允许无界线程具有增长的可能性。
+ * 无界队列。使用无界队列（例如，不具有预定义容量的`LinkedBlockingQueue`）将导致在所有`corePoolSize`线程都忙时新任务在队列中等待。这样，创建的线程就不会超过`corePoolSize`。（因此`maximumPoolSize`的值无效。）当每个任务完全独立于其他任务，即任务执行互不影响时，适合于使用无界队列；例如，在Web页服务器中。这种排队可用于处理瞬态突发请求，当命令以超过队列所能处理的平均数连续到达时，此策略允许无界线程具有增长的可能性。
+ * 有界队列。当使用有限的`maximumPoolSizes`时，有界队列（如`ArrayBlockingQueue`）有助于防止资源耗尽，但是可能较难调整和控制。队列大小和最大池大小可能需要相互折衷：使用大型队列和小型池可以最大限度地降低CPU使用率、操作系统资源和上下文切换开销，但是可能导致人工降低吞吐量。如果任务频繁阻塞（例如，如果它们是I/O边界），则系统可能为超过您许可的更多线程安排时间。使用小型队列通常要求较大的池大小，CPU使用率较高，但是可能遇到不可接受的调度开销，这样也会降低吞吐量。  
+ 
+'''到这里，该了解的理论已经够多了，可以调节的就是`corePoolSize`和`maximumPoolSizes`这对参数还有就是`BlockingQueue`的选择'''。
+ 
+ * 例一：使用直接提交策略，也即`SynchronousQueue`。
+ 首先`SynchronousQueue`是无界的，也就是说他存数任务的能力是没有限制的，但是由于该Queue本身的特性，在某次添加元素后必须等待其他线程取走后才能继续添加。在这里不是核心线程便是新创建的线程，但是我们试想一样下，下面的场景。我们使用一下参数构造`ThreadPoolExecutor`：
+  {{{#!highlight java
+new ThreadPoolExecutor( 2, 3, 30, TimeUnit.SECONDS,   
+    new <span style="white-space: normal;">SynchronousQueue</span><Runnable>(),   
+    new RecorderThreadFactory("CookieRecorderPool"),   
+    new ThreadPoolExecutor.CallerRunsPolicy()
+);
+}}}
+
+ 当核心线程已经有2个正在运行.
+  此时继续来了一个任务（A），根据前面介绍的“如果运行的线程等于或多于`corePoolSize`，则`Executor`始终首选将请求加入队列，而不添加新的线程。所以A被添加到queue中。
+
+  又来了一个任务（B），且核心2个线程还没有忙完，接下来首先尝试1中描述，但是由于使用的`SynchronousQueue`，所以一定无法加入进去。
+
+  此时便满足了上面提到的“如果无法将请求加入队列，则创建新的线程，除非创建此线程超出`maximumPoolSize`，在这种情况下，任务将被拒绝。，所以必然会新建一个线程来运行这个任务。
+
+  暂时还可以，但是如果这三个任务都还没完成，连续来了两个任务，第一个添加入`queue`中，后一个呢？queue中无法插入，而线程数达到了`maximumPoolSize`，所以只好执行异常策略了。
+
+  所以在使用`SynchronousQueue`通常要求`maximumPoolSize`是无界的，这样就可以避免上述情况发生（如果希望限制就直接使用有界队列）。
+
+  `SynchronousQueue`策略： 此策略可以避免在处理可能具有内部依赖性的请求集时出现锁。如果你的任务A1，A2有内部关联，A1需要先运行，那么先提交A1，再提交A2，当使用`SynchronousQueue`我们可以保证，A1必定先被执行，在A1么有被执行前，A2不可能添加入queue中
+
+ * 例二：使用无界队列策略，即`LinkedBlockingQueue`
+
+ 这个就拿 newFixedThreadPool来说，根据前文提到的规则：   
+
+  如果运行的线程少于`corePoolSize`，则`Executor`始终首选添加新的线程，而不进行排队。那么当任务继续增加，会发生什么呢？
+
+  如果运行的线程等于或多于`corePoolSize`，则`Executor 始终首选将请求加入队列，而不添加新的线程。
+
+  此时任务变加入队列之中了，那什么时候才会添加新线程呢？
+
+  如果无法将请求加入队列，则创建新的线程，除非创建此线程超出`maximumPoolSize`，在这种情况下，任务将被拒绝。
+
+  可能会出现无法加入队列吗？不像`SynchronousQueue`那样有其自身的特点，对于无界队列来说，总是可以加入的（资源耗尽，当然另当别论）。即永远也不会触发产生新的线程, `corePoolSize`大小的线程数会一直运行，忙完当前的，就从队列中拿任务开始运行。所以要防止任务疯长，比如任务运行的实行比较长，而添加任务的速度远远超过处理任务的时间，而且还不断增加，如果任务内存大一些，不一会儿就爆了。
+ 
+ * 例三：有界队列，使用`ArrayBlockingQueue`
+ 
+ 这个是最为复杂的使用，所以JDK不推荐使用也有些道理。与上面的相比，最大的特点便是可以防止资源耗尽的情况发生。
+  {{{#!highlight java
+new ThreadPoolExecutor(  
+    2, 4, 30, TimeUnit.SECONDS,   
+    new ArrayBlockingQueue<Runnable>(2),   
+    new RecorderThreadFactory("CookieRecorderPool"),   
+    new ThreadPoolExecutor.CallerRunsPolicy()
+);  
+}}}
+
+假设，所有的任务都永远无法执行完。对于首先来的A,B来说直接运行，接下来，如果来了C,D，他们会被放到queu中，如果接下来再来E,F，则增加线程运行E，F。但是如果再来任务，队列无法再接受了，线程数也到达最大的限制了，所以就会使用拒绝策略来处理。
+ 
+总结`ThreadPoolExecutor`的使用
+ * 使用无界queue可能会耗尽系统资源。
+ * 使用有界queue可能不能很好的满足性能，需要调节线程数和queue大小
+ * 线程数自然也有开销，所以需要根据不同应用进行调节。
+
+通常来说对于静态任务可以归为：
+ * 数量大，但是执行时间很短
+ * 数量小，但是执行时间较长
+ * 数量又大执行时间又长
+除了以上特点外，任务间还有些内在关系
+
+`ThreadPoolExecutor`的三种停止方式
+
+ * `shutdown()`
+  将线程池状态置为SHUTDOWN,并不会立即停止：
+  * 停止接收外部submit的任务
+  * 内部正在跑的任务和队列里等待的任务，会执行完
+  * 等到第二步完成后，才真正停止
+
+ * `shutdownNow()`
+  将线程池状态置为STOP。企图立即停止，事实上不一定：
+  * 跟`shutdown()`一样，先停止接收外部提交的任务
+  * 忽略队列里等待的任务
+  * 尝试将正在跑的任务interrupt中断
+  * 返回未执行的任务列表
+  * 它试图终止线程的方法是通过调用`Thread.interrupt()`方法来实现的，但是大家知道，这种方法的作用有限，如果线程中没有`sleep` 、`wait`、`Condition`、定时锁等应用, `interrupt()`方法是无法中断当前的线程的。所以，`ShutdownNow()`并不代表线程池就一定立即就能退出，它也可能必须要等待所有正在执行的任务都执行完成了才能退出。但是大多数时候是能立即退出的
+
+ * `awaitTermination`
+  接收人timeout和`TimeUnit`两个参数，用于设定超时时间及单位。当等待超过设定时间时，会监测`ExecutorService`是否已经关闭，若关闭则返回true，否则返回false。一般情况下会和shutdown方法组合使用。

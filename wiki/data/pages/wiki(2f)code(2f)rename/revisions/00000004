@@ -1,0 +1,55 @@
+##批量重命名文件 
+#format highlight python
+
+# -*- coding: utf-8 -*-
+import os
+path = 'F:\TDdownload\[Nekomoe kissaten&VCB-Studio] Zombie Land Saga [Ma10p_1080p]'
+num= 1
+for file in os.listdir(path):
+    '''
+    print(  file
+            .replace('[Nekomoe kissaten&VCB-Studio] Z', 'Z')
+            .replace('][Ma10p_1080p][x265_flac]', '')
+            .replace('[', '')
+    )
+    '''
+    
+    #os.rename(os.path.join(path,file),os.path.join(path,str(num)+".flv"))
+
+
+    os.rename(
+        os.path.join(path,file),
+        os.path.join(path,file
+            .replace('[Nekomoe kissaten&VCB-Studio] Z', 'Z')
+            .replace('][Ma10p_1080p][x265_flac]', '')
+            .replace('[', ''))
+        
+    )
+    
+    num+=1
+
+
+
+# -*- coding: utf-8 -*-
+import os
+import re
+
+path = 'F:\REC\新水浒传'
+num= 1
+for file in os.listdir(path):
+    '''
+    _name = file.replace('LRTS#', '')
+
+    print(  _name )
+    print( re.sub(r'_新水浒传#6607#.*\.mp3', '', _name) )
+    '''
+    
+    #os.rename(os.path.join(path,file),os.path.join(path,str(num)+".flv"))
+
+
+    os.rename(
+        os.path.join(path,file),
+        os.path.join(path,re.sub(r'_新水浒传#6607#.*\.mp3', '.mp3', file.replace('LRTS#', '')))
+        
+    )
+    num+=1

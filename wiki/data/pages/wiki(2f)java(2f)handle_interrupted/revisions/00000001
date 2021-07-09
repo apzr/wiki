@@ -1,0 +1,39 @@
+----
+'''我们知道,调用`ThreadPoolExecutor.shutdown();`和`ThreadPoolExecutor.shutdownNow();`方法中断线程时,
+
+实际执行的是Thread的interrupt()方法, 
+
+如果定义的线程实现代码中没有响应interrupt状态处理, 
+
+会造成该线程有可能永远无法停止'''
+
+----
+
+===== java.lang.Thread 类提供了几个方法来操作这个中断状态： =====
+
+ || `public static boolean interrupted` || 测试当前线程是否中断。<<BR>>线程的中断状态由该方法清除<<BR>>如果连续两次调用该方法，则第二次调用将返回`false``（在第一次调用已清除了中断状态后，且第二次调用检验完中断状态前，当前线程再次中断的情况除外）` ||
+ || `public boolean isInterrupted()` || 测试线程是否已经中断。线程的中断状态不受该方法的影响。||
+ || `public void interrupt()` ||  中断线程，将中断状态设置为true。||
+
+===== 响应线程中断的一种方式 =====
+
+ {{{#!highlight java
+public class MyThread extends Thread {
+    @Override
+    public void run() {
+        super.run();
+        try{
+            for (int i = 0; i < 500000; i++) {
+                if (this.interrupted()) {//响应中断请求
+                    System.out.println("should be stopped and exit");
+                    throw new InterruptedException();//实际中断的方式
+                }
+                System.out.println("i=" + (i + 1));
+            }
+            System.out.println("this line cannot be executed. cause thread throws exception");//这行语句不会被执行!!!
+        }catch(InterruptedException e){
+            System.out.println("catch interrupted exception");
+            e.printStackTrace();
+        }
+    }
+}}}
