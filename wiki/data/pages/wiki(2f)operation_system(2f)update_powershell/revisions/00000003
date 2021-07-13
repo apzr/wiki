@@ -1,0 +1,80 @@
+==== 查看Powershell版本 ====
+
+{{{#!highlight batch
+
+::--------------------Version--------------------
+PS C:\Users\Administrator> host
+
+Name             : ConsoleHost
+Version          : 2.0
+InstanceId       : c6b7021d-a705-42a8-b988-4ebbe0f763b3
+UI               : System.Management.Automation.Internal.Host.InternalHostUserInterface
+CurrentCulture   : zh-CN
+CurrentUICulture : zh-CN
+PrivateData      : Microsoft.PowerShell.ConsoleHost+ConsoleColorProxy
+IsRunspacePushed : False
+Runspace         : System.Management.Automation.Runspaces.LocalRunspace
+
+
+::--------------------Major--------------------
+PS C:\Users\Administrator> $PSVersionTable.PSVersion
+
+Major  Minor  Build  Revision
+-----  -----  -----  --------
+2      0      -1     -1
+
+
+::--------------------Version--------------------
+PS C:\Users\Administrator> Get-Host | Select-Object Version
+
+Version
+-------
+2.0
+
+
+}}}
+
+==== 升级Powershell版本 ====
+
+ * [[ https://www.microsoft.com/en-hk/download/details.aspx?id=34595 | 安装包下载 ]]
+
+ * 下载文件`Windows6.1-KB2506143-x64.msu`重命名为`Windows6.1-KB2506143-x64.cab`后解压
+
+ * 管理员cmd运行
+ {{{#!highlight batch
+
+dism /online /add-package /packagepath:"D:\Downloads\powershell\x64\Windows6.1-KB2506143-x64\Windows6.1-KB2506143-x64.cab"
+
+
+部署映像服务和管理工具
+版本: 6.1.7600.16385
+
+映像版本: 6.1.7601.18489
+
+正在处理 1 (共 1) - 正在添加程序包 Microsoft-Windows-WinMan-WinIP-Package-TopLevel~31bf3856ad364e35~amd64~~7.1.7601.16398
+[==========================100.0%==========================]
+操作成功完成。
+重新启动 Windows 以完成该操作。
+是否立即重新启动计算机(Y/N)?
+
+ }}}
+
+ {{{#!highlight batch
+C:\Users\Administrator>tree "D:\Downloads\powershell\x64" /f
+
+卷 软件 的文件夹 PATH 列表
+卷序列号为 1D52-4CC4
+
+D:\DOWNLOADS\POWERSHELL\X64
+├─Windows6.0-KB2506146-x64
+│      Windows6.0-KB2506146-x64-pkgProperties.txt
+│      Windows6.0-KB2506146-x64.cab
+│      Windows6.0-KB2506146-x64.xml
+│      WSUSSCAN.cab
+│
+└─Windows6.1-KB2506143-x64
+        Windows6.1-KB2506143-x64-pkgProperties.txt
+        Windows6.1-KB2506143-x64.cab
+        Windows6.1-KB2506143-x64.xml
+        WSUSSCAN.cab
+}}}

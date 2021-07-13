@@ -1,0 +1,35 @@
+==== 查看Powershell版本 ====
+
+{{{#!highlight batch
+
+::--------------------Version--------------------
+PS C:\Users\Administrator> host
+
+Name             : ConsoleHost
+Version          : 2.0
+InstanceId       : c6b7021d-a705-42a8-b988-4ebbe0f763b3
+UI               : System.Management.Automation.Internal.Host.InternalHostUserInterface
+CurrentCulture   : zh-CN
+CurrentUICulture : zh-CN
+PrivateData      : Microsoft.PowerShell.ConsoleHost+ConsoleColorProxy
+IsRunspacePushed : False
+Runspace         : System.Management.Automation.Runspaces.LocalRunspace
+
+
+::--------------------Major--------------------
+PS C:\Users\Administrator> $PSVersionTable.PSVersion
+
+Major  Minor  Build  Revision
+-----  -----  -----  --------
+2      0      -1     -1
+
+
+::--------------------Version--------------------
+PS C:\Users\Administrator> Get-Host | Select-Object Version
+
+Version
+-------
+2.0
+
+
+}}}

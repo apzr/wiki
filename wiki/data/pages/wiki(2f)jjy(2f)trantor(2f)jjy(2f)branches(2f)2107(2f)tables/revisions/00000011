@@ -1,0 +1,219 @@
+==== 需求计划-正常要货单(结构无变动) >>> custom__supply_plan >>> SupplyPlan.class ====
+
+{{{#!csv
+ ATTR, TYPE, NULL, Visual, DESC
+ submitDate, datetime, False, False, 提交时间
+ planStatus, varchar256, False, False, 状态
+ source, varchar256, False, False, 单据来源
+ createdAt, datetime, True, False, 创建时间
+ isDeleted, tinyint4, True, False, 是否删除
+ formulationCode, varchar256, False, False, 配方单号
+ applyTopic, varchar256, False, False, 要货主题
+ storeName, varchar256, False, False, 要货门店
+ id, bigint20, True, False, 
+ clerkName, varchar256, False, False, 制单人
+ cancelReason, varchar256, False, False, 取消原因
+ updatedAt, datetime, True, False, 更新时间
+ planType, varchar256, False, False, 要货单类型
+ applyArea, varchar256, False, False, 要货区域
+ goodsGroup, varchar256, False, False, 要货柜组
+ planCode, varchar256, False, False, 要货单号 ♢♢♢♢♢♢♢♢♢♢♢♢♢♢♢♢♢♢♢♢♢♢♢♢♢♢♢♢♢♢♢♢♢♢♢♢♢♢♢♢♢
+ lastCreatedAt, datetime, False, False, 原制单日期
+ clerkCode, varchar256, False, False, 制单人编码
+ UpdatedBy, bigint20, False, False,  更新者
+ CreatedBy, bigint20, False, False,  创建者
+ StoreRelation, bigint20, False, False, 门店编码
+ deletedAt, bigint20, False, False,  删除时间
+ 
+}}}
+
+==== 要货单行(结构无变动) >>> custom__supply_plan_line >>> SupplyPlanLine.class ====
+
+{{{#!csv
+ ATTR, TYPE, NULL, Visual, DESC
+ minAmount, int11, False, False, 最小要货量
+ cancelAmount, int11, False, False, 取消数量
+ orderNum, int11, False, False, 序号
+ suggestAmount, int11, False, False, 建议数量
+ remark, varchar256, False, False, 行备注
+ supplierCode, varchar256, False, False, 供应商代码
+ source, varchar256, False, False, 行来源
+ avgSalesLastWeekend, int11, False, False, 上周六至周日日均销量 
+ specifications, varchar256, False, False, 规格：这个java文件里边得空提示错误，目前为@NotNull(message = "商品名称不能为空")
+ deadLine, varchar256, False, False, 截单时间
+ createdAt, datetime, True, False, 创建时间
+ packagesAmount, int11, False, False, 箱包数
+ sellDays, int11, False, False, 预期可售天数
+ supplyPlanCode, varchar256, False, False, 要货单号
+ daySalesLastWeek, int11, False, False, 上周对应当天日销量
+ isDeleted, tinyint4, True, False, 是否标记为删除
+ id, bigint20, True, False, 
+ quantityOnShiping, int11, False, False, 在途库存
+ updatedAt, datetime, True, False, 更新时间
+ supplierName, varchar256, False, False, 供应商名称
+ amount, int11, False, False, 要货数量
+ quantity, int11, False, False, 目前库存
+ avgSalesLastWeekDay, int11, False, False, 上周一至周五日均销量
+ avgSalesLastWeek, int11, False, False, 上周日均销量
+ yesterDaySales, int11, False, False, 本期昨日销量
+ product80, varchar256, False, False, 是否80商品
+ materialCode, varchar256, False, False, 商品编码 ♢♢♢♢♢♢♢♢♢♢♢♢♢♢♢♢♢♢♢♢♢♢♢♢♢♢♢♢♢♢♢♢♢♢♢♢♢♢♢♢♢
+ counter, varchar256, False, False, 专柜类型
+ companyRankLastWeek, int11, False, False, 上周公司排名
+ barCode, varchar256, False, False, 条形码
+ materialName, varchar256, False, False, 商品名称
+ unit, varchar256, False, False, 单位
+ measure, varchar256, False, False, 计量单位
+ normalPrice, decimal9-2, False, False, 正常售价
+ daySales, int11, False, False, 同期日均销量
+ UpdatedBy, bigint20, False, False, 更新者
+ CreatedBy, bigint20, False, False, 创建者
+ SupplyPlanLines, bigint20, False, False, 
+ deletedAt, bigint20, False, False, 删除时间
+ salesClassTomorrow, varchar256, False, False, 明日促销分类
+ salesVolumeDayPromotion, decimal9-2, False, False, 促销日均销量
+ submittedQuantity, int11, False, False, 已提交数量
+ pendingQuantity, int11, False, False, 待提交数量
+ 
+}}}
+
+
+==== 需求-采购申请(结构无变动) >>> requisition_center__purchase_requisition >>> PurchaseRequisition.class ====
+
+{{{#!csv
+ createdAt, datetime, True, False, 创建时间
+ id, bigint20, True, False, 
+ updatedAt, datetime, True, False, 更新时间
+ outerCode, varchar256, False, False, 外部编号
+ planDeliveryAt, datetime, False, False, 需求交货日期
+ submitAt, datetime, False, False, 提报时间
+ purchaseOrgCode, varchar256, False, False, 采购组织编码
+ purchaseGroupCode, varchar256, False, False, 采购组编码
+ sourceType, varchar256, False, False, 来源类型
+ requisitionEntityName, varchar256, False, False, 需求实体名称
+ code, varchar256, False, False, 采购编号
+ requisitionWarehouseName, varchar256, False, False, 需求仓库名称
+ attachments, mediumtext, False, False, 附件信息
+ purchasePartnerCode, varchar256, False, False, 采购方编码
+ remark, varchar256, False, False, 备注
+ title, varchar256, False, False, 采购标题
+ purchaseType, varchar256, True, False, 需求类型
+ purchasePartnerName, varchar256, False, False, 采购方名称
+ purchaseOrgName, varchar256, False, False, 采购组织名称
+ isDeleted, tinyint4, True, False, 
+ submitOperator, varchar256, False, False, 提报经办人
+ busiType, varchar256, False, False, 业务类型
+ requisitionEntityCode, varchar256, False, False, 需求实体编码
+ handleAt, datetime, False, False, 处理时间
+ purchaseGroupName, varchar256, False, False, 采购组名称
+ auditStatus, varchar256, True, False, 审批状态
+ requisitionWarehouseCode, varchar256, False, False, 需求仓库名称
+ CreatedBy, bigint20, False, False, 
+ PurchaserRequisitionOrganization, bigint20, False, False, 采购组织
+ PurchaseRequisitionWarehouse, bigint20, False, False, 需求仓库
+ PurchaseBusinessEntity, bigint20, False, False, 需求实体
+ RequisitionPurchaserGroup, bigint20, False, False, 采购组
+ PurchaseRequisitionPartner, bigint20, False, False, 所属公司(采购商角色的业务合作伙伴)
+ UpdatedBy, bigint20, False, False, 
+ `ZCOST`, varchar256, False, False, 成本算法(?A-生鲜 B：杂货)，扩展字段PurchaseRequisitionExt.Class
+ isRecommend, tinyint4, False, False, 是否推荐要货单，扩展字段PurchaseRequisitionExt.Class
+ isSubmit, tinyint4, False, False, 是否提交，扩展字段PurchaseRequisitionExt.Class
+ arriveEndTime, datetime, False, False, 到货结束时间，扩展字段PurchaseRequisitionExt.Class
+ arriveStartTime, datetime, False, False, 到货开始时间，扩展字段PurchaseRequisitionExt.Class
+ applyStartTime, datetime, False, False, 要货开始时间，扩展字段PurchaseRequisitionExt.Class
+ subjectCoding, varchar256, False, False, 主题编码，扩展字段PurchaseRequisitionExt.Class
+ originPRCreateAt, datetime, False, False, 原单制单日期，扩展字段PurchaseRequisitionExt.Class
+ containerGroupCode, varchar256, False, False, 要货柜组Code，扩展字段PurchaseRequisitionExt.Class
+ applyEndTime, datetime, False, False, 要货结束时间，扩展字段PurchaseRequisitionExt.Class
+ ToRequisitionSelf, bigint20, False, False, 子要货单，扩展字段PurchaseRequisitionExt.Class
+ RequisitonContainerGroup, bigint20, False, False, 要货柜组，扩展字段PurchaseRequisitionExt.Class
+ ToRequisitionParentInfo, bigint20, False, False, 父模型，扩展字段PurchaseRequisitionExt.Class
+ purchaseWay, varchar256, False, False, 采购方式
+ receivesContact, varchar256, False, False, 联系方式
+ receivesAddr, mediumtext, False, False, 接收地区
+ receivesAddrDetail, mediumtext, False, False, 接收地址
+ receiverName, varchar256, False, False, 接收人名称
+ PurchaseRequisitionStaff, bigint20, False, False, 接收人
+ purchaseStatus, varchar256, True, False, 采购状态
+ containerGroupName, varchar256, False, False, 要货柜组name，扩展字段PurchaseRequisitionExt.Class
+ CancelReason, varchar256, False, False, 取消原因，扩展字段PurchaseRequisitionExt.Class
+ UrgentReason, varchar256, False, False, 急单原因，扩展字段PurchaseRequisitionExt.Class
+ syncInfo, mediumtext, False, False, 同步信息，扩展字段PurchaseRequisitionExt.Class
+ syncStatus, varchar256, False, False, 同步状态，扩展字段PurchaseRequisitionExt.Class
+ deletedAt, bigint20, False, False, 
+ arriveType, varchar256, False, False, 到货类型，扩展字段PurchaseRequisitionExt.Class
+ 
+}}}
+
+==== 中间表custom__jda_replenishment_proposal_order(新增整表) ====
+|| 备注 || 类型 || 名称 ||
+|| 处理标识 || Boolean || ISPROCESSED ||
+|| 单号 || String || U_PLANARRIVAL_STORE_CD ||
+|| 柜组编码 || String || U_CATEGORY_CD ||
+|| 柜组名称 || String || U_CATEGORY_DESCR ||
+|| 行号 || String || U_PLANARRIVAL_STORE_LINENO ||
+|| 中类编码 || String || U_MIDCATEGORY_CD ||
+|| 中类名称 || String || U_MIDCATEGORY_DESCR ||
+|| 小类编码 || String || U_SUBCATEGORY_CD ||
+|| 小类名称 || String || U_SUBCATEGORY_DESCR ||
+|| 商品编码 || String || ITEM ||
+|| 商品名称 || String || DESCR ||
+|| 发货地编码 || String || SOURCE ||
+|| 目的地编码 || String || DEST ||
+|| 计划发货日期 || Date || SCHEDSHIPDATE ||
+|| 计划到达日期 || Date || SCHEDARRIVDATE ||
+|| 未来一周门店滚动预估销量 || `BigDecimal` || U_FCST_QTY ||
+|| 中转DC编码 || String || U_TRANSLOC ||
+|| 计划到达中转DC日期 || Date || U_TRANSLOCSCHEDARRIVALDATE ||
+|| 修改标识 || Boolean || U_CHANGE_FLAG ||
+|| 输出标识 || String || U_OUTPUT ||
+|| 覆盖安全天数 || `BigDecimal` || U_SSCOVER ||
+|| 是否为促销商品 || Boolean || U_PROMO_FLAG ||
+|| 订单类型 || String || U_PLANARRIVAL_TYPE ||
+|| 商品规格 || String || U_SPEC ||
+|| 基本计量单位编码 || String || U_UOM ||
+|| 基本计量单位名称 || String || U_UOM_DESCR ||
+|| 最大箱包数 || `BigDecimal` || U_PACKNUMBER ||
+|| 最小要货量 || `BigDecimal` || U_MINSHIPNUMBER ||
+|| 目前库存 || `BigDecimal` || U_OHINVENTORY ||
+|| 在途库存 || `BigDecimal` || U_VEHICLELOADLINE ||
+|| 实际档期编号 || String || U_PROMO_ID ||
+|| 促销开始时间 || Date || U_PROMO_STARTDATE ||
+|| 促销结束时间 || Date || U_PROMO_ENDDATE ||
+|| 条形码 || String || U_BARCODE ||
+|| 系统建议量 || `BigDecimal` || QTY ||
+|| 目的地名称 || String || U_DEST_DESCR ||
+|| 预计可售天数 || `BigDecimal` || U_OUTSTANDINGDAYS ||
+|| 供货工厂 || String || RESWK ||
+|| 供应商 || String || LIFNR ||
+|| 汇总交货日期 || Date || U_ARRIVALDATE ||
+
+
+=== `requisition_center__purchase_line`表(新增字段) ===
+`@TModel(需求-采购申请)` - `PurchaseRequisition.class`新增本次添加的属性
+* 修改拓展类`PurchaseRequisitionExt`,并添加本次新增的字段
+|| '''新增字段''' || '''类型''' || '''对应JDA字段''' || '''备注''' ||
+|| `midCategory` || VARCHAR2 || U_MIDCATEGORY_DESCR || 中类名称 ||
+|| `schedArriveDate` || date || SCHEDARRIVDATE || 计划到达日期 ||
+|| `saleCountNWeek` || number || U_FCST_QTY || 未来一周门店预估销售量 ||
+|| `changeFlag` || boolean || U_CHANGE_FLAG || 是否允许修改 (默认1,可) ||
+|| `promoFlag` || boolean || U_PROMO_FLAG || 是否是促销商品 ||
+|| `promoId` || VARCHAR2 || U_PROMO_ID || 实际档期编号 ||
+|| `supplierFactory`  || VARCHAR2 || 根据MD210中的物流模式判断：<<BR>>10配送取SOURCE、20直通外采、21直通转运、30越库外采、31越库转运取U_TRANSLOC；<<BR>>回传用此字段MD001接口用 || 供货工厂(物流模式=配送时取中转DC的值到此字段) ||
+|| `supplier`  || VARCHAR2 || 根据MD210中的物流模式判断：<<BR>>20直通外采、21直通转运、30越库外采、31越库转运、40直送取SOURCE；<<BR>>不展示，回传用此字段MD001接口用 || 供应商LIFNR ||
+|| `sumDate`  || date || 根据MD210中的物流模式判断：<<BR>>20直通外采、30越库外采取U_TRANSLOCSCHEDARRIVALDATE、40直送取SCHEDARRIVDATE；<<BR>>不展示，回传用此字段MD001接口用 || 汇总交货日期eindt ||
+
+    
+详见文档[[attachment:new_data_from_jda.xlsx | 对照表 ]]
+    
+{{{#!wiki note
+    文档中下面这两个字段是原来就有的, 随谈文档里提到了但是不用新增
+    || promotionStartAt || date || U_PROMO_STARTDATE ||促销开始时间 ||
+    || promotionEndAt || date || U_PROMO_ENDDATE || 促销结束时间 ||
+    
+}}}
+{{{#!wiki tip
+    这个`requisition_center__purchase_line`表中还新增的一个修改原因的字段, 但是不是这个同步jda需求新增的, 所以就没提
+    || `changeReason`  || VARCHAR2 || 修改原因 || 修改原因 ||
+    
+}}}

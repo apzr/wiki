@@ -1,0 +1,73 @@
+=== 中间表custom__jda_replenishment_proposal_order(新增整表) ===
+<<BR>>
+|| 备注 || 类型 || 名称 ||
+|| 处理标识 || Boolean || ISPROCESSED ||
+|| 单号 || String || U_PLANARRIVAL_STORE_CD ||
+|| 柜组编码 || String || U_CATEGORY_CD ||
+|| 柜组名称 || String || U_CATEGORY_DESCR ||
+|| 行号 || String || U_PLANARRIVAL_STORE_LINENO ||
+|| 中类编码 || String || U_MIDCATEGORY_CD ||
+|| 中类名称 || String || U_MIDCATEGORY_DESCR ||
+|| 小类编码 || String || U_SUBCATEGORY_CD ||
+|| 小类名称 || String || U_SUBCATEGORY_DESCR ||
+|| 商品编码 || String || ITEM ||
+|| 商品名称 || String || DESCR ||
+|| 发货地编码 || String || SOURCE ||
+|| 目的地编码 || String || DEST ||
+|| 计划发货日期 || Date || SCHEDSHIPDATE ||
+|| 计划到达日期 || Date || SCHEDARRIVDATE ||
+|| 未来一周门店滚动预估销量 || `BigDecimal` || U_FCST_QTY ||
+|| 中转DC编码 || String || U_TRANSLOC ||
+|| 计划到达中转DC日期 || Date || U_TRANSLOCSCHEDARRIVALDATE ||
+|| 修改标识 || Boolean || U_CHANGE_FLAG ||
+|| 输出标识 || String || U_OUTPUT ||
+|| 覆盖安全天数 || `BigDecimal` || U_SSCOVER ||
+|| 是否为促销商品 || Boolean || U_PROMO_FLAG ||
+|| 订单类型 || String || U_PLANARRIVAL_TYPE ||
+|| 商品规格 || String || U_SPEC ||
+|| 基本计量单位编码 || String || U_UOM ||
+|| 基本计量单位名称 || String || U_UOM_DESCR ||
+|| 最大箱包数 || `BigDecimal` || U_PACKNUMBER ||
+|| 最小要货量 || `BigDecimal` || U_MINSHIPNUMBER ||
+|| 目前库存 || `BigDecimal` || U_OHINVENTORY ||
+|| 在途库存 || `BigDecimal` || U_VEHICLELOADLINE ||
+|| 实际档期编号 || String || U_PROMO_ID ||
+|| 促销开始时间 || Date || U_PROMO_STARTDATE ||
+|| 促销结束时间 || Date || U_PROMO_ENDDATE ||
+|| 条形码 || String || U_BARCODE ||
+|| 系统建议量 || `BigDecimal` || QTY ||
+|| 目的地名称 || String || U_DEST_DESCR ||
+|| 预计可售天数 || `BigDecimal` || U_OUTSTANDINGDAYS ||
+|| 供货工厂 || String || RESWK ||
+|| 供应商 || String || LIFNR ||
+|| 汇总交货日期 || Date || U_ARRIVALDATE ||
+
+
+=== `requisition_center__purchase_line`表(新增字段) ===
+`@TModel(需求-采购申请)` - `PurchaseRequisition.class`新增本次添加的属性
+* 修改拓展类`PurchaseRequisitionExt`,并添加本次新增的字段
+|| '''新增字段''' || '''类型''' || '''对应JDA字段''' || '''备注''' ||
+|| `midCategory` || VARCHAR2 || U_MIDCATEGORY_DESCR || 中类名称 ||
+|| `schedArriveDate` || date || SCHEDARRIVDATE || 计划到达日期 ||
+|| `saleCountNWeek` || number || U_FCST_QTY || 未来一周门店预估销售量 ||
+|| `changeFlag` || boolean || U_CHANGE_FLAG || 是否允许修改 (默认1,可) ||
+|| `promoFlag` || boolean || U_PROMO_FLAG || 是否是促销商品 ||
+|| `promoId` || VARCHAR2 || U_PROMO_ID || 实际档期编号 ||
+|| `supplierFactory`  || VARCHAR2 || 根据MD210中的物流模式判断：<<BR>>10配送取SOURCE、20直通外采、21直通转运、30越库外采、31越库转运取U_TRANSLOC；<<BR>>回传用此字段MD001接口用 || 供货工厂(物流模式=配送时取中转DC的值到此字段) ||
+|| `supplier`  || VARCHAR2 || 根据MD210中的物流模式判断：<<BR>>20直通外采、21直通转运、30越库外采、31越库转运、40直送取SOURCE；<<BR>>不展示，回传用此字段MD001接口用 || 供应商LIFNR ||
+|| `sumDate`  || date || 根据MD210中的物流模式判断：<<BR>>20直通外采、30越库外采取U_TRANSLOCSCHEDARRIVALDATE、40直送取SCHEDARRIVDATE；<<BR>>不展示，回传用此字段MD001接口用 || 汇总交货日期eindt ||
+
+    
+详见文档[[attachment:new_data_from_jda.xlsx | 对照表 ]]
+    
+{{{#!wiki note
+    这两个字段是原来`requisition_center__purchase_line`表中就有的, 因此需求文档里提到了但是不用新增
+    || promotionStartAt || date || U_PROMO_STARTDATE ||促销开始时间 ||
+    || promotionEndAt || date || U_PROMO_ENDDATE || 促销结束时间 ||
+    
+}}}
+{{{#!wiki tip
+    `requisition_center__purchase_line`表中还新增的一个修改原因的字段, 但不是同步jda需求新增的, 所以就没提
+    || `changeReason`  || VARCHAR2 || 修改原因 || 修改原因 ||
+    
+}}}
