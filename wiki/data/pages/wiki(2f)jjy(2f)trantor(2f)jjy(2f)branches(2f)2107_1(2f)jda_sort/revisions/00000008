@@ -1,0 +1,130 @@
+=== 要货单排序 ===
+
+ * 登陆 http://scp-console.test.jjyyx.com/
+
+ * 选择 `SRM门店管理系统` - `门店日常要货` - `要货单列表` 并点击查询
+
+ * 在`NetWork`请求中得到访问接口
+ {{{#!highlight json
+
+{singleResult: false, targetModel: "requisition_center_PurchaseRequisition",…}
+
+    dataSource: {actionKey: "requisition_center_PurchaseRequisition_PurchaseRequisition_list"}
+
+    order: {by: "createdAt", isAsc: false}
+
+    paging: {no: 1, size: 10}
+
+    result: {fields: [{fieldName: "id"}, {fieldName: "code"}, {fieldName: "requisitionEntityName"},…]}
+        fields: [{fieldName: "id"}, {fieldName: "code"}, {fieldName: "requisitionEntityName"},…]
+        singleResult: false
+        sourceModel: "requisition_center_PurchaseRequisition"
+        targetModel: "requisition_center_PurchaseRequisition"
+
+}}}
+
+ * 根据`actionKey`找到`"actionKey": "requisition_center_PurchaseRequisition_PurchaseRequisitionMultiDataAction"`中的排序方法
+ {{{#!highlight java
+
+public class PurchaseRequisitionMultiDataAction implements MultiDataAction<PurchaseRequisition> {
+
+    @Override
+    public MultiDataResult<PurchaseRequisition> load(QueryValues queryValues, MultiDataParams multiDataParams) {
+
+                ...
+                Select::getAll,
+                /***********************************************排序***********************************************/
+                new OrderBy(multiDataParams.getOrder().getBy(), multiDataParams.getOrder().getIsAsc()), null, multiDataParams.getPaging().getNo(), multiDataParams.getPaging().getSize());
+                /***********************************************排序***********************************************/
+
+                ...
+
+    }
+
+}
+
+}}}
+
+ * 可见目前的排序方法为`order: {by: "createdAt", isAsc: false}`为页面传递的参数
+  * 此处如果想做双排序兼容, 要么就在查询前判断查询的数据是drp还是jda的, 直接用不同的SQL去查询出排序好的数据
+  * 要么就直接查询时候双方的排序语句都不带, 先随机查询一条数据,根据查询结果的数据格式判断来源是DRP还是JDA, 再请求带排序的SQL
+
+
+
+=== 要货单商品行排序 ===
+ * 选择 `SRM门店管理系统` - `门店日常要货` - `要货单列表` 并点击查询 - 选择一条数据点击详情
+
+ * 在`NetWork`请求中得到访问接口
+ {{{#!highlight json
+
+{singleResult: false, targetModel: "requisition_center_PurchaseLine", dataSource: {type: "DataStore"},…}
+
+    dataSource: {type: "DataStore"}
+
+    order: {by: "lineNumberExt", isAsc: true}
+
+    paging: {no: 1, size: 10}
+
+    related: {field: "purchaseRequisition", recordIds: [17366133]}
+
+    result: {,…}
+
+    singleResult: false
+
+    targetModel: "requisition_center_PurchaseLine"
+
+}}}
+
+
+在jda同步数据接口中, 商品行数据合单的逻辑后 添加排序方法, 排序之后设置行号即可, `按中类升序，按订单量降序`
+ || '''`类目名称`''' || '''`名称代码`''' || '''`对应属性`''' || '''`备注`''' ||
+ || 2级类目 || `Level2ItemMaterialCategory` || `Item.secondCategory` || 大类 ||
+ || 物料组 || `Level3ItemMaterialCategory` || `Item.thirdCategory` || 中类 ||
+ || 商品小类 || `Level4ItemMaterialCategory` || `Item.secondCategory` || 小类 ||
+
+参见`DrpOrderServiceImpl::createPR`, 设置行号`JdaOrderServiceImpl::convertByPage()`
+ {{{#!highlight java
+   /**
+     * jda排序, 先比中类, 再比订单量
+     *
+     * @param lines
+     * @return void
+     * @author apr
+     * @date 2021/7/16 10:16
+     */
+    private void sort(List<PurchaseLine> lines) {
+        lines.sort((o1, o2) -> {
+            MaterialCategory o1Category = o1.getGoods().get(Item.thirdCategory_field);
+            MaterialCategory o2Category = o2.getGoods().get(Item.thirdCategory_field);
+
+            String o1categoryOutCode = Objects.nonNull(o1Category) ? o1Category.getOuterId() : o1.getGoods().getCategory().getOuterId();
+            String o2categoryOutCode = Objects.nonNull(o2Category) ? o2Category.getOuterId() : o2.getGoods().getCategory().getOuterId();
+
+            int c = o1categoryOutCode.compareTo(o2categoryOutCode);
+            return c == 0 ? compareZero(o1, o2) : c;
+        });
+
+        for (int i = 0; i < lines.size(); i++) {
+            lines.get(i).set(PurchaseLineExt.lineNumberExt_field, i+1);
+        }
+    }
+
+    /**
+     * 比较日均销量
+     *
+     * @param o1 
+     * @param o2
+     * @return int
+     * @author apr
+     * @date 2021/7/16 10:37
+     */
+    private int compareZero(PurchaseLine o1, PurchaseLine o2) {
+        BigDecimal averageDailySales1 = o1.get(PurchaseLineExt.averageDailySales_field);
+        BigDecimal averageDailySales2 = o2.get(PurchaseLineExt.averageDailySales_field);
+
+        if(averageDailySales1 == null && averageDailySales2 == null) return 0;
+        if(averageDailySales1 == null) return 1;
+        if(averageDailySales2 == null) return -1;
+        return averageDailySales2.compareTo(averageDailySales1);
+    }
+}}}

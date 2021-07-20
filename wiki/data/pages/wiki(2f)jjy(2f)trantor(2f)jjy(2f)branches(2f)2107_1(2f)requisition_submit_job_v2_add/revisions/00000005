@@ -1,0 +1,60 @@
+{{{#!wiki note
+本需求要结合上一个截单作废调整需求同步修改
+
+新增JDA试点门店自动补货单job逻辑。
+
+过了截单时间，JDA试点门店的自动补货单的单据状态变为‘已提交’
+}}}
+
+ * 任务名称`RequisitionCloseJobv2`, Java文件`RequisitionCloseJobv2.java`
+
+ * 原有到期任务查询：
+ {{{#!highlight sql
+SELECT id
+FROM requisition_center__purchase_requisition AS t0
+WHERE t0.id IN (
+	SELECT PurchasePurchaseLine
+	FROM requisition_center__purchase_line AS t1
+	WHERE t1.deadlineDate <= now()
+	AND 数据来源 != JDA类型
+)
+AND t0.purchaseStatus IN ('DRAFT','TO_SUBMIT','UNDER_APPROVE') -- 草稿, 已保存, 审批中
+
+-- 假定截单作废逻辑修改完成, 目前查询的方法为此
+}}}
+
+ * 查询之后的更新：
+ {{{#!highlight sql
+
+UPDATE requisition_center__purchase_requisition
+SET purchaseStatus = 'CLOSED', updatedAt = now()
+WHERE id = ?
+AND purchaseStatus IN ('DRAFT','TO_SUBMIT','UNDER_APPROVE')
+
+-- 用jdbcTemplate.update()方法循环查询列表逐一更新
+}}}
+
+ * 本需求在原有定时任务的后面添加逻辑即可
+  * 查询
+  {{{#!highlight sql
+SELECT id
+FROM requisition_center__purchase_requisition AS t0
+WHERE t0.id IN (
+	SELECT PurchasePurchaseLine
+	FROM requisition_center__purchase_line AS t1
+	WHERE t1.deadlineDate <= now()
+	AND 数据来源 = JDA类型
+)
+AND t0.purchaseStatus IN ('DRAFT','TO_SUBMIT','UNDER_APPROVE') -- 草稿, 已保存, 审批中
+}}}
+
+  * 更新
+  {{{#!highlight sql
+
+UPDATE requisition_center__purchase_requisition
+SET purchaseStatus = 'SUBMITTED', updatedAt = now()
+WHERE id = ?
+AND purchaseStatus IN ('DRAFT','TO_SUBMIT','UNDER_APPROVE')
+
+-- 用jdbcTemplate.update()方法循环查询列表逐一更新
+}}}

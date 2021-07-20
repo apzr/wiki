@@ -1,0 +1,46 @@
+## page was renamed from wiki/jjy/trantor/jjy/branches/2107_1/requisition_close_job_v2
+{{{#!wiki note
+修改目前过了截单时间作废单据的job逻辑。非试点门店保留目前作废的逻辑。
+
+JDA试点门店取消‘自动补货单’作废的逻辑，其他类型的要货单保留目前作废逻辑
+}}}
+
+ * 任务名称`RequisitionCloseJobv2`, Java文件`RequisitionCloseJobv2`
+
+ * 到期任务查询：
+ {{{#!highlight sql
+SELECT id 
+FROM requisition_center__purchase_requisition AS t0 
+WHERE t0.id IN (
+	SELECT PurchasePurchaseLine 
+	FROM requisition_center__purchase_line AS t1 
+	WHERE t1.deadlineDate <= now()
+) 
+AND t0.purchaseStatus IN ('DRAFT','TO_SUBMIT','UNDER_APPROVE') -- 草稿, 已保存, 审批中
+
+-- 用jdbcTemplate.queryForList()方法直接查询获取的List<Map<String, Object>>
+}}}
+
+ * 查询之后的更新：
+ {{{#!highlight sql
+
+UPDATE requisition_center__purchase_requisition 
+SET purchaseStatus = 'CLOSED', updatedAt = now() 
+WHERE id = ? 
+AND purchaseStatus IN ('DRAFT','TO_SUBMIT','UNDER_APPROVE') 
+
+-- 用jdbcTemplate.update()方法循环查询列表逐一更新
+}}}
+
+ * 本需求在查询时排除掉JDA类型的数据即可：
+ {{{#!highlight sql
+SELECT id 
+FROM requisition_center__purchase_requisition AS t0 
+WHERE t0.id IN (
+	SELECT PurchasePurchaseLine 
+	FROM requisition_center__purchase_line AS t1 
+	WHERE t1.deadlineDate <= now()
+	AND 数据来源 != JDA类型
+) 
+AND t0.purchaseStatus IN ('DRAFT','TO_SUBMIT','UNDER_APPROVE') -- 草稿, 已保存, 审批中
+}}}

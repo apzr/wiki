@@ -1,0 +1,41 @@
+`io.terminus.jjy.b2b.scp.model.storesplan.PurchaseLineExt.java`中新增字段修改原因
+
+ {{{#!highlight java
+
+    @TModelField(name = "修改原因")
+    @DictionaryMeta(clazz = io.terminus.jjy.b2b.scp.dictory.RequisitionChangeReason.class)
+    private String changeReason;
+
+}}}
+
+新增文件`io.terminus.jjy.b2b.scp.dictory.RequisitionChangeReason.java`
+
+ {{{#!highlight java
+
+@TDict(name = "要货单修改原因")
+public class RequisitionChangeReason {
+
+    @Label("正常陈列")
+    public static final String NORMAL_DISPLAY = "1";
+
+    @Label("特殊陈列")
+    public static final String SPECIAL_DISPLAY = "2";
+
+    @Label("临时促销")
+    public static final String TEMPORARY_SALE = "3";
+
+    @Label("库存、在途不准确")
+    public static final String INACCURATE_INVENTORY = "4";
+
+    @Label("团购商品")
+    public static final String PDD_GOODS = "5";
+
+    @Label("预测有偏差")
+    public static final String FORECAST_BIAS = "6";
+
+    @Label("多码进一码出")
+    public static final String INOUT = "7";
+
+}
+
+}}}

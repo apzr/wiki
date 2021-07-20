@@ -1,0 +1,145 @@
+=== 要货单排序 ===
+
+ * 登陆 http://scp-console.test.jjyyx.com/
+
+ * 选择 `SRM门店管理系统` - `门店日常要货` - `要货单列表` 并点击查询
+
+ * 在`NetWork`请求中得到访问接口
+ {{{#!highlight json
+
+{singleResult: false, targetModel: "requisition_center_PurchaseRequisition",…}
+
+    dataSource: {actionKey: "requisition_center_PurchaseRequisition_PurchaseRequisition_list"}
+
+    order: {by: "createdAt", isAsc: false}
+
+
+    paging: {no: 1, size: 10}
+
+    result: {fields: [{fieldName: "id"}, {fieldName: "code"}, {fieldName: "requisitionEntityName"},…]}
+        fields: [{fieldName: "id"}, {fieldName: "code"}, {fieldName: "requisitionEntityName"},…]
+        singleResult: false
+        sourceModel: "requisition_center_PurchaseRequisition"
+        targetModel: "requisition_center_PurchaseRequisition"
+
+}}}
+
+ * 根据`actionKey`找到`"actionKey": "requisition_center_PurchaseRequisition_PurchaseRequisitionMultiDataAction"`中的排序方法
+ {{{#!highlight java
+
+public class PurchaseRequisitionMultiDataAction implements MultiDataAction<PurchaseRequisition> {
+
+    @Override
+    public MultiDataResult<PurchaseRequisition> load(QueryValues queryValues, MultiDataParams multiDataParams) {
+        log.info("queryValues:{}", queryValues);
+        log.info("multiDataParams:{}", multiDataParams);
+        MultiDataResult<PurchaseRequisition> result = new MultiDataResult<>();
+        JJyPartnerExral jJyPartnerExral = JJyPartnerContext.getCurrent();
+
+        List<BusinessEntity> businessEntityList = storeInfoRepo.find(select -> {
+            select.where(condition -> {
+                condition.condition(StoreInfo.areaManager_field, conditionSet -> {
+                    conditionSet.condition(User.id_field, Operators.EQ, jJyPartnerExral.getUserId());
+                });
+                condition.condition(StoreInfo.storeStatus_field, Operators.IN, ListUtil.of("10", "20"));
+                condition.condition(StoreInfo.newType_field, Operators.EQ, "SHOP");
+            });
+        });
+        log.info("PurchaseRequisitionMultiDataAction-businessEntityList:{}", JSON.toJSONString(businessEntityList));
+        if (CollectionUtils.isEmpty(businessEntityList)) {
+            businessEntityList = storeInfoRepo.find(select -> {
+                select.where(conditionSet -> {
+                    // 值为1时为全部门店权限
+                    if (!UserStoreJurisdictionDict.ALLSTORE.equals(jJyPartnerExral.getExtraConditionMap().get(UserExtraInfo.storeJurisdictionStatus_field))) {
+                        conditionSet.condition(StoreInfo.outerCode_field, Operators.IN, jJyPartnerExral.getStoreCodeList());
+                        conditionSet.condition(StoreInfo.newType_field, Operators.EQ, "SHOP");
+                    }
+                    conditionSet.condition(StoreInfo.storeStatus_field, Operators.IN, ListUtil.of("10", "20"));
+                });
+            });
+        }
+
+        List<String> businessEntityCodeList = businessEntityList.stream().map(BusinessEntity::getOuterCode).collect(Collectors.toList());
+
+        log.info("businessEntityCodeList:{}", businessEntityCodeList);
+
+        Paging<PurchaseRequisition> purchaseRequisitionPaging = purchaseRequisitionRepo.page(condition -> {
+                    if (MapUtils.isNotEmpty(multiDataParams.getSearchValues())) {
+                        QueryValues search = multiDataParams.getSearchValues();
+                        conditionEqual(condition, search, PurchaseRequisition.code_field);
+                        conditionRequisitionEntity(condition, search);
+                        conditionIn(condition, search, PurchaseRequisition.purchaseType_field);
+                        conditionContainerGroup(condition, search);
+                        conditionIn(condition, search, PurchaseRequisitionExt.purchaseStatus_field);
+                        conditionDateTime(condition, search, PurchaseRequisitionExt.createdAt_field);
+                        conditionDateTime(condition, search, PurchaseRequisitionExt.submitAt_field);
+                        conditionEqual(condition, search, PurchaseRequisitionExt.submitOperator_field);
+                        conditionIn(condition, search, PurchaseRequisitionExt.sourceType_field);
+                        conditionPurchaseLineListGoodsCode(condition, search);
+                        conditionPurchaseLineListGoodsName(condition, search);
+                        conditionPurchaseLineListUnifiedCode(condition, search);
+                    }
+                    condition.or(or -> {
+                        or.condition(PurchaseRequisitionExt.isRecommend_field, Operators.NEQ, true);
+                        or.condition(PurchaseRequisitionExt.isRecommend_field, Operators.EQ, null);
+                    });
+                    condition.condition(PurchaseRequisition.requisitionEntityCode_field, Operators.IN, businessEntityCodeList);
+                },
+                Select::getAll,
+                /***********************************************排序***********************************************/
+                new OrderBy(multiDataParams.getOrder().getBy(), multiDataParams.getOrder().getIsAsc()), null, multiDataParams.getPaging().getNo(), multiDataParams.getPaging().getSize());
+                /***********************************************排序***********************************************/
+
+        List<PurchaseRequisition> data = purchaseRequisitionPaging.getData();
+        Optional<BusinessConfig> businessConfig = businessConfigService.findByCode(BusinessConfigBizCodeEnum.STORE_PURCHASEREQUISTION_START_TIME.name());
+        if (businessConfig.isPresent()) {
+            BusinessConfig config = businessConfig.get();
+            SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+            Date startTime = null;
+            Date nowTime = null;
+            try {
+                startTime = sdf.parse(config.getValue());
+                log.info("startTime========={}", config.getValue());
+                nowTime = sdf.parse(sdf.format(new Date()));
+            } catch (ParseException e) {
+                throw new ActionErrorException("要货开始时间格式不正确！");
+            }
+            for (PurchaseRequisition datum : data) {
+                if (startTime.before(nowTime)) {
+                    datum.set(PurchaseRequisitionExt.purchaseFlag_field, true);
+                } else {
+                    datum.set(PurchaseRequisitionExt.purchaseFlag_field, false);
+                    datum.set(PurchaseRequisitionExt.purchaseStartTime_field, config.getValue());
+                }
+            }
+        }
+
+        result.setData(purchaseRequisitionPaging.getData());
+        result.setCount(purchaseRequisitionPaging.getTotal());
+
+        return result;
+    }
+
+}
+
+}}}
+
+ * 可见目前的排序方法为`order: {by: "createdAt", isAsc: false}`为页面传递的参数
+  * 此处如果想做双排序兼容, 要么就在查询前判断查询的数据是drp还是jda的, 直接用不同的SQL去查询出排序好的数据
+  * 要么就直接查询时候双方的排序语句都不带, 先随机查询一条数据,根据查询结果的数据格式判断来源是DRP还是JDA, 再请求带排序的SQL
+
+
+
+=== 要货单商品行排序 ===
+
+在jda同步数据接口中, 商品行数据合单的逻辑后 添加排序方法, 排序之后设置行号即可
+
+参见DrpOrderServiceImpl::createPR
+ {{{
+lineList.sort((o1, o2) -> {
+});
+
+for (int i = 0; i < lineList.size; i++) {
+    lineList.get(i).set(PurchaseLineExt.lineNumberExt_field, i+1);
+}
+}}}
