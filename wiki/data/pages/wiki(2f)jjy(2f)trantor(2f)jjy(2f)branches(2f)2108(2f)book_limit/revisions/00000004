@@ -1,0 +1,34 @@
+`performance-center` - 订单履约 - 预约交货单管理
+
+{{{
+
+详情页面确认交货按钮
+    DeliveryOrderAction::orderOperate
+        record: [{id: 11508002}]
+        env: {operate: "DELIVERED"}
+
+列表页面批量确认交货按钮
+    DeliveryOrderAction::batchOperate
+
+}}}
+
+{{{
+
+采购订单
+    performance_center__purchase_order
+订单行列表
+    performance_center__purchase_order_line
+
+}}}
+
+
+``performance-center` - 订单履约 - 订单管理 - 预约
+{{{
+
+查询订单
+    DeliveryOrderAppointmentAction::load
+
+点击提交
+    DeliveryOrderAction::create
+
+}}}

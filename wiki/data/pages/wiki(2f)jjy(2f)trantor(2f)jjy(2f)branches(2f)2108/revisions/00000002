@@ -1,0 +1,28 @@
+ > [[ /branches_list |  分支 ]]
+
+ <<BR>>
+
+ > [[ /order_lifecycle | 订单生命周期 ]]
+
+ <<BR>>
+
+ > [[ /price_compensation | 补差承担主体 ]]
+
+ <<BR>>
+
+ > [[ /book_limit  | 预约上限控制逻辑更改 ]]
+ 
+ <<BR>>
+
+ > [[ /confirm_order_no_b2b  | 订单员对不使用B2B的供应商订单进行确认、预约 ]]
+
+ <<BR>>
+
+ > [[ /remove_0_order  | 订单中没有预约或预约数量为0的商品不在批次报告管理列表中显示 ]]
+
+ <<BR>>
+
+ || --(MD215)-- ||
+ || --(MD154)-- ||
+ || [[attachment:request.xlsx | 需求 ]] ||
+ || [[attachment:time.xlsx | 进度排期 ]] ||

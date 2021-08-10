@@ -1,0 +1,50 @@
+涉及模块
+ {{{
+
+证照&报告管理 - BatchReportOrderRelation
+
+  >批次报告管理
+
+    >批次报告管理列表 toSupplierManageList
+
+}}}
+
+当SAP回传内向交货单单号时（MD176），触发证照模块生成内向交货单+商品维度的数据并在【批次报告管理列表】中显示
+
+`jjy_b2b_license_center_BatchReportOrderRelation_BatchReportOrderRelation_toSupplierManageList`
+
+
+`jjy-scp-center`
+
+{{{
+MD176Consumer::processRequests
+
+  OrderSAPFacadeImpl::receiveDeliveryMD176~syncDeliveryOrderChange
+
+}}}
+
+`performance-center`
+
+{{{
+
+OrderPurchaserWriteFacadeImpl::syncDeliveryOrderChange方法中
+
+发货订单同步流程类 SyncDeliveryOrderRequest
+
+的属性 - 发货订单信息：DeliveryOrder
+
+的属性 - 发货计划行列表：deliveryOrderLines
+
+的属性　- 采购数量(这个就是文档中所提的商品预约数量？)：quantity  
+　　　　- 发货数量：deliveredQuantity
+　　　　- 到货数量：arrivedQuantity
+　　　　- 入库数量：confirmedQuantity
+　　　　- 是否质检：qualityCheck
+
+}}}
+
+{{{
+
+license项目 - BatchReportOrderRelation
+
+}}}

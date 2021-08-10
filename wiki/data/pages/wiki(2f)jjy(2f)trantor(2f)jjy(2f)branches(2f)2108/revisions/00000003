@@ -1,0 +1,30 @@
+ > [[ /branches_list |  分支 ]]
+
+ <<BR>>
+
+ > [[ /order_lifecycle | 订单生命周期 ]]
+
+ <<BR>>
+
+ > [[ /price_compensation | 补差承担主体 ]]
+
+ <<BR>>
+
+ > [[ /book_limit  | 预约上限控制逻辑更改 ]]
+ 
+ <<BR>>
+
+ > [[ /confirm_order_no_b2b  | 订单员对不使用B2B的供应商订单进行确认、预约 ]]
+
+ <<BR>>
+
+ > [[ /remove_0_order  | 订单中没有预约或预约数量为0的商品不在批次报告管理列表中显示 ]]
+
+ <<BR>>
+
+ || [[attachment:request.xlsx | 需求 ]] ||
+ || [[attachment:book0.docx | 订单中没有预约或预约数量为0的商品不在批次报告管理列表中显示 ]] ||
+ || [[attachment:lifecycle.docx | 订单确认时增加商品生命周期的校验&预约可用库存逻辑调整 ]] ||
+ || [[attachment:xianshang.docx | B2B接收不使用线上平台的供应商的订单 ]] ||
+ || [[attachment:zhuti.docx | 促销调价增加补差承担主体 ]] ||
+ || [[attachment:template.xlsx | 促销调价单商品导入模版 ]] ||

@@ -1,0 +1,18 @@
+[[attachment:requisition_center__purchase_line.sql | 表结构变动_需求提报 ]]
+
+[[attachment:custom__material_store_relation.sql | 表结构变动_物料门店 ]]
+
+[[attachment:custom__jda_replenishment_proposal_order_new.sql | 表新增_JDA中间表结构_新 ]]
+
+
+ [[attachment:data_insert_new.sql | JDA中间表数据备份_新 ]]
+
+
+[[attachment:custom__jda_replenishment_proposal_order_old.sql | 表新增_JDA中间表结构_旧 ]]
+
+
+ [[attachment:data_insert.sql | JDA中间表数据备份_插入 ]]
+
+ [[attachment:data_prod.sql | JDA中间表数据备份_生产 ]]
+
+ [[attachment:data_test.sql | JDA中间表数据备份_测试 ]]

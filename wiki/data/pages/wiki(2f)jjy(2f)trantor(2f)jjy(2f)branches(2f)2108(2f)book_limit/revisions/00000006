@@ -1,0 +1,54 @@
+`数据库相关表`
+{{{
+
+采购订单
+    performance_center__purchase_order
+
+订单行列表
+    performance_center__purchase_order_line
+
+}}}
+
+
+`performance-center` - 订单履约 - 订单管理 - 预约
+{{{
+
+详情界面
+    DeliveryOrderAppointmentAction::load
+
+点击提交
+    DeliveryOrderAction::create
+
+}}}
+
+`performance-center` - 订单履约 - 预约交货单管理
+
+{{{
+
+详情页面确认交货按钮
+    DeliveryOrderAction::orderOperate
+        record: [{id: 11508002}]
+        env: {operate: "DELIVERED"}
+
+列表页面批量确认交货按钮
+    DeliveryOrderAction::batchOperate
+
+}}}
+
+订单行列表- 本次预约数量：`PurchaseOrderLine.deliveredQuantity`
+{{{
+    <Field name="deliveredQuantity" 
+           @initValue="
+               return ( this.record.quantity - this.record.purchaseOrderLine.deliveredQuantity) < 0 
+                          ? 0 
+                          : this.record.quantity - this.record.purchaseOrderLine.deliveredQuantity" 
+           label="本次预约数量">
+    <RenderType>
+        <InputNumber :max="
+                         ( this.record.quantity - this.record.purchaseOrderLine.deliveredQuantity) < 0 
+                             ? 0 
+                             : this.record.quantity - this.record.purchaseOrderLine.deliveredQuantity
+                     " 
+                     min="0"/>
+    </RenderType>
+}}}

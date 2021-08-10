@@ -1,0 +1,130 @@
+`数据库相关表`
+{{{#!highlight sql
+
+-- 采购订单 performance_center__purchase_order
+SELECT * FROM performance_center__purchase_order WHERE id = '12058001'
+
+-- 订单行列表 performance_center__purchase_order_line
+SELECT * FROM performance_center__purchase_order_line WHERE PurchaseOrderLineRef = '12058001'
+
+}}}
+
+
+`performance-center` - 订单履约 - 订单管理 - 预约
+{{{
+
+详情界面
+    DeliveryOrderAppointmentAction::load
+
+点击提交
+    DeliveryOrderAction::create
+
+}}}
+
+`performance-center` - 订单履约 - 预约交货单管理
+
+{{{
+
+详情页面确认交货按钮
+    DeliveryOrderAction::orderOperate
+        record: [{id: 11508002}]
+        env: {operate: "DELIVERED"}
+
+列表页面批量确认交货按钮
+    DeliveryOrderAction::batchOperate
+
+}}}
+
+订单行列表- 本次预约数量：`PurchaseOrderLine.deliveredQuantity(发货数量)`
+{{{
+    <Field name="deliveredQuantity" 
+           @initValue="
+               return ( this.record.quantity - this.record.purchaseOrderLine.deliveredQuantity) < 0 
+                          ? 0 
+                          : this.record.quantity - this.record.purchaseOrderLine.deliveredQuantity" 
+           label="本次预约数量">
+    <RenderType>
+        <InputNumber :max="
+                         ( this.record.quantity - this.record.purchaseOrderLine.deliveredQuantity) < 0 
+                             ? 0 
+                             : this.record.quantity - this.record.purchaseOrderLine.deliveredQuantity
+                     " 
+                     min="0"/>
+    </RenderType>
+}}}
+
+
+`performance-center` - PurchaseOrder.java
+{{{#!highlight java
+
+//部分发货
+public DeliveryOrder deliver(DeliveryOrder deliveryOrder){
+
+    deliveryOrderLine.setQuantity(purchaseOrderLine.getQuantity());
+
+}
+
+//全额发货
+public DeliveryOrder allDeliver(){
+
+    deliveryOrderLine.setQuantity(purchaseOrderLine.getQuantity());
+
+}
+
+}}}
+
+{{{#!highlight java
+
+// 提供给业务系统间服务调用
+OrderPurchaserWriteFacadeImpl
+	create(); // 外部系统采购订单创建
+	createDeliveryOrder(); // 外部系统预约单创建
+	createReverseOrder(); // 外部系统创建退货单
+	syncPurchaseOrderChange(); // 同步外部系统采购订单（数据变更）
+	syncDeliveryOrderChange(); // 同步外部系统发货订单（数据变更）
+	syncReverseOrderChange(); // 同步外部系统退货订单（数据变更）
+
+// 发货订单业务流程处理服务
+DeliveryOrderFlowFacadeImpl
+	updateStatus(); //发货单流程状态变更
+
+// 采购订单业务流程处理服务
+PurchaseOrderFlowFacadeImpl
+	create(); // 采购订单创建
+	updateStatus(); // 采购订单流程状态变更
+	startAudit(); // 采购订单发起审批
+	updateAuditStatus(); // 采购订单审核状态变更
+
+// 退单
+ReverseOrderFlowFacadeImpl
+	create(); // 退货单创建
+	updateStatus(); // 退货单流程状态变更
+
+}}}
+
+`发货单流程状态变更 - DeliveryOrderFlowFacadeImpl::updateStatus`
+{{{#!highlight java
+
+log.info("DeliveryOrder update, deliveryOrder={}, status={}", deliveryOrder, status);
+deliveryOrder.setStatus(status);
+deliveryOrderService.orderOperate(deliveryOrder);
+
+}}}
+
+
+`发货单流程状态变更 - DeliveryOrderService::orderOperate`
+{{{#!highlight java
+
+deliveryOrder = deliveryOrderRepo.update(deliveryOrder);
+sendChangedEventMq(deliveryOrder);
+
+}}}
+
+`发货单流程状态变更 - DeliveryOrderService::sendChangedEventMq`
+{{{#!highlight java
+
+mqProducer.send(MqConstants.ProducerTopic.DeliveryOrder.CHANGED, deliveryOrder.getStatus(), result);
+
+// MqConstants.ProducerTopic.DeliveryOrder.CHANGED = "srm_delivery_order_changed"; 用于生成批次报告
+
+}}}

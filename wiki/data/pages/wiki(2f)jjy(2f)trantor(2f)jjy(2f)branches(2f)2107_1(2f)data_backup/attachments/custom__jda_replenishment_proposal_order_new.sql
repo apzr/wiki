@@ -1,17 +1,17 @@
 /*
  Navicat Premium Data Transfer
 
- Source Server         : 测试10.97.177.99
+ Source Server         : 预发10.98.152.11
  Source Server Type    : MySQL
  Source Server Version : 50723
- Source Host           : 10.97.177.99:3306
+ Source Host           : 10.98.152.11:3306
  Source Schema         : trantor
 
  Target Server Type    : MySQL
  Target Server Version : 50723
  File Encoding         : 65001
 
- Date: 22/07/2021 17:14:40
+ Date: 28/07/2021 08:22:48
 */
 
 SET NAMES utf8mb4;
@@ -64,17 +64,17 @@ CREATE TABLE `custom__jda_replenishment_proposal_order`  (
   `U_PROMO_FLAG` tinyint(4) NULL DEFAULT NULL,
   `U_MIDCATEGORY_CD` varchar(256) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL,
   `U_OUTPUT` varchar(256) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL,
+  `DBTIME` datetime NULL DEFAULT NULL,
   `U_SSCOVER` decimal(9, 2) NULL DEFAULT NULL,
   `U_CATEGORY_DESCR` varchar(256) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL,
   `deletedAt` bigint(20) NULL DEFAULT 0,
   `UpdatedBy` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL COMMENT '最后修改人 ',
   `CreatedBy` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL COMMENT '创建人 ',
-  `DBTIME` datetime NULL DEFAULT NULL COMMENT '制表始时间',
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `UpdatedBy`(`UpdatedBy`) USING BTREE,
   INDEX `CreatedBy`(`CreatedBy`) USING BTREE,
   INDEX `uk_U_PLANARRIVAL_STORE_LINENO`(`U_PLANARRIVAL_STORE_LINENO`) USING BTREE,
   INDEX `uk_U_PLANARRIVAL_STORE_CD`(`U_PLANARRIVAL_STORE_CD`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 4 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 11 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci ROW_FORMAT = Dynamic;
 
 SET FOREIGN_KEY_CHECKS = 1;

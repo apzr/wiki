@@ -1,0 +1,39 @@
+1. 在所有涉及订单确认的接口添加校验：
+
+ * 根据订单的商品编码查询`jjy_b2b_license_center__material_sales`表，获取采购活动状态`promotionStatus`信息；
+ * 查询`material_center__material`表，获取商品生命周期`lifecycle`信息；
+ * 校验
+  * 若采购活动状态是（10暂停订货、20停止订货、30换季停采、40TNA）且`商品的确认数量大于0` 
+  * 若品生命周期是（30计划淘汰、40预淘汰、50淘汰、60废码的商品）且`商品的确认数量大于0` 
+ * 警告`“请将第（行号）行商品的‘订单确认数量’调整为0后，再进行操作”`
+ 
+2. 新增校验方法
+
+{{{#!highlight java
+
+checkLifecycle(){
+
+ //查询采购状态
+
+ //查询生命周期
+
+ //符合条件, 弹出警示
+
+}
+
+}}}
+
+3. 接口增加校验
+
+{{{
+
+商品行确认按钮
+    actionperformance_center_PurchaseOrder_PurchaseOrderAction::orderOperate
+顶部确认订单按钮
+    actionperformance_center_PurchaseOrder_PurchaseOrderAction::batchOperate
+顶部预约订单按钮
+    actionperformance_center_DeliveryOrder_PurchaseOrderAction::batchDeliver
+
+}}}
+
+4. 移动端同理
