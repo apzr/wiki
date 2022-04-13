@@ -1,0 +1,12 @@
+[[ /dump | redis dump ]]
+
+[[ /error_on_redis_dump | Win CMD 执行 redis-dump 命令报错 ]]
+
+[[ /enable_redis_plugin | @EnableRedisPlugin ]]
+
+
+[[ /loadBalanced| @LoadBalanced ]]
+
+
+
+[[ /master_slave_sentinel | 主从哨兵模式记录 ]]

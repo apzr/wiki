@@ -1,0 +1,19 @@
+在这里详述 wiki/kfk/run。
+
+{{{
+@echo off
+
+::zookeeper
+echo -----------------------------
+echo Starting zookeeper
+echo -----------------------------
+cd /d %kfk_home%/
+start /min "kafka-zookeeper" "%kfk_home%/bin/windows/zookeeper-server-start.bat" %kfk_home%/config/zookeeper.properties
+
+::kafka
+echo -----------------------------
+echo Starting kafka
+echo -----------------------------
+cd /d %kfk_home%/
+start /min "kafka-server" "%kfk_home%/bin/windows/kafka-server-start.bat" %kfk_home%/config/server.properties
+}}}

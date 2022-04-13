@@ -1,0 +1,311 @@
+== 主从 ==
+
+记录一下根据一主二从三哨兵的原则来搭建一个分布式的缓存服务
+
+==== 1.1 准备 ====
+
+[[ https://github.com/MicrosoftArchive/redis/releases | 下载redis程序包 ]] , 解压后, 复制三分, 分别各自命名
+ {{{#!highlight batch
+
+E:\program_flies\redis_x64_5.0.10_win_cluster
+├─redis_master_x64_5.0.10_win_6379
+├─redis_slaver0_x64_5.0.10_win_6380
+└─redis_slaver1_x64_5.0.10_win_6381
+
+}}}
+
+==== 1.2 修改配置 ====
+
+ * 修改master-6379配置文件`E:\program_flies\redis_x64_5.0.10_win_cluster\redis_master_x64_5.0.10_win_6379\redis.windows.conf
+ {{{#!highlight shell
+
+port 6379
+daemonize yes
+# 这个文件夹也可以改成绝对目录
+# "E:\program_flies\redis_x64_5.0.10_win_cluster\redis_master_x64_5.0.10_win_6379", 
+# 如果默认的话程序或帮忙修改
+dir ./
+
+}}}
+ * 修改master-6379配置文件`E:\program_flies\redis_x64_5.0.10_win_cluster\redis_slaver0_x64_5.0.10_win_6380\redis.windows.conf
+ {{{#!highlight shell
+
+port 6380
+# 主服务器端口为6379
+slaveof 127.0.0.1 6379
+dir ./
+
+}}}
+ * 修改master-6379配置文件`E:\program_flies\redis_x64_5.0.10_win_cluster\redis_slaver1_x64_5.0.10_win_6381\redis.windows.conf
+ {{{#!highlight shell
+
+port 6381
+# 主服务器端口为6379
+slaveof 127.0.0.1 6379
+dir ./
+}}}
+
+
+==== 1.3 启动验证 ====
+
+ * 启动报错
+ {{{
+*** FATAL CONFIG FILE ERROR ***
+Reading the configuration file, at line 1374
+>>> 'replicaof 127.0.0.1:6379'
+slaveof directive not allowed in cluster mode
+}}}
+  * 解决: 修改对应redis.windows.conf文件中的`cluster-enabled yes`为`cluster-enabled no`
+
+ * 启动成功
+  * 主 
+  {{{
+E:\program_flies\redis_x64_5.0.10_win_cluster\redis_master_x64_5.0.10_win_6379>redis-server.exe redis.windows.conf
+[16828] 13 Apr 10:08:13.465 # oO0OoO0OoO0Oo Redis is starting oO0OoO0OoO0Oo
+[16828] 13 Apr 10:08:13.466 # Redis version=5.0.10, bits=64, commit=1c047b68, modified=0, pid=16828, just started
+[16828] 13 Apr 10:08:13.468 # Configuration loaded
+[16828] 13 Apr 10:08:13.470 # Windows does not support daemonize. Start Redis as service
+                _._
+           _.-``__ ''-._
+      _.-``    `.  `_.  ''-._           Redis 5.0.10 (1c047b68/0) 64 bit
+  .-`` .-```.  ```\/    _.,_ ''-._
+ (    '      ,       .-`  | `,    )     Running in standalone mode
+ |`-._`-...-` __...-.``-._|'` _.-'|     Port: 6379
+ |    `-._   `._    /     _.-'    |     PID: 16828
+  `-._    `-._  `-./  _.-'    _.-'
+ |`-._`-._    `-.__.-'    _.-'_.-'|
+ |    `-._`-._        _.-'_.-'    |           http://redis.io
+  `-._    `-._`-.__.-'_.-'    _.-'
+ |`-._`-._    `-.__.-'    _.-'_.-'|
+ |    `-._`-._        _.-'_.-'    |
+  `-._    `-._`-.__.-'_.-'    _.-'
+      `-._    `-.__.-'    _.-'
+          `-._        _.-'
+              `-.__.-'
+
+[16828] 13 Apr 10:08:13.501 # Server initialized
+[16828] 13 Apr 10:08:13.505 * Reading RDB preamble from AOF file...
+[16828] 13 Apr 10:08:13.511 * Reading the remaining AOF tail...
+[16828] 13 Apr 10:08:14.178 * DB loaded from append only file: 0.674 seconds
+[16828] 13 Apr 10:08:14.179 * Ready to accept connections
+}}}
+
+  * 从
+  {{{
+E:\program_flies\redis_x64_5.0.10_win_cluster\redis_slaver0_x64_5.0.10_win_6380>redis-server.exe redis.windows.conf
+[13408] 13 Apr 10:15:38.190 # oO0OoO0OoO0Oo Redis is starting oO0OoO0OoO0Oo
+[13408] 13 Apr 10:15:38.192 # Redis version=5.0.10, bits=64, commit=1c047b68, modified=0, pid=13408, just started
+[13408] 13 Apr 10:15:38.193 # Configuration loaded
+[13408] 13 Apr 10:15:38.195 # Windows does not support daemonize. Start Redis as service
+                _._
+           _.-``__ ''-._
+      _.-``    `.  `_.  ''-._           Redis 5.0.10 (1c047b68/0) 64 bit
+  .-`` .-```.  ```\/    _.,_ ''-._
+ (    '      ,       .-`  | `,    )     Running in standalone mode
+ |`-._`-...-` __...-.``-._|'` _.-'|     Port: 6380
+ |    `-._   `._    /     _.-'    |     PID: 13408
+  `-._    `-._  `-./  _.-'    _.-'
+ |`-._`-._    `-.__.-'    _.-'_.-'|
+ |    `-._`-._        _.-'_.-'    |           http://redis.io
+  `-._    `-._`-.__.-'_.-'    _.-'
+ |`-._`-._    `-.__.-'    _.-'_.-'|
+ |    `-._`-._        _.-'_.-'    |
+  `-._    `-._`-.__.-'_.-'    _.-'
+      `-._    `-.__.-'    _.-'
+          `-._        _.-'
+              `-.__.-'
+
+[13408] 13 Apr 10:15:38.226 # Server initialized
+[13408] 13 Apr 10:15:38.229 * Reading RDB preamble from AOF file...
+[13408] 13 Apr 10:15:38.232 * Reading the remaining AOF tail...
+[13408] 13 Apr 10:15:38.234 * DB loaded from append only file: 0.006 seconds
+[13408] 13 Apr 10:15:38.235 * Ready to accept connections
+[13408] 13 Apr 10:15:38.238 * Connecting to MASTER 127.0.0.1:6379
+[13408] 13 Apr 10:15:38.240 * MASTER <-> REPLICA sync started
+[13408] 13 Apr 10:15:38.243 * Non blocking connect for SYNC fired the event.
+[13408] 13 Apr 10:15:38.245 * Master replied to PING, replication can continue...
+[13408] 13 Apr 10:15:38.248 * Partial resynchronization not possible (no cached master)
+[13408] 13 Apr 10:15:38.259 * Full resync from master: 0c27630568c8b35e733d1abd5df44acfb728aa96:0
+[13408] 13 Apr 10:15:38.462 * MASTER <-> REPLICA sync: receiving 59571 bytes from master
+[13408] 13 Apr 10:15:38.474 * MASTER <-> REPLICA sync: Flushing old data
+[13408] 13 Apr 10:15:38.476 * MASTER <-> REPLICA sync: Loading DB in memory
+[13408] 13 Apr 10:15:38.479 * MASTER <-> REPLICA sync: Finished with success
+[13408] 13 Apr 10:15:38.487 * Background append only file rewriting started by pid 17700
+[13408] 13 Apr 10:15:38.642 * AOF rewrite child asks to stop sending diffs.
+[13408] 13 Apr 10:15:38.742 # fork operation complete
+[13408] 13 Apr 10:15:38.758 * Background AOF rewrite terminated with success
+[13408] 13 Apr 10:15:38.759 * Residual parent diff successfully flushed to the rewritten AOF (0.00 MB)
+[13408] 13 Apr 10:15:38.764 * Background AOF rewrite finished successfully
+[13408] 13 Apr 10:15:38.839 * Replica 127.0.0.1:6381 asks for synchronization
+[13408] 13 Apr 10:15:38.840 * Partial resynchronization not accepted: Replication ID mismatch (Replica asked for 'c4232eb8c9168592f7e5a9f0634c44c8f8387f39', my replication IDs are '0c27630568c8b35e733d1abd5df44acfb728aa96' and '0000000000000000000000000000000000000000')
+[13408] 13 Apr 10:15:38.843 * Starting BGSAVE for SYNC with target: disk
+[13408] 13 Apr 10:15:38.851 * Background saving started by pid 17728
+[13408] 13 Apr 10:15:38.966 # fork operation complete
+[13408] 13 Apr 10:15:38.978 * Background saving terminated with success
+[13408] 13 Apr 10:15:38.988 * Synchronization with replica 127.0.0.1:6381 succeeded
+}}}
+  * 验证1 分别在三个服务执行`info replication`命令结果如下
+  {{{
+> 127.0.0.1@6379 connected!
+> info replication
+# Replication
+role:master
+connected_slaves:1
+slave0:ip=127.0.0.1,port=6380,state=online,offset=154,lag=1
+master_replid:0c27630568c8b35e733d1abd5df44acfb728aa96
+master_replid2:0000000000000000000000000000000000000000
+master_repl_offset:168
+second_repl_offset:-1
+repl_backlog_active:1
+repl_backlog_size:1048576
+repl_backlog_first_byte_offset:1
+repl_backlog_histlen:168
+}}}
+  {{{
+> 127.0.0.1@6380 connected!
+> info replication
+# Replication
+role:slave
+master_host:127.0.0.1
+master_port:6379
+master_link_status:up
+master_last_io_seconds_ago:0
+master_sync_in_progress:0
+slave_repl_offset:196
+slave_priority:100
+slave_read_only:1
+connected_slaves:1
+slave0:ip=127.0.0.1,port=6381,state=online,offset=182,lag=1
+master_replid:0c27630568c8b35e733d1abd5df44acfb728aa96
+master_replid2:0000000000000000000000000000000000000000
+master_repl_offset:196
+second_repl_offset:-1
+repl_backlog_active:1
+repl_backlog_size:1048576
+repl_backlog_first_byte_offset:1
+repl_backlog_histlen:196
+}}}
+  {{{
+> 127.0.0.1@6381 connected!
+> info replication
+# Replication
+role:slave
+master_host:127.0.0.1
+master_port:6380
+master_link_status:up
+master_last_io_seconds_ago:4
+master_sync_in_progress:0
+slave_repl_offset:224
+slave_priority:100
+slave_read_only:1
+connected_slaves:0
+master_replid:0c27630568c8b35e733d1abd5df44acfb728aa96
+master_replid2:0000000000000000000000000000000000000000
+master_repl_offset:224
+second_repl_offset:-1
+repl_backlog_active:1
+repl_backlog_size:1048576
+repl_backlog_first_byte_offset:1
+repl_backlog_histlen:224
+}}}
+ * 可见一个master, 两个slave, 符合预期一主二从
+
+  * 验证2
+   * 在6379服务写入数据, 检查6380和6381服务会自动同步
+   * 在6380, 6381服务写入数据提示不能在只读服务上执行写入操作, 符合预期
+
+==== 1.4 异常验证 ====
+
+ * 停止6379端口的服务后, 其他两个从服务会持续输出如下信息, 表示主服务器下线了, 如果没有进一步操作会处于异常状态.
+ {{{
+[13408] 13 Apr 10:22:36.344 * MASTER <-> REPLICA sync started
+[13408] 13 Apr 10:22:37.354 * Non blocking connect for SYNC fired the event.
+[13408] 13 Apr 10:22:37.354 # Sending command to master in replication handshake: -Writing to master: 找不到指定的模块。
+[13408] 13 Apr 10:22:38.344 * Connecting to MASTER 127.0.0.1:6379
+[13408] 13 Apr 10:22:38.344 * MASTER <-> REPLICA sync started
+[13408] 13 Apr 10:22:39.352 * Non blocking connect for SYNC fired the event.
+[13408] 13 Apr 10:22:39.352 # Sending command to master in replication handshake: -Writing to master: 找不到指定的模块。
+[13408] 13 Apr 10:22:40.345 * Connecting to MASTER 127.0.0.1:6379
+[13408] 13 Apr 10:22:40.345 * MASTER <-> REPLICA sync started
+[13408] 13 Apr 10:22:41.345 * Non blocking connect for SYNC fired the event.
+[13408] 13 Apr 10:22:41.345 # Sending command to master in replication handshake: -Writing to master: 找不到指定的模块。
+[13408] 13 Apr 10:22:41.347 * Connecting to MASTER 127.0.0.1:6379
+[13408] 13 Apr 10:22:41.347 * MASTER <-> REPLICA sync started
+
+== 2 哨兵模式 ==
+
+==== 2.1 新建配置 ====
+
+ * 新建master-6379哨兵配置文件`E:\program_flies\redis_x64_5.0.10_win_cluster\redis_master_x64_5.0.10_win_6379\redis.windows.conf
+ {{{#!highlight shell
+
+port 26379
+# 初次配置时的状态，这个sentinel会自动更新
+sentinel monitor your_custom_master_name 127.0.0.1 6379 2
+daemonize yes
+logfile "./sentinel_log.log"
+
+
+}}}
+ * 新建master-6380哨兵配置文件`E:\program_flies\redis_x64_5.0.10_win_cluster\redis_slaver0_x64_5.0.10_win_6380\redis.windows.conf
+ {{{#!highlight shell
+
+port 26380
+# 初次配置时的状态，这个sentinel会自动更新
+sentinel monitor your_custom_master_name 127.0.0.1 6379 2
+daemonize yes
+logfile "./sentinel_log.log"
+
+}}}
+ * 新建master-6381哨兵配置文件`E:\program_flies\redis_x64_5.0.10_win_cluster\redis_slaver1_x64_5.0.10_win_6381\sentinel.conf
+ {{{#!highlight shell
+
+port 26381
+# 初次配置时的状态，这个sentinel会自动更新
+sentinel monitor your_custom_master_name 127.0.0.1 6379 2
+daemonize yes
+logfile "./sentinel_log.log"
+
+}}}
+
+==== 2.2 启动验证 ====
+ * 重新启动三个redis服务
+ * 启动三个服务各自的哨兵服务
+  {{{
+
+E:\program_flies\redis_x64_5.0.10_win_cluster\redis_master_x64_5.0.10_win_6379>redis-server sentinel.conf --sentinel
+E:\program_flies\redis_x64_5.0.10_win_cluster\redis_slave0_x64_5.0.10_win_6380>redis-server sentinel.conf --sentinel
+E:\program_flies\redis_x64_5.0.10_win_cluster\redis_slave1_x64_5.0.10_win_6380>redis-server sentinel.conf --sentinel
+
+}}}
+
+  {{{
+E:\program_flies\redis_x64_5.0.10_win_cluster\redis_master_x64_5.0.10_win_6379>redis-server sentinel.conf --sentinel
+[16416] 13 Apr 10:58:43.151 # oO0OoO0OoO0Oo Redis is starting oO0OoO0OoO0Oo
+[16416] 13 Apr 10:58:43.151 # Redis version=5.0.10, bits=64, commit=1c047b68, modified=0, pid=16416, just started
+[16416] 13 Apr 10:58:43.151 # Configuration loaded
+                _._
+           _.-``__ ''-._
+      _.-``    `.  `_.  ''-._           Redis 5.0.10 (1c047b68/0) 64 bit
+  .-`` .-```.  ```\/    _.,_ ''-._
+ (    '      ,       .-`  | `,    )     Running in sentinel mode
+ |`-._`-...-` __...-.``-._|'` _.-'|     Port: 26379
+ |    `-._   `._    /     _.-'    |     PID: 16416
+  `-._    `-._  `-./  _.-'    _.-'
+ |`-._`-._    `-.__.-'    _.-'_.-'|
+ |    `-._`-._        _.-'_.-'    |           http://redis.io
+  `-._    `-._`-.__.-'_.-'    _.-'
+ |`-._`-._    `-.__.-'    _.-'_.-'|
+ |    `-._`-._        _.-'_.-'    |
+  `-._    `-._`-.__.-'_.-'    _.-'
+      `-._    `-.__.-'    _.-'
+          `-._        _.-'
+              `-.__.-'
+
+[16416] 13 Apr 10:58:43.163 # Sentinel ID is fdfbf3651e4e1fd63489d59f23711cf7cac596f4
+[16416] 13 Apr 10:58:43.166 # +monitor master r_master 127.0.0.1 6379 quorum 1
+
+}}}
+==== 2.3 异常验证 ====
+
+ * 关闭6379主服务, 再次分别在三个服务执行`info replication`命令结果显示80变成了master主服务, 符合预期
