@@ -1,0 +1,24 @@
+今天使用sqlserver，发现了一个问题，就是使用 insert into 数据库名.dbo.表名(字段) values(值) 这样语句的时候，会返回错误：
+
+sqlserver 服务器主体 无法在当前安全上下文下访问数据库。
+于是在网上找了一下资料，发现是因为trustworthy数据库属性用于指明 SQL Server 实例是否信任该数据库以及其中的内容。
+
+默认情况下，此设置为 OFF，但是可以使用 ALTER DATABASE 语句将其设置为 ON。
+
+ 
+
+查看看到哪些数据库开了trustworthy属性，命令如下：
+
+{{{#!highlight sql
+SELECT name, database_id, is_trustworthy_on FROM sys.databases，默认就msdb开的有。
+}}}
+
+要打开数据库trustworthy属性，命令如下： 
+{{{#!highlight sql
+ALTER DATABASE 数据库名 SET TRUSTWORTHY ON
+}}}
+
+授权用户访问，命令如下：
+{{{#!highlight sql
+ALTER AUTHORIZATION ON DATABASE::数据库名 TO [用户名]
+}}}
